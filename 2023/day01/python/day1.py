@@ -12,8 +12,8 @@ number_words = {
     "five": "5",
     "six": "6",
     "seven": "7",
-    "eight": "8",
-    "nine": "9",
+    "eight": "8", 
+    "nine": "9"
 }
 
 
@@ -23,18 +23,22 @@ def is_number(char):
     return False
 
 
-def first_last_num(list):
-    return [list[0], list[-1]]
+def first_last_num(input_list):
+    if len(input_list) == 0:
+        return int(f"{input_list[0]}{input_list[0]}")
+    return int(f"{input_list[0]}{input_list[-1]}")
 
 
 def convert_words_to_numbers(input_string):
     curr_string = ""
 
-    for char in input_string:
+    for pos, char in enumerate(input_string):
         curr_string += char
-        for number_word, number_str in number_words.items():
-            curr_string = curr_string.replace(number_word, number_str)
 
+        for number_word, number_str in number_words.items():
+            if number_word in curr_string:
+                curr_string = curr_string[0:-len(number_word)] + number_str + curr_string[-len(number_word)]
+                
     return curr_string
 
 
@@ -42,10 +46,11 @@ def process_file_a(path):
     with open(path) as file:
         total = sum(
             map(
-                lambda x: int("".join(first_last_num(list(filter(is_number, x))))),
+                lambda x: first_last_num(list(filter(is_number, x))),
                 file.readlines(),
             )
         )
+        
         return total
 
 
@@ -53,13 +58,11 @@ def process_file_b(path):
     with open(path) as file:
         total = sum(
             map(
-                lambda x: int(
-                    "".join(
+                lambda x:
                         first_last_num(
                             list(filter(is_number, convert_words_to_numbers(x)))
                         )
-                    )
-                ),
+                ,
                 file.readlines(),
             )
         )

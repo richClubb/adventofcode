@@ -10,23 +10,6 @@ from day1 import (
     process_file_b,
 )
 
-part_a = [
-    "1abc2",
-    "pqr3stu8vwx",
-    "a1b2c3d4e5f",
-    "treb7uchet",
-]
-
-part_b = [
-    "two1nine",
-    "eightwothree",
-    "abcone2threexyz",
-    "xtwone3four",
-    "4nineeightseven2",
-    "zoneight234",
-    "7pqrstsixteen",
-]
-
 
 @pytest.mark.parametrize(
     "value, expected_result",
@@ -55,7 +38,7 @@ def test_is_number(value, expected_result):
 
 @pytest.mark.parametrize(
     "input_list, expected_result",
-    [([1, 3], [1, 3]), ([1], [1, 1]), ([1, 2, 3], [1, 3])],
+    [([1, 3], 13), ([1], 11), ([1, 2, 3], 13)],
 )
 def test_first_last_num(input_list, expected_result):
     assert first_last_num(input_list) == expected_result
@@ -82,6 +65,12 @@ def test_first_last_num(input_list, expected_result):
             "976rsrgmclkvthkgtxq2vtlxfrdnllxvsghslh",
         ),
         ("seven443six8three31", "744368331"),
+        ("pppmfmnfourtworxrqrfhbgx8vvxgrjzhvqmztltwo", "pppmfmn42rxrqrfhbgx8vvxgrjzhvqmztl2"),
+        ("56oneninethreevv4chvlfljbrthree","56193vv4chvlfljbr3"),
+        ("9sixseven9zspvdsqxzf","9679zspvdsqxzf"),
+        ("4four8ndqjtgllktwo4","448ndqjtgllk24"),
+        ("jchmqgp85","jchmqgp85"),
+        ("dznstvthreeeightjzcxzsqbtsixqr8", "dznstv38jzcxzsqbt6qr8"),
     ],
 )
 def test_convert_words_to_numbers(input_string, expected_result):
@@ -98,7 +87,3 @@ def test_process_file_b():
     result = process_file_b("part_b_sample.txt")
 
     assert result == 281
-
-
-if __name__ == "__main__":
-    pass
