@@ -5,15 +5,15 @@ import os
 from functools import reduce
 
 number_words = {
-    "one": "1",
-    "two": "2",
-    "three": "3",
-    "four": "4",
-    "five": "5",
-    "six": "6",
-    "seven": "7",
-    "eight": "8", 
-    "nine": "9"
+    "one": "1ne",
+    "two": "2wo",
+    "three": "3hree",
+    "four": "4our",
+    "five": "5ive",
+    "six": "6ix",
+    "seven": "7even",
+    "eight": "8ight",
+    "nine": "9ine",
 }
 
 
@@ -37,8 +37,8 @@ def convert_words_to_numbers(input_string):
 
         for number_word, number_str in number_words.items():
             if number_word in curr_string:
-                curr_string = curr_string[0:-len(number_word)] + number_str + curr_string[-len(number_word)]
-                
+                curr_string = curr_string.replace(number_word, number_str)
+
     return curr_string
 
 
@@ -50,7 +50,7 @@ def process_file_a(path):
                 file.readlines(),
             )
         )
-        
+
         return total
 
 
@@ -58,11 +58,9 @@ def process_file_b(path):
     with open(path) as file:
         total = sum(
             map(
-                lambda x:
-                        first_last_num(
-                            list(filter(is_number, convert_words_to_numbers(x)))
-                        )
-                ,
+                lambda x: first_last_num(
+                    list(filter(is_number, convert_words_to_numbers(x)))
+                ),
                 file.readlines(),
             )
         )

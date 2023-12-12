@@ -47,30 +47,33 @@ def test_first_last_num(input_list, expected_result):
 @pytest.mark.parametrize(
     "input_string, expected_result",
     [
-        ("one", "1"),
+        ("one", "1ne"),
         ("1", "1"),
-        ("one1", "11"),
-        ("nineninenine", "999"),
-        ("one1zzztwo8", "11zzz28"),
-        ("nine57", "957"),
-        ("7rdtplhbvddvlkonefqsttj", "7rdtplhbvddvlk1fqsttj"),
-        ("four6mssqzhgxt", "46mssqzhgxt"),
+        ("one1", "1ne1"),
+        ("nineninenine", "9ine9ine9ine"),
+        ("one1zzztwo8", "1ne1zzz2wo8"),
+        ("nine57", "9ine57"),
+        ("7rdtplhbvddvlkonefqsttj", "7rdtplhbvddvlk1nefqsttj"),
+        ("four6mssqzhgxt", "4our6mssqzhgxt"),
         ("gphnqxhlhzzftghk767", "gphnqxhlhzzftghk767"),
-        ("mbcbpjcsnt4six", "mbcbpjcsnt46"),
-        ("one9xmhvzklmzffive1kcsixmnsbm2", "19xmhvzklmzf51kc6mnsbm2"),
+        ("mbcbpjcsnt4six", "mbcbpjcsnt46ix"),
+        ("one9xmhvzklmzffive1kcsixmnsbm2", "1ne9xmhvzklmzf5ive1kc6ixmnsbm2"),
         ("1dgschj", "1dgschj"),
-        ("nine8foursnczninednds", "984sncz9dnds"),
+        ("nine8foursnczninednds", "9ine84oursncz9inednds"),
         (
             "9sevensixrsrgmclkvthkgtxqtwovtlxfrdnllxvsghslh",
-            "976rsrgmclkvthkgtxq2vtlxfrdnllxvsghslh",
+            "97even6ixrsrgmclkvthkgtxq2wovtlxfrdnllxvsghslh",
         ),
-        ("seven443six8three31", "744368331"),
-        ("pppmfmnfourtworxrqrfhbgx8vvxgrjzhvqmztltwo", "pppmfmn42rxrqrfhbgx8vvxgrjzhvqmztl2"),
-        ("56oneninethreevv4chvlfljbrthree","56193vv4chvlfljbr3"),
-        ("9sixseven9zspvdsqxzf","9679zspvdsqxzf"),
-        ("4four8ndqjtgllktwo4","448ndqjtgllk24"),
-        ("jchmqgp85","jchmqgp85"),
-        ("dznstvthreeeightjzcxzsqbtsixqr8", "dznstv38jzcxzsqbt6qr8"),
+        ("seven443six8three31", "7even4436ix83hree31"),
+        (
+            "pppmfmnfourtworxrqrfhbgx8vvxgrjzhvqmztltwo",
+            "pppmfmn4our2worxrqrfhbgx8vvxgrjzhvqmztl2wo",
+        ),
+        ("56oneninethreevv4chvlfljbrthree", "561ne9ine3hreevv4chvlfljbr3hree"),
+        ("9sixseven9zspvdsqxzf", "96ix7even9zspvdsqxzf"),
+        ("4four8ndqjtgllktwo4", "44our8ndqjtgllk2wo4"),
+        ("jchmqgp85", "jchmqgp85"),
+        ("dznstvthreeeightjzcxzsqbtsixqr8", "dznstv3hree8ightjzcxzsqbt6ixqr8"),
     ],
 )
 def test_convert_words_to_numbers(input_string, expected_result):
@@ -78,12 +81,12 @@ def test_convert_words_to_numbers(input_string, expected_result):
 
 
 def test_process_file_a():
-    result = process_file_a("part_a_sample.txt")
+    result = process_file_a("../part_a_sample.txt")
 
     assert result == 142
 
 
 def test_process_file_b():
-    result = process_file_b("part_b_sample.txt")
+    result = process_file_b("../part_b_sample.txt")
 
     assert result == 281
