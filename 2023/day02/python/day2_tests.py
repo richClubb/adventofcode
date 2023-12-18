@@ -1,5 +1,6 @@
 #!/bin/env python3
 import pytest
+import sys
 from day2 import (
     part_a,
     part_b,
@@ -111,12 +112,16 @@ def test_is_game_possible(input_game, expected_result):
 
 
 def test_part_a():
-    result = part_a("part_a_sample.txt")
+    result = part_a("../part_a_sample.txt")
 
     assert result == 8
 
 
 def test_part_b():
-    result = part_b("part_a_sample.txt")
+    result = part_b("../part_a_sample.txt")
 
     assert result == 2286
+
+
+if __name__ == "__main__":
+    pytest.main(sys.argv)

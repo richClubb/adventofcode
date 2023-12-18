@@ -1,6 +1,6 @@
 #!/bin/env python3
 import pytest
-
+import sys
 
 from day1 import (
     is_number,
@@ -90,3 +90,7 @@ def test_process_file_b():
     result = process_file_b("../part_b_sample.txt")
 
     assert result == 281
+
+
+if __name__ == "__main__":
+    pytest.main(sys.argv)
