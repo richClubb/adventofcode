@@ -36,7 +36,7 @@ def calculate_new_seeds(seed_range, mappings):
             ):
                 print(f"Fully matching")
                 mapping_output = [(mapping_dest_start, mapping_dest_end)]
-                return mapping_output, None
+                break
             elif (
                 (mapping_src_start < working_seed_start)
                 and (mapping_src_end > working_seed_start)
@@ -46,7 +46,7 @@ def calculate_new_seeds(seed_range, mappings):
                 delta = working_seed_start - mapping_src_start
                 mapping_output = [(mapping_dest_start + delta, mapping_dest_end)]
                 remaining_seed_range = [(mapping_src_end + 1, working_seed_end)]
-                return mapping_output, remaining_seed_range
+                break
             elif (mapping_src_start < working_seed_start) and (
                 mapping_src_end == working_seed_start
             ):
@@ -57,7 +57,7 @@ def calculate_new_seeds(seed_range, mappings):
                 else:
                     remaining_seed_range = [(mapping_src_end + 1, working_seed_end)]
 
-                return mapping_output, remaining_seed_range
+                break
             elif (mapping_src_start > working_seed_start) and (
                 mapping_src_end < working_seed_end
             ):
@@ -66,12 +66,13 @@ def calculate_new_seeds(seed_range, mappings):
                     lower_range = working_seed_start
                 else:
                     lower_range = (working_seed_start, mapping_src_start - 1)
-                mapped_range = (mapping_dest_start, mapping_dest_end)
+                mapping_output = [lower_range, (mapping_dest_start, mapping_dest_end)]
                 if (mapping_src_end + 1) == working_seed_end:
                     remaining_seed_range = [working_seed_end]
                 else:
                     remaining_seed_range = [(mapping_src_end + 1, working_seed_end)]
-                return [lower_range, mapped_range], remaining_seed_range
+                break
+
             elif mapping_src_end < working_seed_start:
                 print(f"Mapping range too low")
             elif mapping_src_start > working_seed_end:
@@ -84,10 +85,20 @@ def calculate_new_seeds(seed_range, mappings):
                     lower_range = working_seed_start
                 else:
                     lower_range = (working_seed_start, mapping_src_start - 1)
-                mapped_range = (mapping_dest_start, mapping_dest_end)
-                return [(lower_range), mapped_range], None
+                mapping_output = [lower_range, (mapping_dest_start, mapping_dest_end)]
+                break
 
-    return [(working_seed_start, working_seed_end)], None
+    temp_output = []
+    # for seed_start, seed_end in mapping_output:
+    #     if seed_start == seed_end:
+    #         temp_output.append(seed_start)
+    #     else:
+    #         temp_output.append((seed_start, seed_end))
+
+    if (mapping_output is None) and (remaining_seed_range is None):
+        return [seed_range], None
+
+    return mapping_output, remaining_seed_range
 
 
 if __name__ == "__main__":
