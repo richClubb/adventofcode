@@ -52,25 +52,16 @@ def calculate_new_seeds(seed_range, mappings):
             ):
                 print(f"Found overlap on first value of seed")
                 mapping_output = [mapping_dest_end]
-                if (mapping_src_end + 1) == working_seed_end:
-                    remaining_seed_range = [working_seed_end]
-                else:
-                    remaining_seed_range = [(mapping_src_end + 1, working_seed_end)]
+                remaining_seed_range = [(mapping_src_end + 1, working_seed_end)]
 
                 break
             elif (mapping_src_start > working_seed_start) and (
                 mapping_src_end < working_seed_end
             ):
                 print(f"mapping in the middle")
-                if working_seed_start == mapping_src_start - 1:
-                    lower_range = working_seed_start
-                else:
-                    lower_range = (working_seed_start, mapping_src_start - 1)
+                lower_range = (working_seed_start, mapping_src_start - 1)
                 mapping_output = [lower_range, (mapping_dest_start, mapping_dest_end)]
-                if (mapping_src_end + 1) == working_seed_end:
-                    remaining_seed_range = [working_seed_end]
-                else:
-                    remaining_seed_range = [(mapping_src_end + 1, working_seed_end)]
+                remaining_seed_range = [(mapping_src_end + 1, working_seed_end)]
                 break
 
             elif mapping_src_end < working_seed_start:
@@ -81,19 +72,16 @@ def calculate_new_seeds(seed_range, mappings):
                 mapping_src_end == working_seed_end
             ):
                 print(f"mapping in middle, ends on end seed")
-                if working_seed_start == mapping_src_start - 1:
-                    lower_range = working_seed_start
-                else:
-                    lower_range = (working_seed_start, mapping_src_start - 1)
+                lower_range = (working_seed_start, mapping_src_start - 1)
                 mapping_output = [lower_range, (mapping_dest_start, mapping_dest_end)]
                 break
 
     temp_output = []
-    # for seed_start, seed_end in mapping_output:
-    #     if seed_start == seed_end:
-    #         temp_output.append(seed_start)
-    #     else:
-    #         temp_output.append((seed_start, seed_end))
+    for seed_start, seed_end in mapping_output:
+        if seed_start == seed_end:
+            temp_output.append(seed_start)
+        else:
+            temp_output.append((seed_start, seed_end))
 
     if (mapping_output is None) and (remaining_seed_range is None):
         return [seed_range], None
