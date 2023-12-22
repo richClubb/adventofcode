@@ -240,7 +240,7 @@ def part_b_forward_ranges(input_file_path):
     new_individual_seeds = []
 
     for map_index in range(0, len(maps.keys())):
-        print(f"Map layer {map_index} input {new_seeds} ")
+        # print(f"Map layer {map_index} Input: {new_seeds} ")
         curr_map_list = maps[map_index]
         curr_map_list = sorted(curr_map_list, key=lambda lst: lst[1])
 
@@ -251,6 +251,7 @@ def part_b_forward_ranges(input_file_path):
         if len(extracted_individual_seeds) > 0:
             new_individual_seeds += extracted_individual_seeds
         new_seeds = sorted(new_seeds, key=lambda tup: tup[0])
+        # print(f"Map layer {map_index} Output: {new_seeds} ")
 
     new_seeds = sorted(new_seeds, key=lambda tup: tup[0])
     return new_seeds[0][0]

@@ -14,7 +14,7 @@ def correct_seed_ranges(seed_ranges):
         temp_output = []
         for seed_start, seed_end in seed_ranges:
             if seed_start == seed_end:
-                temp_output.append(seed_start)
+                temp_output.append((seed_start, None))
             else:
                 temp_output.append((seed_start, seed_end))
         return temp_output
@@ -22,19 +22,21 @@ def correct_seed_ranges(seed_ranges):
 
 
 def calculate_new_seeds(seed_range, mappings):
-    if type(seed_range) == int:
+    working_seed_start, working_seed_end = seed_range
+    if working_seed_end is None:
         for mapping_dest_start, mapping_src_start, mapping_range in mappings:
             mapping_src_end = mapping_src_start + mapping_range - 1
             mapping_dest_end = mapping_dest_start + mapping_range - 1
 
-            if (seed_range >= mapping_src_start) and (seed_range <= mapping_src_end):
-                delta = seed_range - mapping_src_start
-                return [(mapping_dest_start + delta)], None
+            if (working_seed_start >= mapping_src_start) and (
+                working_seed_start <= mapping_src_end
+            ):
+                delta = working_seed_start - mapping_src_start
+                return [(mapping_dest_start + delta, None)], None
 
         return seed_range, None
 
     else:
-        working_seed_start, working_seed_end = seed_range
         mapping_output = None
         remaining_seed_range = None
 
