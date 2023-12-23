@@ -13,8 +13,58 @@ class Mapping_Direction(Enum):
     OUTPUT_TO_INPUT = 2
 
 
-def calculate_translation_ranges(map):
-    pass
+def clean_up_seed_list(seed_ranges):
+    output_ranges = []
+    starting_range_start, starting_range_end = seed_ranges.pop(0)
+    while len(seed_ranges) > 0:
+        working_range_start, working_range_end = seed_ranges.pop(0)
+
+        if (starting_range_end is None) and (working_range_end is None):
+            if starting_range_start == working_range_start:
+                pass
+            elif starting_range_start + 1 == working_range_start:
+                starting_range_end = working_range_start
+            else:
+                output_ranges.append((starting_range_start, None))
+                starting_range_start = working_range_start
+        elif (starting_range_end is None) and (working_range_end is not None):
+            if starting_range_start == working_range_start + 1:
+                starting_range_end == working_range_end
+            else:
+                output_ranges.append((starting_range_start, None))
+                starting_range_start, starting_range_end = (
+                    working_range_start,
+                    working_range_end,
+                )
+        elif (starting_range_end is not None) and (working_range_end is None):
+            if (starting_range_end + 1) == working_range_start:
+                starting_range_end = working_range_start
+            else:
+                output_ranges.append((starting_range_start, starting_range_end))
+                starting_range_start, starting_range_end = (
+                    working_range_start,
+                    working_range_end,
+                )
+        else:
+            if (starting_range_end + 1) == working_range_start:
+                starting_range_end = working_range_end
+            elif starting_range_end == working_range_end:
+                starting_range_end = working_range_end
+            elif starting_range_end > working_range_end:
+                pass
+            elif (starting_range_end >= working_range_start) and (
+                starting_range_start <= working_range_end
+            ):
+                starting_range_end = working_range_end
+            else:
+                output_ranges.append((starting_range_start, starting_range_end))
+                starting_range_start, starting_range_end = (
+                    working_range_start,
+                    working_range_end,
+                )
+
+    output_ranges.append((starting_range_start, starting_range_end))
+    return output_ranges
 
 
 def do_mapping(input, dest, src, length, direction=Mapping_Direction.INPUT_TO_OUTPUT):
@@ -67,44 +117,26 @@ def find_location(seed, maps, direction=Mapping_Direction.INPUT_TO_OUTPUT):
 
 
 def process_seed_mapping(seed_list, mapping):
+    """
+
+    returns: A sorted list of seed pairs
+    """
     new_seeds = []
+    # Takes each seed pair and calculates the mapping, any remaining not mapped will be
+    # re-added to the seed_list
     while len(seed_list) > 0:
         working_seed = seed_list.pop(0)
         mapped_seeds, remaining_seeds = calculate_new_seeds(working_seed, mapping)
-        new_seeds += mapped_seeds
+        if mapped_seeds is not None:
+            new_seeds += mapped_seeds
+
+        # Add any remaining to the seed list
         if remaining_seeds is not None:
-            seed_list += remaining_seeds
-            seed_list = sorted(seed_list, key=lambda tup: tup[1])
-    return new_seeds
+            seed_list.append(remaining_seeds)
+            seed_list = sorted(seed_list, key=lambda tup: tup[0])
 
-
-def separate_individual_seeds(seed_list):
-    individual_seeds = []
-    seed_pairs = []
-    for seed in seed_list:
-        if type(seed) == int:
-            individual_seeds.append(seed)
-        else:
-            seed_pairs.append(seed)
-    return individual_seeds, seed_pairs
-
-
-def calculate_continuous_ranges(seed_range):
-    ranges = []
-
-    current_range_start = seed_range[0]
-    last_val = current_range_start
-    for value in seed_range:
-        if last_val == value:
-            continue
-        if (value - last_val) > 1:
-            ranges.append((current_range_start, last_val))
-            current_range_start = value
-
-        last_val = value
-
-    ranges.append((current_range_start, last_val))
-    return ranges
+    mapped_seed_pairs = sorted(new_seeds, key=lambda tup: tup[0])
+    return mapped_seed_pairs
 
 
 def extract_maps_and_seeds(input_file_path):
@@ -228,32 +260,26 @@ def part_b_forward_multiprocess(input_file_path):
 def part_b_forward_ranges(input_file_path):
     maps, seeds = extract_maps_and_seeds(input_file_path)
 
+    # Extracts a list of pairs (start, size)
     f = lambda A, n=3: [A[i : i + n] for i in range(0, len(A), n)]
     seed_pairs = f(seeds, 2)
 
+    # gets the seed ranges in a (start, end) format rather than (start, size)
     seed_range = []
     for seed_start, seed_range_size in seed_pairs:
         seed_range.append((seed_start, seed_start + seed_range_size - 1))
 
-    seed_pairs = sorted(seed_range, key=lambda tup: tup[0])
-    new_seeds = seed_pairs
-    new_individual_seeds = []
+    # The seed ranges have to be sorted for this algorithm to work
+    new_seeds = sorted(seed_range, key=lambda tup: tup[0])
 
+    # Calculates the new seed ranges for each layer
     for map_index in range(0, len(maps.keys())):
-        # print(f"Map layer {map_index} Input: {new_seeds} ")
+        # print(f"Input to layer {map_index}: {new_seeds}")
         curr_map_list = maps[map_index]
         curr_map_list = sorted(curr_map_list, key=lambda lst: lst[1])
-
-        new_individual_seeds = process_seed_mapping(new_individual_seeds, curr_map_list)
         new_seeds = process_seed_mapping(new_seeds, curr_map_list)
+        # print(f"Output from layer {map_index}: {clean_up_seed_list(new_seeds)}")
 
-        extracted_individual_seeds, new_seeds = separate_individual_seeds(new_seeds)
-        if len(extracted_individual_seeds) > 0:
-            new_individual_seeds += extracted_individual_seeds
-        new_seeds = sorted(new_seeds, key=lambda tup: tup[0])
-        # print(f"Map layer {map_index} Output: {new_seeds} ")
-
-    new_seeds = sorted(new_seeds, key=lambda tup: tup[0])
     return new_seeds[0][0]
 
 
@@ -268,10 +294,10 @@ if __name__ == "__main__":
         print("Missing input file")
         exit()
 
-    # print(f"part a: {part_a(args.input_file_path)}")
+    print(f"part a (forward depth first): {part_a(args.input_file_path)}")
     # print(f"part b forward: {part_b_forwards(args.input_file_path)}")
     # print(f"part b backwards: {part_b_backward(args.input_file_path)}")
     # print(f"part b forwards multiprocess (bad): {part_b_forward_multiprocess(args.input_file_path)}")
     print(
-        f"part b forwards ranges (unknown): {part_b_forward_ranges(args.input_file_path)}"
+        f"part b (forwards ranges method): {part_b_forward_ranges(args.input_file_path)}"
     )
