@@ -13,60 +13,6 @@ class Mapping_Direction(Enum):
     OUTPUT_TO_INPUT = 2
 
 
-def clean_up_seed_list(seed_ranges):
-    output_ranges = []
-    starting_range_start, starting_range_end = seed_ranges.pop(0)
-    while len(seed_ranges) > 0:
-        working_range_start, working_range_end = seed_ranges.pop(0)
-
-        if (starting_range_end is None) and (working_range_end is None):
-            if starting_range_start == working_range_start:
-                pass
-            elif starting_range_start + 1 == working_range_start:
-                starting_range_end = working_range_start
-            else:
-                output_ranges.append((starting_range_start, None))
-                starting_range_start = working_range_start
-        elif (starting_range_end is None) and (working_range_end is not None):
-            if starting_range_start == working_range_start + 1:
-                starting_range_end == working_range_end
-            else:
-                output_ranges.append((starting_range_start, None))
-                starting_range_start, starting_range_end = (
-                    working_range_start,
-                    working_range_end,
-                )
-        elif (starting_range_end is not None) and (working_range_end is None):
-            if (starting_range_end + 1) == working_range_start:
-                starting_range_end = working_range_start
-            else:
-                output_ranges.append((starting_range_start, starting_range_end))
-                starting_range_start, starting_range_end = (
-                    working_range_start,
-                    working_range_end,
-                )
-        else:
-            if (starting_range_end + 1) == working_range_start:
-                starting_range_end = working_range_end
-            elif starting_range_end == working_range_end:
-                starting_range_end = working_range_end
-            elif starting_range_end > working_range_end:
-                pass
-            elif (starting_range_end >= working_range_start) and (
-                starting_range_start <= working_range_end
-            ):
-                starting_range_end = working_range_end
-            else:
-                output_ranges.append((starting_range_start, starting_range_end))
-                starting_range_start, starting_range_end = (
-                    working_range_start,
-                    working_range_end,
-                )
-
-    output_ranges.append((starting_range_start, starting_range_end))
-    return output_ranges
-
-
 def do_mapping(input, dest, src, length, direction=Mapping_Direction.INPUT_TO_OUTPUT):
     if direction == Mapping_Direction.INPUT_TO_OUTPUT:
         if input >= src and input < src + length:
@@ -216,12 +162,8 @@ def part_b_forwards(input_file_path):
 def part_b_backward(input_file_path):
     maps, seeds = extract_maps_and_seeds(input_file_path)
 
-    max_seed = 0
     f = lambda A, n=3: [A[i : i + n] for i in range(0, len(A), n)]
     seed_pairs = f(seeds, 2)
-
-    for start, length in seed_pairs:
-        max_seed = max(max_seed, start + length)
 
     start_val = 0
     while True:
@@ -276,7 +218,6 @@ def part_b_forward_ranges(input_file_path):
     for map_index in range(0, len(maps.keys())):
         # print(f"Input to layer {map_index}: {new_seeds}")
         curr_map_list = maps[map_index]
-        curr_map_list = sorted(curr_map_list, key=lambda lst: lst[1])
         new_seeds = process_seed_mapping(new_seeds, curr_map_list)
         # print(f"Output from layer {map_index}: {clean_up_seed_list(new_seeds)}")
 
@@ -297,6 +238,7 @@ if __name__ == "__main__":
     print(f"part a (forward depth first): {part_a(args.input_file_path)}")
     # print(f"part b forward: {part_b_forwards(args.input_file_path)}")
     # print(f"part b backwards: {part_b_backward(args.input_file_path)}")
+    # print(f"part b backwards multiprocess: {part_b_backward_multiprocess(args.input_file_path)}")
     # print(f"part b forwards multiprocess (bad): {part_b_forward_multiprocess(args.input_file_path)}")
     print(
         f"part b (forwards ranges method): {part_b_forward_ranges(args.input_file_path)}"
