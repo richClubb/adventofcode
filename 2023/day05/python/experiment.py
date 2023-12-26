@@ -4,14 +4,18 @@
 def case_1(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
     if seed_end < mapping_src_start:
         return None, None
-    return None
+    return case_2(
+        seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size
+    )
 
 
 def case_2(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
     mapping_src_end = mapping_src_start + mapping_size - 1
     if seed_start > mapping_src_end:
         return None, None
-    return None
+    return case_3(
+        seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size
+    )
 
 
 def case_3(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
@@ -19,10 +23,12 @@ def case_3(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_s
         lower_range = (seed_start, mapping_src_start - 1)
         mapped_range = (mapping_dst_start, mapping_dst_start)
         return [lower_range, mapped_range], None
-    return None
+    return case_4(
+        seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size
+    )
 
 
-def case_4(seed_start, seed_end, mapping_src_start, mapping_dest_start, mapping_size):
+def case_4(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
     mapping_src_end = mapping_src_start + mapping_size - 1
     if (
         (seed_start < mapping_src_start)
@@ -32,9 +38,11 @@ def case_4(seed_start, seed_end, mapping_src_start, mapping_dest_start, mapping_
         # Case 4
         lower_range = (seed_start, mapping_src_start - 1)
         offset = seed_end - mapping_src_start
-        mapped_range = (mapping_dest_start, mapping_dest_start + offset)
+        mapped_range = (mapping_dst_start, mapping_dst_start + offset)
         return [lower_range, mapped_range], None
-    return None
+    return case_5(
+        seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size
+    )
 
 
 def case_5(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
@@ -44,7 +52,9 @@ def case_5(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_s
         lower_range = (seed_start, mapping_src_start - 1)
         mapped_range = (mapping_dst_start, mapping_dst_end)
         return [lower_range, mapped_range], None
-    return None
+    return case_6(
+        seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size
+    )
 
 
 def case_6(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
@@ -55,7 +65,9 @@ def case_6(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_s
         mapped_range = (mapping_dst_start, mapping_dst_end)
         remaining_seed_range = (mapping_src_end + 1, seed_end)
         return [lower_range, mapped_range], remaining_seed_range
-    return None
+    return case_7(
+        seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size
+    )
 
 
 def case_7(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
@@ -64,7 +76,9 @@ def case_7(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_s
         offset = seed_end - mapping_src_start
         mapped_range = (mapping_dst_start, mapping_dst_start + offset)
         return [mapped_range], None
-    return None
+    return case_8(
+        seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size
+    )
 
 
 def case_8(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
@@ -73,7 +87,9 @@ def case_8(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_s
     if (seed_start == mapping_src_start) and (seed_end == mapping_src_end):
         mapped_range = (mapping_dst_start, mapping_dst_end)
         return [mapped_range], None
-    return None
+    return case_9(
+        seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size
+    )
 
 
 def case_9(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
@@ -82,7 +98,9 @@ def case_9(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_s
     if (seed_start == mapping_src_start) and (seed_end > mapping_src_end):
         mapped_range = (mapping_dst_start, mapping_dst_end)
         return [mapped_range], (mapping_src_end + 1, seed_end)
-    return None
+    return case_10(
+        seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size
+    )
 
 
 def case_10(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
@@ -95,7 +113,9 @@ def case_10(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_
             mapping_dst_start + offset + size,
         )
         return [mapped_range], None
-    return None
+    return case_11(
+        seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size
+    )
 
 
 def case_11(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
@@ -105,7 +125,9 @@ def case_11(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_
         offset = seed_start - mapping_src_start
         mapped_range = (mapping_dst_start + offset, mapping_dst_end)
         return [mapped_range], None
-    return None
+    return case_12(
+        seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size
+    )
 
 
 def case_12(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
@@ -120,7 +142,9 @@ def case_12(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_
         offset = seed_start - mapping_src_start
         mapped_range = (mapping_dst_start + offset, mapping_dst_end)
         return [mapped_range], (mapping_src_end + 1, seed_end)
-    return None
+    return case_13(
+        seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size
+    )
 
 
 def case_13(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
