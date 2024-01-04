@@ -5,7 +5,7 @@ import argparse
 import os
 from enum import Enum
 from multiprocessing import Pool
-from experiment import calculate_new_seeds
+from day5_ranges import calculate_new_seeds
 
 
 class Mapping_Direction(Enum):

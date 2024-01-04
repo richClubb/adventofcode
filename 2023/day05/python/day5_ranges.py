@@ -346,55 +346,6 @@ def calculate_new_seeds(seed_range, mappings):
     return correct_seed_ranges(mapping_output), correct_seed_range(remaining_seed_range)
 
 
-def do_mapping(input, dest, src, length, direction=Mapping_Direction.INPUT_TO_OUTPUT):
-    if direction == Mapping_Direction.INPUT_TO_OUTPUT:
-        if input >= src and input < src + length:
-            return dest + (input - src)
-    elif direction == Mapping_Direction.OUTPUT_TO_INPUT:
-        if input >= dest and input < dest + length:
-            return src + (input - dest)
-    # implicit return None
-
-
-def find_location_wrapper(arguments):
-    seed_start = arguments[0]
-    seed_length = arguments[1]
-    maps = arguments[2]
-    min_loc = 10**30
-    for seed in range(seed_start, seed_start + seed_length):
-        loc = find_location(seed, maps)
-        if loc < min_loc:
-            min_loc = loc
-    return min_loc
-
-
-def find_location(seed, maps, direction=Mapping_Direction.INPUT_TO_OUTPUT):
-    if direction == Mapping_Direction.OUTPUT_TO_INPUT:
-        map_key = 6
-        inter = seed
-        while map_key >= 0:
-            for entry in maps[map_key]:
-                x = do_mapping(inter, *entry, direction=direction)
-                if x is not None:
-                    inter = x
-                    break
-            map_key -= 1
-
-        return inter
-
-    elif direction == Mapping_Direction.INPUT_TO_OUTPUT:
-        map_key = 0
-        while map_key < 7:
-            for entry in maps[map_key]:
-                x = do_mapping(seed, *entry, direction=direction)
-                if x is not None:
-                    seed = x
-                    break
-            map_key += 1
-
-        return seed
-
-
 def process_seed_mapping(seed_list, mapping):
     """
 
@@ -449,13 +400,20 @@ def extract_maps_and_seeds(input_file_path):
 def part_a(input_file_path):
     maps, seeds = extract_maps_and_seeds(input_file_path)
 
-    min_loc = 10**30
+    # gets the seed ranges in a (start, end) format rather than (start, size)
+    seed_ranges = []
     for seed in seeds:
-        loc = find_location(seed, maps)
-        if loc < min_loc:
-            min_loc = loc
+        seed_ranges.append((seed, None))
 
-    return min_loc
+    # The seed ranges have to be sorted for this algorithm to work
+    seed_ranges = sorted(seed_ranges, key=lambda tup: tup[0])
+
+    # Calculates the new seed ranges for each layer
+    for map_index in range(0, len(maps.keys())):
+        curr_map_list = maps[map_index]
+        seed_ranges = process_seed_mapping(seed_ranges, curr_map_list)
+
+    return seed_ranges[0][0]
 
 
 def part_b_forward_ranges(input_file_path):
@@ -466,21 +424,19 @@ def part_b_forward_ranges(input_file_path):
     seed_pairs = f(seeds, 2)
 
     # gets the seed ranges in a (start, end) format rather than (start, size)
-    seed_range = []
+    seed_ranges = []
     for seed_start, seed_range_size in seed_pairs:
-        seed_range.append((seed_start, seed_start + seed_range_size - 1))
+        seed_ranges.append((seed_start, seed_start + seed_range_size - 1))
 
     # The seed ranges have to be sorted for this algorithm to work
-    new_seeds = sorted(seed_range, key=lambda tup: tup[0])
+    seed_ranges = sorted(seed_ranges, key=lambda tup: tup[0])
 
     # Calculates the new seed ranges for each layer
     for map_index in range(0, len(maps.keys())):
-        # print(f"Input to layer {map_index}: {new_seeds}")
         curr_map_list = maps[map_index]
-        new_seeds = process_seed_mapping(new_seeds, curr_map_list)
-        # print(f"Output from layer {map_index}: {clean_up_seed_list(new_seeds)}")
+        seed_ranges = process_seed_mapping(seed_ranges, curr_map_list)
 
-    return new_seeds[0][0]
+    return seed_ranges[0][0]
 
 
 if __name__ == "__main__":
