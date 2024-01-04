@@ -32,17 +32,8 @@ def find_lowest_location(arguments):
 
     min_loc = 10**30
 
-    count = 0
-    start = time()
     for seed in range(seed_start, seed_start + seed_length):
         loc = find_location(seed, maps)
-        count += 1
-        if (count % 100000) == 0:
-            count = 0
-            print(
-                f"Time taken to process 100000 on seed {seed_start}: {time() - start}"
-            )
-            start = time()
         if loc < min_loc:
             min_loc = loc
 
