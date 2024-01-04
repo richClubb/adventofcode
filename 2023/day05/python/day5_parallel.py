@@ -5,8 +5,10 @@ import argparse
 import os
 from enum import Enum
 from multiprocessing import Pool
+from time import time
 
-RUNS = ["part_a", "part_b_forward", "part_b_backward"]
+
+RUNS = ["part_a", "part_b"]
 
 
 class Mapping_Direction(Enum):
@@ -24,15 +26,26 @@ def do_mapping(input, dest, src, length, direction=Mapping_Direction.INPUT_TO_OU
     # implicit return None
 
 
-def find_location_wrapper(arguments):
-    seed_start = arguments[0]
-    seed_length = arguments[1]
-    maps = arguments[2]
+def find_lowest_location(arguments):
+    seed_start, seed_length = arguments[0]
+    maps = arguments[1]
+
     min_loc = 10**30
+
+    count = 0
+    start = time()
     for seed in range(seed_start, seed_start + seed_length):
         loc = find_location(seed, maps)
+        count += 1
+        if (count % 100000) == 0:
+            count = 0
+            print(
+                f"Time taken to process 100000 on seed {seed_start}: {time() - start}"
+            )
+            start = time()
         if loc < min_loc:
             min_loc = loc
+
     return min_loc
 
 
@@ -103,44 +116,20 @@ def part_a(input_file_path):
     return min_loc
 
 
-def part_b_forwards(input_file_path):
+def part_b_forward_multiprocess(input_file_path):
     maps, seeds = extract_maps_and_seeds(input_file_path)
 
     f = lambda A, n=3: [A[i : i + n] for i in range(0, len(A), n)]
     seed_pairs = f(seeds, 2)
+    pool_arguments = []
 
-    min_loc = 10**30
-    for seed_start, seed_size in seed_pairs:
-        for seed in range(seed_start, seed_start + seed_size - 1):
-            loc = find_location(seed, maps)
-            if loc < min_loc:
-                min_loc = loc
+    for seed_pair in seed_pairs:
+        pool_arguments.append((seed_pair, maps))
 
-    return min_loc
+    with Pool(4) as p:
+        results = p.map(find_lowest_location, pool_arguments)
 
-
-def part_b_backward(input_file_path):
-    maps, seeds = extract_maps_and_seeds(input_file_path)
-
-    f = lambda A, n=3: [A[i : i + n] for i in range(0, len(A), n)]
-    seed_pairs = f(seeds, 2)
-
-    start_val = 0
-    while True:
-        try:
-            calculated_seed = find_location(
-                start_val, maps, direction=Mapping_Direction.OUTPUT_TO_INPUT
-            )
-
-            for start, length in seed_pairs:
-                if (calculated_seed >= start) and (calculated_seed <= start + length):
-                    return start_val
-
-            start_val += 1
-
-        except KeyboardInterrupt:
-            print(f"exited on {start_val:,}")
-            exit()
+    return min(results)
 
 
 if __name__ == "__main__":
@@ -156,8 +145,10 @@ if __name__ == "__main__":
         exit()
 
     if args.run == "part_a":
-        print(f"part a (forward depth first): {part_a(args.input_file_path)}")
-    elif args.run == "part_b_forward":
-        print(f"part b forward: {part_b_forwards(args.input_file_path)}")
-    elif args.run == "part_b_backward":
-        print(f"part b backwards: {part_b_backward(args.input_file_path)}")
+        print(f"part A forward depth first: {part_a(args.input_file_path)}")
+    elif args.run == "part_b":
+        print(
+            f"part B forwards multiprocess (slow): {part_b_forward_multiprocess(args.input_file_path)}"
+        )
+    else:
+        print(f"Unknown run: {args.run}")

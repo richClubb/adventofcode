@@ -5,8 +5,7 @@ import argparse
 import os
 from enum import Enum
 from multiprocessing import Pool
-
-RUNS = ["part_a", "part_b_forward", "part_b_backward"]
+from experiment import calculate_new_seeds
 
 
 class Mapping_Direction(Enum):
@@ -63,6 +62,29 @@ def find_location(seed, maps, direction=Mapping_Direction.INPUT_TO_OUTPUT):
         return seed
 
 
+def process_seed_mapping(seed_list, mapping):
+    """
+
+    returns: A sorted list of seed pairs
+    """
+    new_seeds = []
+    # Takes each seed pair and calculates the mapping, any remaining not mapped will be
+    # re-added to the seed_list
+    while len(seed_list) > 0:
+        working_seed = seed_list.pop(0)
+        mapped_seeds, remaining_seeds = calculate_new_seeds(working_seed, mapping)
+        if mapped_seeds is not None:
+            new_seeds += mapped_seeds
+
+        # Add any remaining to the seed list
+        if remaining_seeds is not None:
+            seed_list.append(remaining_seeds)
+            seed_list = sorted(seed_list, key=lambda tup: tup[0])
+
+    mapped_seed_pairs = sorted(new_seeds, key=lambda tup: tup[0])
+    return mapped_seed_pairs
+
+
 def extract_maps_and_seeds(input_file_path):
     maps = defaultdict(list)
 
@@ -109,14 +131,32 @@ def part_b_forwards(input_file_path):
     f = lambda A, n=3: [A[i : i + n] for i in range(0, len(A), n)]
     seed_pairs = f(seeds, 2)
 
-    min_loc = 10**30
-    for seed_start, seed_size in seed_pairs:
-        for seed in range(seed_start, seed_start + seed_size - 1):
-            loc = find_location(seed, maps)
-            if loc < min_loc:
-                min_loc = loc
+    new_seed_range = []
+    for seed in seed_pairs:
+        new_seed_range += list(range(seed[0], seed[0] + seed[1]))
 
-    return min_loc
+    new_seed_range.sort()
+
+    for map_layer_index in range(0, len(maps.keys())):
+        map_layer = maps[map_layer_index]
+
+        temp_seed_layer = []
+        for seed in new_seed_range:
+            seed_mapped = False
+            for map_dst_start, map_src_start, map_size in map_layer:
+                map_src_end = map_src_start + map_size - 1
+                if seed >= map_src_start and (seed <= map_src_end):
+                    offset = seed - map_src_start
+                    temp_seed_layer.append(map_dst_start + offset)
+                    seed_mapped = True
+
+            if seed_mapped is False:
+                temp_seed_layer.append(seed)
+
+        new_seed_range = temp_seed_layer
+        new_seed_range.sort()
+
+    return min(new_seed_range)
 
 
 def part_b_backward(input_file_path):
@@ -143,11 +183,51 @@ def part_b_backward(input_file_path):
             exit()
 
 
+def part_b_forward_multiprocess(input_file_path):
+    maps, seeds = extract_maps_and_seeds(input_file_path)
+
+    f = lambda A, n=3: [A[i : i + n] for i in range(0, len(A), n)]
+    seed_pairs = f(seeds, 2)
+    arguments = []
+
+    for seed_pair in seed_pairs:
+        arguments.append(seed_pair + [maps])
+
+    with Pool(6) as p:
+        results = p.map(find_location_wrapper, arguments)
+
+    return min(results)
+
+
+def part_b_forward_ranges(input_file_path):
+    maps, seeds = extract_maps_and_seeds(input_file_path)
+
+    # Extracts a list of pairs (start, size)
+    f = lambda A, n=3: [A[i : i + n] for i in range(0, len(A), n)]
+    seed_pairs = f(seeds, 2)
+
+    # gets the seed ranges in a (start, end) format rather than (start, size)
+    seed_range = []
+    for seed_start, seed_range_size in seed_pairs:
+        seed_range.append((seed_start, seed_start + seed_range_size - 1))
+
+    # The seed ranges have to be sorted for this algorithm to work
+    new_seeds = sorted(seed_range, key=lambda tup: tup[0])
+
+    # Calculates the new seed ranges for each layer
+    for map_index in range(0, len(maps.keys())):
+        # print(f"Input to layer {map_index}: {new_seeds}")
+        curr_map_list = maps[map_index]
+        new_seeds = process_seed_mapping(new_seeds, curr_map_list)
+        # print(f"Output from layer {map_index}: {clean_up_seed_list(new_seeds)}")
+
+    return new_seeds[0][0]
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("input_file_path")
-    parser.add_argument("run", choices=RUNS)
 
     args = parser.parse_args()
 
@@ -155,9 +235,11 @@ if __name__ == "__main__":
         print("Missing input file")
         exit()
 
-    if args.run == "part_a":
-        print(f"part a (forward depth first): {part_a(args.input_file_path)}")
-    elif args.run == "part_b_forward":
-        print(f"part b forward: {part_b_forwards(args.input_file_path)}")
-    elif args.run == "part_b_backward":
-        print(f"part b backwards: {part_b_backward(args.input_file_path)}")
+    print(f"part a (forward depth first): {part_a(args.input_file_path)}")
+    # print(f"part b forward: {part_b_forwards(args.input_file_path)}")
+    # print(f"part b backwards: {part_b_backward(args.input_file_path)}")
+    # print(f"part b backwards multiprocess: {part_b_backward_multiprocess(args.input_file_path)}")
+    # print(f"part b forwards multiprocess (bad): {part_b_forward_multiprocess(args.input_file_path)}")
+    print(
+        f"part b (forwards ranges method): {part_b_forward_ranges(args.input_file_path)}"
+    )

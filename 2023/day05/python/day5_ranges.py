@@ -1,7 +1,23 @@
 #!/bin/env python3
 
+from collections import defaultdict
+import argparse
+import os
+from enum import Enum
+from multiprocessing import Pool
+
+RUNS = ["part_a", "part_b"]
+
+
+class Mapping_Direction(Enum):
+    INPUT_TO_OUTPUT = 1
+    OUTPUT_TO_INPUT = 2
+
 
 def case_1(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
+    """
+    Seed below the mapping range
+    """
     if seed_end < mapping_src_start:
         return None, None
     return case_2(
@@ -10,6 +26,9 @@ def case_1(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_s
 
 
 def case_2(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
+    """
+    Seed above the mapping range
+    """
     mapping_src_end = mapping_src_start + mapping_size - 1
     if seed_start > mapping_src_end:
         return None, None
@@ -19,6 +38,9 @@ def case_2(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_s
 
 
 def case_3(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
+    """
+    Seed just overlapping with the first value of the mapping range
+    """
     if (seed_start < mapping_src_start) and (seed_end == mapping_src_start):
         lower_range = (seed_start, mapping_src_start - 1)
         mapped_range = (mapping_dst_start, mapping_dst_start)
@@ -29,6 +51,9 @@ def case_3(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_s
 
 
 def case_4(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
+    """
+    Seed overlapping with the beginning of the mapping range
+    """
     mapping_src_end = mapping_src_start + mapping_size - 1
     if (
         (seed_start < mapping_src_start)
@@ -46,6 +71,10 @@ def case_4(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_s
 
 
 def case_5(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
+    """
+    Seed overflowing the beginning of the mapping range but fully encompassed in
+    the mapping range
+    """
     mapping_src_end = mapping_src_start + mapping_size - 1
     mapping_dst_end = mapping_dst_start + mapping_size - 1
     if (seed_start < mapping_src_start) and (seed_end == mapping_src_end):
@@ -58,6 +87,9 @@ def case_5(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_s
 
 
 def case_6(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
+    """
+    Seed overflowing the start and end of the mapping range
+    """
     mapping_src_end = mapping_src_start + mapping_size - 1
     mapping_dst_end = mapping_dst_start + mapping_size - 1
     if (seed_start < mapping_src_start) and (seed_end > mapping_src_start):
@@ -71,6 +103,9 @@ def case_6(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_s
 
 
 def case_7(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
+    """
+    Seed starting at the beginning of the mapping range but contained inside
+    """
     mapping_src_end = mapping_src_start + mapping_size - 1
     if (seed_start == mapping_src_start) and (seed_end < mapping_src_end):
         offset = seed_end - mapping_src_start
@@ -82,6 +117,9 @@ def case_7(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_s
 
 
 def case_8(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
+    """
+    Seed matches the entire mapping range
+    """
     mapping_src_end = mapping_src_start + mapping_size - 1
     mapping_dst_end = mapping_dst_start + mapping_size - 1
     if (seed_start == mapping_src_start) and (seed_end == mapping_src_end):
@@ -93,6 +131,9 @@ def case_8(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_s
 
 
 def case_9(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
+    """
+    Seed matching the beginning of the mapping range but overflowing the end
+    """
     mapping_src_end = mapping_src_start + mapping_size - 1
     mapping_dst_end = mapping_dst_start + mapping_size - 1
     if (seed_start == mapping_src_start) and (seed_end > mapping_src_end):
@@ -104,6 +145,9 @@ def case_9(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_s
 
 
 def case_10(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
+    """
+    Seed starts and ends in the middle of the mapping range
+    """
     mapping_src_end = mapping_src_start + mapping_size - 1
     if (seed_start > mapping_src_start) and (seed_end < mapping_src_end):
         offset = seed_start - mapping_src_start
@@ -119,6 +163,9 @@ def case_10(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_
 
 
 def case_11(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
+    """
+    Seed starts in the middle of the mapping range and ends at the end.
+    """
     mapping_src_end = mapping_src_start + mapping_size - 1
     mapping_dst_end = mapping_dst_start + mapping_size - 1
     if (seed_start > mapping_src_start) and (seed_end == mapping_src_end):
@@ -131,6 +178,9 @@ def case_11(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_
 
 
 def case_12(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
+    """
+    Seed starts in the middle of the mapping range but overflows the end
+    """
     mapping_src_end = mapping_src_start + mapping_size - 1
     mapping_dst_end = mapping_dst_start + mapping_size - 1
     if (
@@ -148,6 +198,9 @@ def case_12(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_
 
 
 def case_13(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_size):
+    """
+    Seed overlaps with the last value of the mapping range
+    """
     mapping_src_end = mapping_src_start + mapping_size - 1
     mapping_dst_end = mapping_dst_start + mapping_size - 1
     if (seed_start == mapping_src_end) and (seed_end > mapping_src_end):
@@ -155,23 +208,6 @@ def case_13(seed_start, seed_end, mapping_src_start, mapping_dst_start, mapping_
         mapped_range = (mapping_dst_end, mapping_dst_end)
         return [mapped_range], (seed_start + 1, seed_end)
     return None
-
-
-check_functions = [
-    case_1,
-    case_2,
-    case_3,
-    case_4,
-    case_5,
-    case_6,
-    case_7,
-    case_8,
-    case_9,
-    case_10,
-    case_11,
-    case_12,
-    case_13,
-]
 
 
 def clean_up_seed_list(seed_ranges):
@@ -233,6 +269,10 @@ def clean_up_seed_list(seed_ranges):
 
 
 def correct_seed_range(seed_range):
+    """
+    If the seed range is a single value then correct it
+    Check for any erroneous values.
+    """
     if seed_range is not None:
         seed_range_start, seed_range_end = seed_range
         if seed_range_start == seed_range_end:
@@ -244,6 +284,7 @@ def correct_seed_range(seed_range):
 
 
 def correct_seed_ranges(seed_ranges):
+    """ """
     if seed_ranges is not None:
         temp_output = []
         for seed_range in seed_ranges:
@@ -253,6 +294,9 @@ def correct_seed_ranges(seed_ranges):
 
 
 def find_map(seed, mappings):
+    """
+    Finds the right map for mapping
+    """
     for map in mappings:
         _, map_src_start, map_size = map
         map_src_end = map_src_start + map_size - 1
@@ -269,22 +313,10 @@ def map_seed(seed, mappings):
         return [(seed, None)]
 
 
-def map_seed_range(
-    seed_start,
-    seed_end,
-    mapping_src_start,
-    mapping_dest_start,
-    mapping_range,
-):
-    for check in check_functions:
-        if result := check(
-            seed_start, seed_end, mapping_src_start, mapping_dest_start, mapping_range
-        ):
-            return result
-    return None
-
-
 def calculate_new_seeds(seed_range, mappings):
+    """
+    calculates the new seed ranges.
+    """
     working_seed_start, working_seed_end = seed_range
     map_list = sorted(mappings, key=lambda lst: lst[1])
     if working_seed_end is None:
@@ -293,7 +325,7 @@ def calculate_new_seeds(seed_range, mappings):
 
     else:
         for mapping_dest_start, mapping_src_start, mapping_range in map_list:
-            if result := map_seed_range(
+            if result := case_1(
                 working_seed_start,
                 working_seed_end,
                 mapping_src_start,
@@ -312,3 +344,160 @@ def calculate_new_seeds(seed_range, mappings):
         return [seed_range], None
 
     return correct_seed_ranges(mapping_output), correct_seed_range(remaining_seed_range)
+
+
+def do_mapping(input, dest, src, length, direction=Mapping_Direction.INPUT_TO_OUTPUT):
+    if direction == Mapping_Direction.INPUT_TO_OUTPUT:
+        if input >= src and input < src + length:
+            return dest + (input - src)
+    elif direction == Mapping_Direction.OUTPUT_TO_INPUT:
+        if input >= dest and input < dest + length:
+            return src + (input - dest)
+    # implicit return None
+
+
+def find_location_wrapper(arguments):
+    seed_start = arguments[0]
+    seed_length = arguments[1]
+    maps = arguments[2]
+    min_loc = 10**30
+    for seed in range(seed_start, seed_start + seed_length):
+        loc = find_location(seed, maps)
+        if loc < min_loc:
+            min_loc = loc
+    return min_loc
+
+
+def find_location(seed, maps, direction=Mapping_Direction.INPUT_TO_OUTPUT):
+    if direction == Mapping_Direction.OUTPUT_TO_INPUT:
+        map_key = 6
+        inter = seed
+        while map_key >= 0:
+            for entry in maps[map_key]:
+                x = do_mapping(inter, *entry, direction=direction)
+                if x is not None:
+                    inter = x
+                    break
+            map_key -= 1
+
+        return inter
+
+    elif direction == Mapping_Direction.INPUT_TO_OUTPUT:
+        map_key = 0
+        while map_key < 7:
+            for entry in maps[map_key]:
+                x = do_mapping(seed, *entry, direction=direction)
+                if x is not None:
+                    seed = x
+                    break
+            map_key += 1
+
+        return seed
+
+
+def process_seed_mapping(seed_list, mapping):
+    """
+
+    returns: A sorted list of seed pairs
+    """
+    new_seeds = []
+    # Takes each seed pair and calculates the mapping, any remaining not mapped will be
+    # re-added to the seed_list
+    while len(seed_list) > 0:
+        working_seed = seed_list.pop(0)
+        mapped_seeds, remaining_seeds = calculate_new_seeds(working_seed, mapping)
+        if mapped_seeds is not None:
+            new_seeds += mapped_seeds
+
+        # Add any remaining to the seed list
+        if remaining_seeds is not None:
+            seed_list.append(remaining_seeds)
+            seed_list = sorted(seed_list, key=lambda tup: tup[0])
+
+    mapped_seed_pairs = sorted(new_seeds, key=lambda tup: tup[0])
+    return mapped_seed_pairs
+
+
+def extract_maps_and_seeds(input_file_path):
+    maps = defaultdict(list)
+
+    with open(input_file_path) as f:
+        for line in f:
+            line = line.strip()
+            if line.startswith("seeds"):
+                seeds = list(map(int, line.split()[1:]))
+            elif line.startswith("seed-to-soil"):
+                active_map = 0
+            elif line.startswith("soil-to-fertilizer"):
+                active_map = 1
+            elif line.startswith("fertilizer-to-water"):
+                active_map = 2
+            elif line.startswith("water-to-light"):
+                active_map = 3
+            elif line.startswith("light-to-temperature"):
+                active_map = 4
+            elif line.startswith("temperature-to-humidity"):
+                active_map = 5
+            elif line.startswith("humidity-to-location"):
+                active_map = 6
+            elif line:
+                maps[active_map].append(list(map(int, line.split())))
+
+    return maps, seeds
+
+
+def part_a(input_file_path):
+    maps, seeds = extract_maps_and_seeds(input_file_path)
+
+    min_loc = 10**30
+    for seed in seeds:
+        loc = find_location(seed, maps)
+        if loc < min_loc:
+            min_loc = loc
+
+    return min_loc
+
+
+def part_b_forward_ranges(input_file_path):
+    maps, seeds = extract_maps_and_seeds(input_file_path)
+
+    # Extracts a list of pairs (start, size)
+    f = lambda A, n=3: [A[i : i + n] for i in range(0, len(A), n)]
+    seed_pairs = f(seeds, 2)
+
+    # gets the seed ranges in a (start, end) format rather than (start, size)
+    seed_range = []
+    for seed_start, seed_range_size in seed_pairs:
+        seed_range.append((seed_start, seed_start + seed_range_size - 1))
+
+    # The seed ranges have to be sorted for this algorithm to work
+    new_seeds = sorted(seed_range, key=lambda tup: tup[0])
+
+    # Calculates the new seed ranges for each layer
+    for map_index in range(0, len(maps.keys())):
+        # print(f"Input to layer {map_index}: {new_seeds}")
+        curr_map_list = maps[map_index]
+        new_seeds = process_seed_mapping(new_seeds, curr_map_list)
+        # print(f"Output from layer {map_index}: {clean_up_seed_list(new_seeds)}")
+
+    return new_seeds[0][0]
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("input_file_path")
+    parser.add_argument("run")
+
+    args = parser.parse_args()
+
+    if os.path.exists(args.input_file_path) is False:
+        print("Missing input file")
+        exit()
+
+    if args.run == "part_a":
+        print(f"part a (forward depth first): {part_a(args.input_file_path)}")
+    elif args.run == "part_b":
+        print(
+            f"part b (forwards ranges method): {part_b_forward_ranges(args.input_file_path)}"
+        )

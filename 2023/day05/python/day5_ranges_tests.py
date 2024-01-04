@@ -1,6 +1,6 @@
 #!/bin/env python3
 
-from experiment import calculate_new_seeds, clean_up_seed_list
+from day5_ranges import calculate_new_seeds, clean_up_seed_list
 import pytest
 import sys
 
