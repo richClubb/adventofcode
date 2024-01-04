@@ -8,7 +8,7 @@ from multiprocessing import Pool
 from time import time
 
 
-RUNS = ["part_a", "part_b"]
+RUNS = ["part_a", "part_b_forward", "part_b_backward"]
 
 
 class Mapping_Direction(Enum):
@@ -24,20 +24,6 @@ def do_mapping(input, dest, src, length, direction=Mapping_Direction.INPUT_TO_OU
         if input >= dest and input < dest + length:
             return src + (input - dest)
     # implicit return None
-
-
-def find_lowest_location(arguments):
-    seed_start, seed_length = arguments[0]
-    maps = arguments[1]
-
-    min_loc = 10**30
-
-    for seed in range(seed_start, seed_start + seed_length):
-        loc = find_location(seed, maps)
-        if loc < min_loc:
-            min_loc = loc
-
-    return min_loc
 
 
 def find_location(seed, maps, direction=Mapping_Direction.INPUT_TO_OUTPUT):
@@ -65,6 +51,37 @@ def find_location(seed, maps, direction=Mapping_Direction.INPUT_TO_OUTPUT):
             map_key += 1
 
         return seed
+
+
+def find_lowest_location(arguments):
+    seed_start, seed_length = arguments[0]
+    maps = arguments[1]
+
+    min_loc = 10**30
+
+    for seed in range(seed_start, seed_start + seed_length):
+        loc = find_location(seed, maps)
+        if loc < min_loc:
+            min_loc = loc
+
+    return min_loc
+
+
+def find_lowest_seed(arguments):
+    location_start, location_end = arguments[0]
+    seed_pairs = arguments[1]
+    maps = arguments[2]
+
+    for location in range(location_start, location_end):
+        calculated_seed = find_location(
+            location, maps, direction=Mapping_Direction.OUTPUT_TO_INPUT
+        )
+
+        for start, length in seed_pairs:
+            if (calculated_seed >= start) and (calculated_seed <= start + length):
+                return location
+
+    return None
 
 
 def extract_maps_and_seeds(input_file_path):
@@ -123,6 +140,34 @@ def part_b_forward_multiprocess(input_file_path):
     return min(results)
 
 
+def part_b_backward_multiprocess(input_file_path):
+    maps, seeds = extract_maps_and_seeds(input_file_path)
+
+    f = lambda A, n=3: [A[i : i + n] for i in range(0, len(A), n)]
+    seed_pairs = f(seeds, 2)
+
+    range_start = 0
+    processes = 4
+    range_size = 100000
+    while True:
+        pool_arguments = []
+
+        for _ in range(0, processes):
+            pool_arguments.append(
+                ((range_start, range_start + range_size - 1), seed_pairs, maps)
+            )
+            range_start += range_size
+
+        with Pool(4) as p:
+            results = p.map(find_lowest_seed, pool_arguments)
+
+            results = list(filter(lambda x: x is not None, results))
+
+            if len(results) > 0:
+                results.sort()
+                return results[0]
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
@@ -137,9 +182,11 @@ if __name__ == "__main__":
 
     if args.run == "part_a":
         print(f"part A forward depth first: {part_a(args.input_file_path)}")
-    elif args.run == "part_b":
+    elif args.run == "part_b_forward":
         print(
             f"part B forwards multiprocess (slow): {part_b_forward_multiprocess(args.input_file_path)}"
         )
-    else:
-        print(f"Unknown run: {args.run}")
+    elif args.run == "part_b_backward":
+        print(
+            f"part B backward multiprocess (slow): {part_b_backward_multiprocess(args.input_file_path)}"
+        )
