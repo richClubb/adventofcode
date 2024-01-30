@@ -5,7 +5,7 @@ RUNS = ["part_a", "part_b_forward", "part_b_backward"]
 
 
 class Seed:
-    def __init__(self, value):
+    def __init__(self, value: int):
         self.__value = value
 
     @property
@@ -13,7 +13,7 @@ class Seed:
         return self.__value
 
     @value.setter
-    def value(self, value):
+    def value(self, value: int):
         self.__value = value
 
     def __eq__(self, value):
@@ -54,7 +54,7 @@ class Seed:
 
 
 class SeedRange:
-    def __init__(self, start_value, size):
+    def __init__(self, start_value: int, size: int):
         self.__start_value = start_value
         self.__end_value = start_value + size - 1
         self.__next_value = self.__start_value
@@ -63,7 +63,7 @@ class SeedRange:
     def value(self):
         return (self.__start_value, self.__end_value)
 
-    def in_seed_range(self, value):
+    def in_seed_range(self, value: int):
         if (value >= self.__start_value) and (value <= self.__end_value):
             return True
         return False
@@ -92,26 +92,27 @@ class SeedRange:
 
 
 class Mapping:
-    def __init__(self, dest, src, size):
+    def __init__(self, dest: int, src: int, size: int):
         self.__dest = dest
         self.__src = src
         self.__size = size
 
-    def map_seed(self, seed):
+    def map_seed(self, seed: Seed):
         if (seed.value >= self.__src) and (seed.value <= self.__src + self.__size - 1):
-            seed.value = self.__dest + (seed.value - self.__src)
-            return True
-        return False
+            return Seed(self.__dest + (seed.value - self.__src))
+        return None
 
-    def map_seed_inverse(self, seed):
+    def map_seed_inverse(self, seed: Seed):
         if (seed.value >= self.__dest) and (
             seed.value <= self.__dest + self.__size - 1
         ):
-            seed.value = self.__src + (seed.value - self.__dest)
-            return True
-        return False
+            return Seed(self.__src + (seed.value - self.__dest))
+        return None
 
-    def map_seed_range(self, seed_range):
+    def map_seed_range(self, seed_range: SeedRange):
+        """
+        calculates the new seed ranges.
+        """
         pass
 
 
@@ -119,22 +120,22 @@ class MappingLayer:
     def __init__(self):
         self.__mappings = []
 
-    def add_mapping(self, mapping):
+    def add_mapping(self, mapping: Mapping):
         self.__mappings.append(mapping)
 
-    def map_seed(self, seed):
+    def map_seed(self, seed: Seed):
         for mapping in self.__mappings:
-            if mapping.map_seed(seed):
-                return True
-        return False
+            if result := mapping.map_seed(seed):
+                return result
+        return None
 
-    def map_seed_inverse(self, seed):
+    def map_seed_inverse(self, seed: Seed) -> Seed:
         for mapping in self.__mappings:
-            if mapping.map_seed_inverse(seed):
-                return True
-        return False
+            if result := mapping.map_seed_inverse(seed):
+                return result
+        return None
 
-    def map_seed_range(self, seed_range):
+    def map_seed_range(self, seed_range: SeedRange):
         pass
 
 
@@ -142,18 +143,26 @@ class MappingLayers:
     def __init__(self):
         self.__mapping_layers = []
 
-    def add_mapping_layer(self, mapping_layer):
+    def add_mapping_layer(self, mapping_layer: MappingLayer):
         self.__mapping_layers.append(mapping_layer)
 
-    def map_seed(self, seed):
+    def map_seed(self, seed: Seed) -> Seed:
         for mapping_layer in self.__mapping_layers:
-            mapping_layer.map_seed(seed)
+            if result := mapping_layer.map_seed(seed):
+                seed = result
+        return seed
 
-    def map_seed_inverse(self, seed):
+    def map_seed_inverse(self, seed: Seed) -> Seed:
         start = len(self.__mapping_layers) - 1
         reversed_mapping_list = [self.__mapping_layers[i] for i in range(start, -1, -1)]
+        value = seed
         for mapping_layer in reversed_mapping_list:
-            mapping_layer.map_seed_inverse(seed)
+            if result := mapping_layer.map_seed_inverse(value):
+                value = result
+        return value
+
+    def map_seed_range(self, seed_range: SeedRange):
+        pass
 
 
 def get_raw_seeds_from_file(path):
@@ -221,9 +230,9 @@ def part_a(path):
 
     min_value = 10**30
     for seed in seeds:
-        mapping_layers.map_seed(seed)
-        if seed < min_value:
-            min_value = seed.value
+        result = mapping_layers.map_seed(seed)
+        if result < min_value:
+            min_value = result.value
 
     return min_value
 
@@ -235,9 +244,9 @@ def part_b_forwards(path):
     min_value = 10**30
     for seed_range in seed_ranges:
         for seed in seed_range:
-            mapping_layers.map_seed(seed)
-            if seed < min_value:
-                min_value = seed.value
+            result = mapping_layers.map_seed(seed)
+            if result < min_value:
+                min_value = result.value
 
     return min_value
 
@@ -251,10 +260,10 @@ def part_b_backward(path):
     found_result = False
     while found_result == False:
         seed = Seed(value)
-        mapping_layers.map_seed_inverse(seed)
+        result = mapping_layers.map_seed_inverse(seed)
 
         for seed_range in seed_ranges:
-            if seed_range.in_seed_range(seed):
+            if seed_range.in_seed_range(result):
                 return value
 
         value += 1
