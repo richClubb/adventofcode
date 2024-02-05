@@ -79,46 +79,162 @@ class TestSeedRange:
 class TestMapping:
     @pytest.mark.parametrize(
         "dest, src, size, seed_value, expected_value, expected_result",
-        [(1, 5, 2, 1, 1, False), (1, 5, 2, 5, 1, True)],
+        [(1, 5, 2, 1, 1, None), (1, 5, 2, 5, 1, Seed(1))],
     )
-    def test_mapping(
+    def test_mapping_seed(
         self, dest, src, size, seed_value, expected_value, expected_result
     ):
         mapping = Mapping(dest, src, size)
         seed = Seed(seed_value)
 
         assert mapping.map_seed(seed) == expected_result
-        assert seed.value == expected_value
+
+    @pytest.mark.parametrize(
+        "dest, src, size, seed_range, expected_result",
+        [
+            (1, 5, 2, SeedRange(1, 2), ([SeedRange(1, 2)], None)),
+            (1, 5, 2, SeedRange(8, 9), ([], SeedRange(8, 9))),
+            (
+                1,
+                5,
+                2,
+                SeedRange(3, 3),
+                ([SeedRange(3, end=4), SeedRange(1, end=1)], None),
+            ),
+            (
+                1,
+                5,
+                4,
+                SeedRange(3, 4),
+                ([SeedRange(3, end=4), SeedRange(1, end=2)], None),
+            ),
+            (
+                1,
+                5,
+                4,
+                SeedRange(3, 6),
+                ([SeedRange(3, end=4), SeedRange(1, end=4)], None),
+            ),
+            (
+                1,
+                5,
+                4,
+                SeedRange(3, 7),
+                ([SeedRange(3, end=4), SeedRange(1, end=4)], SeedRange(9, end=9)),
+            ),
+            (
+                1,
+                5,
+                4,
+                SeedRange(5, 2),
+                ([SeedRange(1, end=2)], None),
+            ),
+            (
+                1,
+                5,
+                4,
+                SeedRange(5, end=8),
+                ([SeedRange(1, end=4)], None),
+            ),
+            (
+                1,
+                5,
+                4,
+                SeedRange(5, end=10),
+                ([SeedRange(1, end=4)], SeedRange(9, 2)),
+            ),
+            (
+                1,
+                5,
+                4,
+                SeedRange(6, end=7),
+                ([SeedRange(2, end=3)], None),
+            ),
+            (
+                1,
+                5,
+                4,
+                SeedRange(6, end=8),
+                ([SeedRange(2, end=4)], None),
+            ),
+        ],
+    )
+    def test_mapping_seed_range(self, dest, src, size, seed_range, expected_result):
+        mapping = Mapping(dest, src, size)
+        result = mapping.map_seed_range(seed_range)
+        assert result == expected_result
 
 
 class TestMappingLayer:
     @pytest.mark.parametrize(
-        "maps, seed, expected_value, expected_result",
+        "maps, seed, expected_value",
         [
-            ([Mapping(1, 5, 2), Mapping(7, 10, 3)], Seed(1), 1, False),
-            ([Mapping(1, 5, 2), Mapping(7, 10, 3)], Seed(5), 1, True),
-            ([Mapping(1, 5, 2), Mapping(7, 10, 3)], Seed(11), 8, True),
+            ([Mapping(1, 5, 2), Mapping(7, 10, 3)], Seed(1), None),
+            ([Mapping(1, 5, 2), Mapping(7, 10, 3)], Seed(5), Seed(1)),
+            ([Mapping(1, 5, 2), Mapping(7, 10, 3)], Seed(11), Seed(8)),
         ],
     )
-    def test_mapping_layer(self, maps, seed, expected_value, expected_result):
+    def test_mapping_layer_map_seed(self, maps, seed, expected_value):
         mapping_layer = MappingLayer()
         for map in maps:
             mapping_layer.add_mapping(map)
 
-        assert mapping_layer.map_seed(seed) == expected_result
-        assert seed.value == expected_value
+        assert mapping_layer.map_seed(seed) == expected_value
+
+    @pytest.mark.parametrize(
+        "maps, seed_ranges, expected_value",
+        [
+            (
+                [Mapping(1, 5, 2), Mapping(7, 10, 3)],
+                [SeedRange(1, end=4)],
+                [SeedRange(1, end=4)],
+            ),
+            (
+                [Mapping(1, 5, 2), Mapping(7, 10, 3)],
+                [SeedRange(3, end=6)],
+                [SeedRange(1, end=2), SeedRange(3, end=4)],
+            ),
+            (
+                [Mapping(1, 5, 2), Mapping(16, 10, 3)],
+                [SeedRange(3, end=15)],
+                [
+                    SeedRange(1, end=2),
+                    SeedRange(3, end=4),
+                    SeedRange(7, end=9),
+                    SeedRange(13, end=15),
+                    SeedRange(16, end=18),
+                ],
+            ),
+        ],
+    )
+    def test_mapping_layer_map_range(self, maps, seed_ranges, expected_value):
+        mapping_layer = MappingLayer()
+        for map in maps:
+            mapping_layer.add_mapping(map)
+
+        result = mapping_layer.map_seed_ranges(seed_ranges)
+
+        assert result == expected_value
 
 
 class TestMappingLayers:
     @pytest.mark.parametrize(
         "mapping_lists, seed, expected_value",
         [
-            ([[Mapping(1, 5, 2), Mapping(7, 10, 3)], [Mapping(12, 20, 5)]], Seed(1), 1),
-            ([[Mapping(1, 5, 2), Mapping(7, 10, 3)], [Mapping(12, 20, 5)]], Seed(5), 1),
+            (
+                [[Mapping(1, 5, 2), Mapping(7, 10, 3)], [Mapping(12, 20, 5)]],
+                Seed(1),
+                Seed(1),
+            ),
+            (
+                [[Mapping(1, 5, 2), Mapping(7, 10, 3)], [Mapping(12, 20, 5)]],
+                Seed(5),
+                Seed(1),
+            ),
             (
                 [[Mapping(1, 5, 2), Mapping(7, 10, 3)], [Mapping(20, 5, 5)]],
                 Seed(11),
-                23,
+                Seed(23),
             ),
         ],
     )
@@ -131,9 +247,9 @@ class TestMappingLayers:
                 mapping_layer.add_mapping(mapping)
             mapping_layers.add_mapping_layer(mapping_layer)
 
-        mapping_layers.map_seed(seed)
+        result = mapping_layers.map_seed(seed)
 
-        assert seed.value == expected_value
+        assert result == expected_value
 
 
 if __name__ == "__main__":
