@@ -6,7 +6,7 @@ import os
 from enum import Enum
 from multiprocessing import Pool
 
-RUNS = ["part_a", "part_b"]
+RUNS = ["part_a", "part_b_ranges"]
 
 
 class Mapping_Direction(Enum):
@@ -453,7 +453,7 @@ if __name__ == "__main__":
 
     if args.run == "part_a":
         print(f"part a (forward depth first): {part_a(args.input_file_path)}")
-    elif args.run == "part_b":
+    elif args.run == "part_b_ranges":
         print(
-            f"part b (forwards ranges method): {part_b_forward_ranges(args.input_file_path)}"
+            f"part b (forward ranges method): {part_b_forward_ranges(args.input_file_path)}"
         )

@@ -8,7 +8,7 @@ from multiprocessing import Pool
 from time import time
 
 
-RUNS = ["part_a", "part_b_forward", "part_b_backward"]
+RUNS = ["part_a", "part_b_forward", "part_b_inverse"]
 
 
 class Mapping_Direction(Enum):
@@ -140,7 +140,7 @@ def part_b_forward_multiprocess(input_file_path):
     return min(results)
 
 
-def part_b_backward_multiprocess(input_file_path):
+def part_b_inverse_multiprocess(input_file_path):
     maps, seeds = extract_maps_and_seeds(input_file_path)
 
     f = lambda A, n=3: [A[i : i + n] for i in range(0, len(A), n)]
@@ -181,12 +181,12 @@ if __name__ == "__main__":
         exit()
 
     if args.run == "part_a":
-        print(f"part A forward depth first: {part_a(args.input_file_path)}")
+        print(f"part a (forward depth first): {part_a(args.input_file_path)}")
     elif args.run == "part_b_forward":
         print(
-            f"part B forwards multiprocess (slow): {part_b_forward_multiprocess(args.input_file_path)}"
+            f"part b (forward depth first multiprocess): {part_b_forward_multiprocess(args.input_file_path)}"
         )
-    elif args.run == "part_b_backward":
+    elif args.run == "part_b_inverse":
         print(
-            f"part B backward multiprocess (slow): {part_b_backward_multiprocess(args.input_file_path)}"
+            f"part b (inverse depth first multiprocess): {part_b_inverse_multiprocess(args.input_file_path)}"
         )

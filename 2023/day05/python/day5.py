@@ -6,7 +6,7 @@ import os
 from enum import Enum
 from multiprocessing import Pool
 
-RUNS = ["part_a", "part_b_forward", "part_b_backward"]
+RUNS = ["part_a", "part_b_forward", "part_b_inverse"]
 
 
 class Mapping_Direction(Enum):
@@ -119,7 +119,7 @@ def part_b_forwards(input_file_path):
     return min_loc
 
 
-def part_b_backward(input_file_path):
+def part_b_inverse(input_file_path):
     maps, seeds = extract_maps_and_seeds(input_file_path)
 
     f = lambda A, n=3: [A[i : i + n] for i in range(0, len(A), n)]
@@ -139,7 +139,7 @@ def part_b_backward(input_file_path):
             start_val += 1
 
         except KeyboardInterrupt:
-            print(f"exited on {start_val:,}")
+            print(f"exited on {start_val}")
             exit()
 
 
@@ -158,6 +158,6 @@ if __name__ == "__main__":
     if args.run == "part_a":
         print(f"part a (forward depth first): {part_a(args.input_file_path)}")
     elif args.run == "part_b_forward":
-        print(f"part b forward: {part_b_forwards(args.input_file_path)}")
-    elif args.run == "part_b_backward":
-        print(f"part b backwards: {part_b_backward(args.input_file_path)}")
+        print(f"part b (forward depth first): {part_b_forwards(args.input_file_path)}")
+    elif args.run == "part_b_inverse":
+        print(f"part b (inverse depth first): {part_b_inverse(args.input_file_path)}")

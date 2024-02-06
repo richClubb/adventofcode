@@ -3,12 +3,23 @@ import os
 
 from copy import copy
 
-RUNS = ["part_a", "part_b_forward", "part_b_backward", "part_b_ranges"]
+RUNS = ["part_a", "part_b_forward", "part_b_inverse", "part_b_ranges"]
 
 
 class Seed:
     def __init__(self, value: int):
         self.__value = value
+
+    @staticmethod
+    def get_seeds_from_file(file_path):
+
+        with open(file_path) as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith("seeds"):
+                    seeds_raw = list(map(int, line.split()[1:]))
+
+        return [Seed(seed) for seed in seeds_raw]
 
     @property
     def value(self):
@@ -65,6 +76,23 @@ class SeedRange:
         else:
             raise Exception("Must have a size or and end value")
         self.__next_value = self.__start_value
+
+    @staticmethod
+    def get_seed_ranges_from_file(file_path):
+
+        with open(file_path) as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith("seeds"):
+                    seeds_raw = list(map(int, line.split()[1:]))
+
+        f = lambda A, n=3: [A[i : i + n] for i in range(0, len(A), n)]
+        seed_pairs = f(seeds_raw, 2)
+        seed_ranges = [
+            SeedRange(seed_pair[0], seed_pair[1]) for seed_pair in seed_pairs
+        ]
+
+        return seed_ranges
 
     @property
     def value(self):
@@ -363,6 +391,43 @@ class MappingLayers:
     def __init__(self):
         self.__mapping_layers = []
 
+    @staticmethod
+    def get_mapping_layers_from_file(path):
+        mapping_layers = MappingLayers()
+
+        with open(path) as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith("seeds"):
+                    continue
+
+                elif line.startswith("seed-to-soil"):
+                    mapping_layer = MappingLayer()
+                    mapping_layers.add_mapping_layer(mapping_layer)
+                elif line.startswith("soil-to-fertilizer"):
+                    mapping_layer = MappingLayer()
+                    mapping_layers.add_mapping_layer(mapping_layer)
+                elif line.startswith("fertilizer-to-water"):
+                    mapping_layer = MappingLayer()
+                    mapping_layers.add_mapping_layer(mapping_layer)
+                elif line.startswith("water-to-light"):
+                    mapping_layer = MappingLayer()
+                    mapping_layers.add_mapping_layer(mapping_layer)
+                elif line.startswith("light-to-temperature"):
+                    mapping_layer = MappingLayer()
+                    mapping_layers.add_mapping_layer(mapping_layer)
+                elif line.startswith("temperature-to-humidity"):
+                    mapping_layer = MappingLayer()
+                    mapping_layers.add_mapping_layer(mapping_layer)
+                elif line.startswith("humidity-to-location"):
+                    mapping_layer = MappingLayer()
+                    mapping_layers.add_mapping_layer(mapping_layer)
+                elif line:
+                    dest, src, size = list(map(int, line.split()))
+                    mapping_layer.add_mapping(Mapping(dest, src, size))
+
+        return mapping_layers
+
     def add_mapping_layer(self, mapping_layer: MappingLayer):
         self.__mapping_layers.append(mapping_layer)
 
@@ -391,68 +456,9 @@ class MappingLayers:
         return seed_ranges
 
 
-def get_raw_seeds_from_file(path):
-    with open(path) as f:
-        for line in f:
-            line = line.strip()
-            if line.startswith("seeds"):
-                return list(map(int, line.split()[1:]))
-
-
-def load_seeds_from_file(path):
-    seeds_raw = get_raw_seeds_from_file(path)
-    return [Seed(seed) for seed in seeds_raw]
-
-
-def load_seed_ranges_from_file(path):
-    seeds_raw = get_raw_seeds_from_file(path)
-    f = lambda A, n=3: [A[i : i + n] for i in range(0, len(A), n)]
-    seed_pairs = f(seeds_raw, 2)
-    seed_ranges = [SeedRange(seed_pair[0], seed_pair[1]) for seed_pair in seed_pairs]
-
-    return seed_ranges
-
-
-def load_mapping_layers_from_file(path):
-    mapping_layers = MappingLayers()
-
-    with open(path) as f:
-        for line in f:
-            line = line.strip()
-            if line.startswith("seeds"):
-                continue
-
-            elif line.startswith("seed-to-soil"):
-                mapping_layer = MappingLayer()
-                mapping_layers.add_mapping_layer(mapping_layer)
-            elif line.startswith("soil-to-fertilizer"):
-                mapping_layer = MappingLayer()
-                mapping_layers.add_mapping_layer(mapping_layer)
-            elif line.startswith("fertilizer-to-water"):
-                mapping_layer = MappingLayer()
-                mapping_layers.add_mapping_layer(mapping_layer)
-            elif line.startswith("water-to-light"):
-                mapping_layer = MappingLayer()
-                mapping_layers.add_mapping_layer(mapping_layer)
-            elif line.startswith("light-to-temperature"):
-                mapping_layer = MappingLayer()
-                mapping_layers.add_mapping_layer(mapping_layer)
-            elif line.startswith("temperature-to-humidity"):
-                mapping_layer = MappingLayer()
-                mapping_layers.add_mapping_layer(mapping_layer)
-            elif line.startswith("humidity-to-location"):
-                mapping_layer = MappingLayer()
-                mapping_layers.add_mapping_layer(mapping_layer)
-            elif line:
-                dest, src, size = list(map(int, line.split()))
-                mapping_layer.add_mapping(Mapping(dest, src, size))
-
-    return mapping_layers
-
-
 def part_a(path):
-    seeds = load_seeds_from_file(path)
-    mapping_layers = load_mapping_layers_from_file(path)
+    seeds = Seed.get_seeds_from_file(path)
+    mapping_layers = MappingLayers.get_mapping_layers_from_file(path)
 
     min_value = 10**30
     for seed in seeds:
@@ -464,8 +470,8 @@ def part_a(path):
 
 
 def part_b_forwards(path):
-    seed_ranges = load_seed_ranges_from_file(path)
-    mapping_layers = load_mapping_layers_from_file(path)
+    seed_ranges = SeedRange.get_seed_ranges_from_file(path)
+    mapping_layers = MappingLayers.get_mapping_layers_from_file(path)
 
     min_value = 10**30
     for seed_range in seed_ranges:
@@ -477,9 +483,9 @@ def part_b_forwards(path):
     return min_value
 
 
-def part_b_backward(path):
-    seed_ranges = load_seed_ranges_from_file(path)
-    mapping_layers = load_mapping_layers_from_file(path)
+def part_b_inverse(path):
+    seed_ranges = SeedRange.get_seed_ranges_from_file(path)
+    mapping_layers = MappingLayers.get_mapping_layers_from_file(path)
 
     value = 0
     found_result = False
@@ -495,8 +501,8 @@ def part_b_backward(path):
 
 
 def part_b_ranges(path):
-    seed_ranges = load_seed_ranges_from_file(path)
-    mapping_layers = load_mapping_layers_from_file(path)
+    seed_ranges = SeedRange.get_seed_ranges_from_file(path)
+    mapping_layers = MappingLayers.get_mapping_layers_from_file(path)
 
     seed_ranges.sort()
     result = mapping_layers.map_seed_ranges(seed_ranges)
@@ -520,8 +526,8 @@ if __name__ == "__main__":
     if args.run == "part_a":
         print(f"part a (forward depth first): {part_a(args.input_file_path)}")
     elif args.run == "part_b_forward":
-        print(f"part b forward: {part_b_forwards(args.input_file_path)}")
-    elif args.run == "part_b_backward":
-        print(f"part b backwards: {part_b_backward(args.input_file_path)}")
+        print(f"part b (forward depth first): {part_b_forwards(args.input_file_path)}")
+    elif args.run == "part_b_inverse":
+        print(f"part b (inverse depth first): {part_b_inverse(args.input_file_path)}")
     elif args.run == "part_b_ranges":
-        print(f"part b ranges: {part_b_ranges(args.input_file_path)}")
+        print(f"part b (forward ranges method): {part_b_ranges(args.input_file_path)}")
