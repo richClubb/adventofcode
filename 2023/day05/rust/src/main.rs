@@ -2,6 +2,7 @@ use clap::Parser;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use regex::Regex;
+use rayon::prelude::*;
 
 #[derive(Parser)]
 struct Cli {
@@ -194,11 +195,21 @@ fn map_seed_inverse(seed: &Seed, map_layers: &Vec<MapLayer>) -> Seed
     return result;
 }
 
-fn get_lowest_seed_in_range(seed_range: &SeedRange, map_layers: &Vec<MapLayer>)
+fn get_lowest_seed_in_range(seed_range: &SeedRange, map_layers: &Vec<MapLayer>) -> u64
 {
+    let mut min_value = std::u64::MAX;
 
+    for seed_val in seed_range.start..seed_range.end + 1
+    {
+        let seed = Seed{value: seed_val};
+        let result:Seed = map_seed(&seed, &map_layers);
+        if result.value < min_value
+        {
+            min_value = result.value;
+        }
+    }
 
-
+    return min_value
 }
 
 
@@ -272,20 +283,18 @@ fn part_b_inverse(path: &String){
 
 fn part_b_parallel(path: &String){
 
-    let seeds_ranges:Vec<SeedRange> = get_seed_ranges_from_file(&path);
+    let seed_ranges:Vec<SeedRange> = get_seed_ranges_from_file(&path);
     let map_layers:Vec<MapLayer> = get_map_layers_from_file(&path);
 
     let mut min_value = std::u64::MAX;
-    for seed_range in seeds_ranges
+    let results: Vec<u64> = seed_ranges.par_iter().map(|s| get_lowest_seed_in_range(s, &map_layers)).collect();
+
+    let mut min_value = std::u64::MAX;
+    for result in results
     {
-        for seed_val in seed_range.start..seed_range.end + 1
+        if result < min_value
         {
-            let seed = Seed{value: seed_val};
-            let result:Seed = map_seed(&seed, &map_layers);
-            if result.value < min_value
-            {
-                min_value = result.value;
-            }
+            min_value = result;
         }
     }
 
