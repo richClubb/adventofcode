@@ -53,6 +53,9 @@ fn main() {
     else if &args.run == "part_b_parallel_inverse" {
         part_b_parallel_inverse(&args.path);
     }
+    else if &args.run =="part_b_ranges" {
+        part_b_ranges(&args.path)
+    }
     else {
         println!("Unknown run");
     }
@@ -198,7 +201,7 @@ fn map_seed_inverse(seed: &Seed, map_layers: &Vec<MapLayer>) -> Seed
     return result;
 }
 
-fn map_inverse_block_find_lowest_val(start: u64, end: u64, seed_ranges: &Vec<SeedRange>, map_layers: &Vec<MapLayer>) -> u64
+fn map_inverse_block_find_lowest_val(start: u64, end: u64, seed_ranges: &Vec<SeedRange>, map_layers: &Vec<MapLayer>) -> Option<u64>
 {
     
     for value in start..end
@@ -220,12 +223,12 @@ fn map_inverse_block_find_lowest_val(start: u64, end: u64, seed_ranges: &Vec<See
         {
             if (result.value >= seed_range.start) && (result.value <= seed_range.end)
             {
-                return value;
+                return Some(value);
             }
         }
     }
 
-    return 0;
+    return None;
 }
 
 
@@ -331,43 +334,38 @@ fn part_b_parallel_inverse(path: &String)
     let seed_ranges:Vec<SeedRange> = get_seed_ranges_from_file(&path);
     let map_layers:Vec<MapLayer> = get_map_layers_from_file(&path);
 
-    let blocksize:u64 = 10000;
+    let blocksize:u64 = 1000;
     let mut block:u64 = 0;
     let par_num:u64 = 4;
 
-    let mut min_value = std::u64::MAX;
-
-    'main_iter: loop {
+    loop {
         
         //let results: Option<u64> = (0..par_num).into_par_iter().for_each(|a:u64| map_inverse_block_find_lowest_val(block*a, (block*a)+blocksize, &map_layers).unwrap());
-        let results:Vec<u64> = (0..par_num).into_par_iter().map(|a:u64| map_inverse_block_find_lowest_val(block+(blocksize*a), block+((blocksize*a)+blocksize), &seed_ranges, &map_layers)).collect();
+        let results:Vec<Option<u64>> = (0..par_num)
+                                                .into_par_iter()
+                                                .map(|a:u64| map_inverse_block_find_lowest_val(block+(blocksize*a), block+((blocksize*a)+blocksize), &seed_ranges, &map_layers))
+                                                .filter(|a| a.is_some())
+                                                .collect();
 
         // results.iter().for_each(|a| println!("{}", a));
 
-        for result in results
+        if results.len() > 0
         {
-            if result != 0
-            {
-                if result < min_value
-                {
-                    min_value = result
-                }
-            }
+            println!("Part B inverse parallel: {}",results[0].unwrap());
+            return;
         }
 
         block += blocksize * par_num;
-
-        if min_value != std::u64::MAX
-        {
-            break 'main_iter;
-        }
     }
 
-    println!("Part B inverse parallel: {min_value}");
 }
 
-fn part_b_range(path: &String)
+fn part_b_ranges(path: &String)
 {
+    let seed_ranges:Vec<SeedRange> = get_seed_ranges_from_file(&path);
+    let map_layers:Vec<MapLayer> = get_map_layers_from_file(&path);
 
+    let mut result: Vec<SeedRange> = Vec::new();
 
+    
 }
