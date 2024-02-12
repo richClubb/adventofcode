@@ -47,8 +47,11 @@ fn main() {
     else if &args.run == "part_b_inverse" {
         part_b_inverse(&args.path);
     }
-    else if &args.run == "part_b_parallel" {
-        part_b_parallel(&args.path);
+    else if &args.run == "part_b_parallel_forward" {
+        part_b_parallel_forward(&args.path);
+    }
+    else if &args.run == "part_b_parallel_inverse" {
+        part_b_parallel_inverse(&args.path);
     }
     else {
         println!("Unknown run");
@@ -195,6 +198,29 @@ fn map_seed_inverse(seed: &Seed, map_layers: &Vec<MapLayer>) -> Seed
     return result;
 }
 
+fn map_inverse_block_find_lowest_val(start: u64, end: u64, map_layers: &Vec<MapLayer>) -> Option<u64>
+{
+
+    for value in start..end+1
+    {
+        let mut result: Seed = Seed{ value: value};
+        for map_layer in map_layers.iter().rev()
+        {
+            for map in &map_layer.maps
+            {
+                if (result.value >= map.dest_start) && (result.value <= map.dest_end)
+                {
+                    result.value = map.src_start + result.value - map.dest_start;
+                    return Some(result.value)
+                }
+            }
+        }
+    }
+
+    None
+}
+
+
 fn get_lowest_seed_in_range(seed_range: &SeedRange, map_layers: &Vec<MapLayer>) -> u64
 {
     let mut min_value = std::u64::MAX;
@@ -281,23 +307,36 @@ fn part_b_inverse(path: &String){
 
 }
 
-fn part_b_parallel(path: &String){
+fn part_b_parallel_forward(path: &String){
 
     let seed_ranges:Vec<SeedRange> = get_seed_ranges_from_file(&path);
     let map_layers:Vec<MapLayer> = get_map_layers_from_file(&path);
 
-    let mut min_value = std::u64::MAX;
-    let results: Vec<u64> = seed_ranges.par_iter().map(|s| get_lowest_seed_in_range(s, &map_layers)).collect();
+    let result = seed_ranges.par_iter().map(|s| get_lowest_seed_in_range(s, &map_layers)).min().unwrap();
 
-    let mut min_value = std::u64::MAX;
-    for result in results
-    {
-        if result < min_value
-        {
-            min_value = result;
-        }
-    }
+    println!("Part B forward parallel: {result}");
 
-    println!("Part B forward parallel: {min_value}");
+}
+
+fn part_b_parallel_inverse(path: &String)
+{
+    let seed_ranges:Vec<SeedRange> = get_seed_ranges_from_file(&path);
+    let map_layers:Vec<MapLayer> = get_map_layers_from_file(&path);
+
+    let blocksize:u64 = 10000;
+    let block:u64 = 0;
+    let par_num:u64 = 4;
+
+    // 'main_iter: loop {
+        
+    //     let results: Vec<u64> = (0..par_num).into_par_iter().map(|a:u64| map_inverse_block_find_lowest_val(block, block+=blocksize, &map_layers)).collect();
+
+    //     break 'main_iter;
+    // }
+}
+
+fn part_b_range(path: &String)
+{
+
 
 }
