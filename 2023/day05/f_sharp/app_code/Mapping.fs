@@ -7,6 +7,7 @@ type Mapping(dest : int64, src : int64, size : int64) =
     member this.dest_end = dest + size - int64(1)
 
     member this.TranslateSeedForward (seed: int64): int64 = 
+        //printfn $"{seed}"
         match seed with
         | seed_value when seed_value >= this.src_start && seed_value <= this.src_end -> this.dest_start + seed_value - this.src_start
         | _ -> seed
@@ -17,6 +18,7 @@ type Mapping(dest : int64, src : int64, size : int64) =
         | _ -> seed
 
     member this.CheckSeedInRangeForward (seed: int64) : bool =
+        //printfn $"Checking {seed}"
         match seed with
         | seed_value when seed_value >= this.src_start && seed_value <= this.src_end -> true
         | _ -> false

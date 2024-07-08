@@ -15,37 +15,31 @@ let convert (athing: string list) =
     MappingLayer(result)
 
 task {
-    //let path = "../../part_a_sample.txt"
     let path = "../../input.txt"
-    //let! lines = File.ReadAllLinesAsync path
+    //let path = "../../part_a_sample.txt"
+
     let! content = File.ReadAllTextAsync path
 
     let blocks = content.Split("\n\n") |> Array.toList
     
     let seed_line = List.filter (fun (block :string) -> block.Contains("seeds: ")) blocks |> List.head
     let seeds = seed_line.Replace("seeds: ", "").Split(" ") |> Array.toList |> List.map (fun seed_string -> int64(seed_string))
-    //List.iter (fun (x:Seed) -> printfn $"{x.Value}") seeds
 
     let map_blocks = List.filter (fun (block :string) -> block.Contains("seeds: ") = false) blocks
     let map_string = List.map (fun (block: string) -> block.Split("\n") |> Array.toList |> List.tail ) map_blocks
-    //printfn($"{map_string}")
+    
+    let map_layers = List.map (fun x -> convert x) map_string
+    
+    let things: int64 list list = List.map (fun seed -> (seed, map_layers) ||> List.scan (fun s v -> v.TranslateSeedForward(s))) seeds
+    let part_a_min_seed = List.map (fun a -> List.last a) things |> List.min
 
-    let result = List.map (fun x -> convert x) map_string
-    //List.iter (fun (x:MappingLayer )-> printfn($"Mapping Layer: "); List.iter (fun (y:Mapping) -> printfn $"{y.src_start}, {y.src_end}, {y.dest_start}, {y.dest_end}") x.Mappings) result
+    printfn($"Part A result: {part_a_min_seed}")
 
-    let fnChain = result[0].TranslateSeedForward >> result[1].TranslateSeedForward >> result[2].TranslateSeedForward >> result[3].TranslateSeedForward >> result[4].TranslateSeedForward >> result[5].TranslateSeedForward >> result[6].TranslateSeedForward    
-
-    let result2 = List.map (fun x -> fnChain x) seeds |> List.min
-
-    printfn($"Part A result: {result2}")
-
+    //This doesn't compute fast enough for the main input sample
     let seed_ranges_values = Seq.chunkBySize 2 seeds |> Seq.collect Array.pairwise |> Seq.toList
-
     let seed_ranges = List.map (fun (x, y) -> SeedRange(x, y)) seed_ranges_values
-
-    let result4 = List.map (fun (x: SeedRange) -> x.FindMinSeedInRange result) seed_ranges |> List.min
-
-    printfn($"Part B result {result4}")
+    let part_b_min_seed = List.map (fun (x: SeedRange) -> x.FindMinSeedInRangeMutable map_layers) seed_ranges |> List.min
+    printfn($"Part B result {part_b_min_seed}")
 
 }
 |> Async.AwaitTask

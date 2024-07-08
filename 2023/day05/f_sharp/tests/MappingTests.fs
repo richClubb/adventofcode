@@ -93,5 +93,5 @@ type MappingTests () =
     member this.TestTranslateSeedForward1() = 
         let mapping = Mapping(52, 50, 98)
         let seed = int64(79)
-        let result = mapping.TranslateSeedReverse(seed)
+        let result = mapping.TranslateSeedForward(seed)
         Assert.AreEqual(int64(81), result)

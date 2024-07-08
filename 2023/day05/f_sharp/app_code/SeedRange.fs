@@ -7,15 +7,14 @@ type SeedRange(start : int64, size : int64) =
 
     member this.FindMinSeedInRange( mappingLayers : List<MappingLayer> ) = 
 
-        let mappingFn = mappingLayers[0].TranslateSeedForward 
-                        >> mappingLayers[1].TranslateSeedForward 
-                        >> mappingLayers[2].TranslateSeedForward 
-                        >> mappingLayers[3].TranslateSeedForward 
-                        >> mappingLayers[4].TranslateSeedForward 
-                        >> mappingLayers[5].TranslateSeedForward 
-                        >> mappingLayers[6].TranslateSeedForward
+        let things: int64 list list = List.map (fun seed -> (seed, mappingLayers) ||> List.scan (fun s v -> v.TranslateSeedForward(s))) this.Seeds
+        List.map (fun a -> List.last a) things |> List.min
 
-        let results = List.map (fun x -> mappingFn(x)) this.Seeds
-        let minSeed = List.min results
+    member this.FindMinSeedInRangeMutable( mappingLayers : List<MappingLayer> ) = 
 
-        minSeed
+        let mutable min_value = Int64.MaxValue
+        for seed in this.Seeds do
+            let seed_val = (seed, mappingLayers) ||> List.scan (fun s v -> v.TranslateSeedForward(s)) |> List.last
+            if seed_val < min_value then min_value <- seed_val
+
+        min_value

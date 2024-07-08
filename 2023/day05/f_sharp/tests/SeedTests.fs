@@ -11,6 +11,7 @@ type SeedTests () =
     member this.TestMethodPassing () =
         Assert.IsTrue(true);
 
+    // failed to get seed equality to work
     // [<TestMethod>]
     // member this.TestSeedEquals () =
     //     let seed1 = Seed(1)
@@ -22,3 +23,5 @@ type SeedTests () =
     //     let seed1 = Seed(1)
     //     let seed2 = Seed(2)
     //     Assert.IsFalse(seed1.Equals(seed2))
+
+    

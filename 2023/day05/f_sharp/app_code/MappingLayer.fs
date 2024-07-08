@@ -6,7 +6,7 @@ type MappingLayer(mappings: List<Mapping>) =
     member this.Mappings = mappings
 
     member this.TranslateSeedForward(seed : int64) = 
-        //printfn $"{seed.Value}"
+        //printfn $"{seed}"
         let mappings = List.filter (fun (mapping: Mapping)-> mapping.CheckSeedInRangeForward seed) this.Mappings
         match mappings.Length with
         | 0 -> seed
