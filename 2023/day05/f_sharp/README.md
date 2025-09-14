@@ -1,0 +1,1 @@
+This can probably be changed to work differently but still use a pure functional approach, think about it.
