@@ -1,0 +1,26 @@
+cmake_minimum_required(VERSION 3.14)
+project(test_part_a)
+
+enable_testing()
+
+add_executable(
+  "${PROJECT_NAME}"
+  test_part_a.c
+  "${PROJECT_SOURCE_DIR}/../part_a.c"
+  "${PROJECT_SOURCE_DIR}/../../seed_map/seed_map.c"
+  "${PROJECT_SOURCE_DIR}/../../seed_map_layer/seed_map_layer.c"
+)
+
+target_include_directories(
+  "${PROJECT_NAME}"
+  PRIVATE
+  "${PROJECT_SOURCE_DIR}/../"
+  "${PROJECT_SOURCE_DIR}/../../config/"
+  "${PROJECT_SOURCE_DIR}/../../seed_map/"
+  "${PROJECT_SOURCE_DIR}/../../seed_map_layer/"
+)
+
+target_link_libraries(
+  "${PROJECT_NAME}"
+  cunit
+)
