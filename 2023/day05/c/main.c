@@ -15,9 +15,13 @@ int main(int argc, char **argv)
 
     result = load_config(&config, argc, argv);
 
-    part_a(&config);
+    unsigned long part_a_min = part_a(&config);
 
-    part_b(&config);
+    printf("Part A: min value is '%d'\n", part_a_min);
+
+    unsigned long part_b_min = part_b(&config);
+
+    printf("Part B: min value is '%d'\n", part_b_min);
 
     return result;
 }
