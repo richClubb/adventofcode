@@ -50,7 +50,7 @@ unsigned long part_a(const CONFIG *config)
         if ( strstr(line, ":") != NULL )
         {
             // memory check
-            seed_map_layers = (SEED_MAP_LAYER **)realloc(seed_map_layers, sizeof(SEED_MAP_LAYER *) * seed_map_layers_index + 2);
+            seed_map_layers = (SEED_MAP_LAYER **)realloc(seed_map_layers, sizeof(SEED_MAP_LAYER *) * (seed_map_layers_index + 2));
 
             seed_map_layers[seed_map_layers_index] = NULL;
             seed_map_layer_init(&seed_map_layers[seed_map_layers_index]);
