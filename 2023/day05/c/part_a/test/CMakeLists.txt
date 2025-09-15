@@ -9,6 +9,7 @@ add_executable(
   "${PROJECT_SOURCE_DIR}/../part_a.c"
   "${PROJECT_SOURCE_DIR}/../../seed_map/seed_map.c"
   "${PROJECT_SOURCE_DIR}/../../seed_map_layer/seed_map_layer.c"
+  "${PROJECT_SOURCE_DIR}/../../utils/utils.c"
 )
 
 target_include_directories(
@@ -18,6 +19,7 @@ target_include_directories(
   "${PROJECT_SOURCE_DIR}/../../config/"
   "${PROJECT_SOURCE_DIR}/../../seed_map/"
   "${PROJECT_SOURCE_DIR}/../../seed_map_layer/"
+  "${PROJECT_SOURCE_DIR}/../../utils/"
 )
 
 target_link_libraries(

@@ -8,6 +8,8 @@ add_executable(
     "${PROJECT_SOURCE_DIR}/part_b/part_b.c"
     "${PROJECT_SOURCE_DIR}/seed_map/seed_map.c"
     "${PROJECT_SOURCE_DIR}/seed_map_layer/seed_map_layer.c"
+    "${PROJECT_SOURCE_DIR}/seed_range/seed_range.c"
+    "${PROJECT_SOURCE_DIR}/utils/utils.c"
 
 )
 
@@ -19,4 +21,6 @@ target_include_directories(
     "${PROJECT_SOURCE_DIR}/part_b/"
     "${PROJECT_SOURCE_DIR}/seed_map/"
     "${PROJECT_SOURCE_DIR}/seed_map_layer/"
+    "${PROJECT_SOURCE_DIR}/seed_range/"
+    "${PROJECT_SOURCE_DIR}/utils/"
 )

@@ -4,6 +4,6 @@
 
 #include "config.h"
 
-void part_a(const CONFIG *config);
+unsigned long part_a(const CONFIG *config);
 
 #endif 
