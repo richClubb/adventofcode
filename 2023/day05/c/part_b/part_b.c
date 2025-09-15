@@ -47,7 +47,7 @@ unsigned long part_b(const CONFIG *config)
         if ( strstr(line, ":") != NULL )
         {
             // memory check
-            seed_map_layers = (SEED_MAP_LAYER **)realloc(seed_map_layers, sizeof(SEED_MAP_LAYER *) * seed_map_layers_index + 2);
+            seed_map_layers = (SEED_MAP_LAYER **)realloc(seed_map_layers, sizeof(SEED_MAP_LAYER *) * (seed_map_layers_index + 2));
 
             seed_map_layers[seed_map_layers_index] = NULL;
             seed_map_layer_init(&seed_map_layers[seed_map_layers_index]);
@@ -66,23 +66,14 @@ unsigned long part_b(const CONFIG *config)
         seed_map_layer_add_seed_map(curr_layer, seed_map);
     }
 
-    
     unsigned long curr_seed_min = ULONG_MAX;
 
-    printf("seed ranges %d\n", num_seed_ranges);
+    // don't like this too much, think of refactoring it.
     for(int seed_ranges_index = 0; seed_ranges_index < num_seed_ranges; seed_ranges_index++)
     {
         unsigned long seed_range_start = seed_ranges[seed_ranges_index]->start;
         unsigned long seed_range_end = seed_ranges[seed_ranges_index]->start + seed_ranges[seed_ranges_index]->size;
-
-        unsigned long range_min = ULONG_MAX;
-
-        printf(
-            "Seed range: %u, size %u, from %u to %u\n", 
-            seed_ranges[seed_ranges_index]->start, 
-            seed_ranges[seed_ranges_index]->size, 
-            seed_range_start,
-            seed_range_end );
+        
         for 
         (
             unsigned long seed_index = seed_range_start; 
@@ -103,19 +94,16 @@ unsigned long part_b(const CONFIG *config)
                 seed_map_layer_map_seed(curr_seed_map_layer, &curr_seed_value);
             }
 
-            if (curr_seed_value < range_min)
+            if (curr_seed_value < curr_seed_min)
             {
-                range_min = curr_seed_value;
-            }
-
-            if (range_min < curr_seed_min)
-            {
-                curr_seed_min = range_min;
+                curr_seed_min = curr_seed_value;
             }
         }
     }
 
-    free(seed_map_layers);
+    seed_ranges_term(seed_ranges, num_seed_ranges);
+
+    seed_map_layers_term(seed_map_layers, seed_map_layers_index);
 
     fclose(input_file);
 

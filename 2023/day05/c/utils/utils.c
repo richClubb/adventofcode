@@ -41,9 +41,9 @@ unsigned long *extract_number_list(const char *number_string, unsigned int *leng
     while (token != NULL) {
         char* endptr = NULL;
 
-        seeds[seeds_index] = strtol(token, &endptr, 10);
+        seeds[seeds_index] = (unsigned long)strtol(token, &endptr, 10);
         seeds_index += 1;
-        seeds = (unsigned long *)realloc(seeds, sizeof(unsigned long) * seeds_index + 1);
+        seeds = (unsigned long *)realloc(seeds, sizeof(unsigned long) * (seeds_index + 1));
 
         token = strtok(NULL, " ");
     }
