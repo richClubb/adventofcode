@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "name": "c++ day5 advent of code",
+            "cStandard": "c17",
+            "cppStandard": "c++20",
+            "includePath": [
+                "${default}",
+                "${workspaceFolder}/config",
+                "${workspaceFolder}/part_a",
+                "${workspaceFolder}/part_b",
+                "${workspaceFolder}/seed_map",
+                "${workspaceFolder}/seed_map_layer",
+                "${workspaceFolder}/utils",
+                "${workspaceFolder}/seed_map_layer/test/build-x86/_deps/googletest-src/googletest/include"
+            ]
+        }
+    ],
+    "version": 4,
+    "enableConfigurationSquiggles": true
+}
