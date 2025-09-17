@@ -73,7 +73,8 @@ unsigned long part_b(const CONFIG *config)
     {
         unsigned long seed_range_start = seed_ranges[seed_ranges_index]->start;
         unsigned long seed_range_end = seed_ranges[seed_ranges_index]->start + seed_ranges[seed_ranges_index]->size;
-        
+        unsigned long range_min = ULONG_MAX;
+
         for 
         (
             unsigned long seed_index = seed_range_start; 
@@ -82,7 +83,6 @@ unsigned long part_b(const CONFIG *config)
         )
         {
             unsigned long curr_seed_value = seed_index;
-            
             for
             (
                 unsigned int seed_map_layer_index = 0; 
@@ -94,9 +94,14 @@ unsigned long part_b(const CONFIG *config)
                 seed_map_layer_map_seed(curr_seed_map_layer, &curr_seed_value);
             }
 
-            if (curr_seed_value < curr_seed_min)
+            if (curr_seed_value < range_min)
             {
-                curr_seed_min = curr_seed_value;
+                range_min = curr_seed_value;
+            }
+
+            if (range_min < curr_seed_min)
+            {
+                curr_seed_min = range_min;
             }
         }
     }

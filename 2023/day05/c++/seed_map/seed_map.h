@@ -11,15 +11,17 @@
 class SeedMap
 {
 public:
-    SeedMap(uint32_t, uint32_t, uint32_t);
+    SeedMap(uint64_t, uint64_t, uint64_t);
     SeedMap(std::string);
     ~SeedMap();
-    std::optional<uint32_t> map_seed(uint32_t);
+    std::optional<uint64_t> map_seed(uint64_t);
+
+    uint64_t get_source(){ return source; }
 
 private:
-    uint32_t source;
-    uint32_t target;
-    uint32_t size;
+    uint64_t source;
+    uint64_t target;
+    uint64_t size;
 };
 
 #endif

@@ -6,6 +6,6 @@
 
 #include "config.h"
 
-uint32_t part_a(const CONFIG &);
+uint64_t part_a(const CONFIG &);
 
 #endif

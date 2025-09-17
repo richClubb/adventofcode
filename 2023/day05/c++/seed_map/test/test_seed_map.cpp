@@ -23,7 +23,7 @@ TEST(SeedMapTests, MapSeed)
 {
   SeedMap seed_map(2, 10, 5);
 
-  uint32_t input = 1;
+  uint64_t input = 1;
 
   EXPECT_EQ(seed_map.map_seed(input), std::nullopt);
 

@@ -17,12 +17,14 @@ public:
     SeedMapLayer(std::string);
     ~SeedMapLayer();
 
-    void add_seed_map(SeedMap *);
+    void add_seed_map(SeedMap);
 
-    std::optional<uint32_t> map_seed(uint32_t input);
+    std::optional<uint64_t> map_seed(uint64_t input);
+
+    void sort_seed_maps();
 
 private:
-    std::vector<SeedMap *> seed_maps;
+    std::vector<SeedMap> seed_maps;
     std::string name;
 
 };
