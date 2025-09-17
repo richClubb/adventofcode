@@ -20,6 +20,9 @@ add_executable(
   "${PROJECT_NAME}"
   "${PROJECT_SOURCE_DIR}/test_part_a.cpp"
   "${PROJECT_SOURCE_DIR}/../part_a.cpp"
+  "${PROJECT_SOURCE_DIR}/../../utils/utils.cpp"
+  "${PROJECT_SOURCE_DIR}/../../seed_map/seed_map.cpp"
+  "${PROJECT_SOURCE_DIR}/../../seed_map_layer/seed_map_layer.cpp"
 )
 
 target_include_directories(
@@ -27,6 +30,9 @@ target_include_directories(
   PRIVATE
   "${PROJECT_SOURCE_DIR}/../"
   "${PROJECT_SOURCE_DIR}/../../config/"
+  "${PROJECT_SOURCE_DIR}/../../utils/"
+  "${PROJECT_SOURCE_DIR}/../../seed_map/"
+  "${PROJECT_SOURCE_DIR}/../../seed_map_layer/"
 )
 
 target_link_libraries(

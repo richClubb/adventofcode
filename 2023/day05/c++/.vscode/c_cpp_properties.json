@@ -11,6 +11,7 @@
                 "${workspaceFolder}/part_b",
                 "${workspaceFolder}/seed_map",
                 "${workspaceFolder}/seed_map_layer",
+                "${workspaceFolder}/seed_range",
                 "${workspaceFolder}/utils",
                 "${workspaceFolder}/seed_map_layer/test/build-x86/_deps/googletest-src/googletest/include"
             ]

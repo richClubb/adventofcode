@@ -19,6 +19,22 @@ enable_testing()
 add_executable(
   "${PROJECT_NAME}"
   "${PROJECT_SOURCE_DIR}/test_part_b.cpp"
+  "${PROJECT_SOURCE_DIR}/../part_b.cpp"
+  "${PROJECT_SOURCE_DIR}/../../utils/utils.cpp"
+  "${PROJECT_SOURCE_DIR}/../../seed_range/seed_range.cpp"
+  "${PROJECT_SOURCE_DIR}/../../seed_map_layer/seed_map_layer.cpp"
+  "${PROJECT_SOURCE_DIR}/../../seed_map/seed_map.cpp"
+)
+
+target_include_directories(
+  "${PROJECT_NAME}"
+  PRIVATE
+  "${PROJECT_SOURCE_DIR}/.."
+  "${PROJECT_SOURCE_DIR}/../../config"
+  "${PROJECT_SOURCE_DIR}/../../utils"
+  "${PROJECT_SOURCE_DIR}/../../seed_map"
+  "${PROJECT_SOURCE_DIR}/../../seed_range"
+  "${PROJECT_SOURCE_DIR}/../../seed_map_layer"
 )
 
 target_link_libraries(
