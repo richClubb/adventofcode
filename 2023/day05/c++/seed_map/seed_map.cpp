@@ -8,7 +8,9 @@
 SeedMap::SeedMap(uint64_t source, uint64_t target, uint64_t size)
 {
     this->source = source;
+    this->source_end = source + size - 1;
     this->target = target;
+    this->target_end = target + size - 1;
     this->size = size;
 }
 
@@ -29,6 +31,9 @@ SeedMap::SeedMap(std::string input_string)
     this->source = numbers[1];
     this->target = numbers[0];
     this->size = numbers[2];
+
+    this->source_end = this->source + size - 1;
+    this->target_end = this->target + size - 1;
 }
 
 SeedMap::~SeedMap()
@@ -38,16 +43,17 @@ SeedMap::~SeedMap()
     this->size = 0;
 }
 
-std::optional<uint64_t> SeedMap::map_seed(uint64_t input)
+bool SeedMap::map_seed(uint64_t *input)
 {
     if 
     (
-        (input >= this->source) && 
-        (input < this->source + this->size)
+        (*input >= this->source) && 
+        (*input < this->source + this->size)
     )
     {
-        return (input - this->source) + this->target;
+        *input = (*input - this->source) + this->target;
+        return true;
     }
 
-    return std::nullopt;
+    return false;
 }

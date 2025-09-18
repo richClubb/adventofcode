@@ -36,26 +36,40 @@ TEST(SeedMapLayerTests, MapSeed)
 
   seed_map_layer->add_seed_map(SeedMap(2, 10, 5));
 
-  std::optional<uint64_t> result = seed_map_layer->map_seed(1);
-  EXPECT_EQ(result, std::nullopt);
+  uint64_t value = 1;
+  bool result = seed_map_layer->map_seed(&value);
+  EXPECT_EQ(result, false);
+  EXPECT_EQ(value, 1);
 
-  result = seed_map_layer->map_seed(2);
-  EXPECT_EQ(result, 10);
+  value = 2;
+  result = seed_map_layer->map_seed(&value);
+  EXPECT_EQ(result, true);
+  EXPECT_EQ(value, 10);
 
-  result = seed_map_layer->map_seed(3);
-  EXPECT_EQ(result, 11);
+  value = 3;
+  result = seed_map_layer->map_seed(&value);
+  EXPECT_EQ(result, true);
+  EXPECT_EQ(value, 11);
 
-  result = seed_map_layer->map_seed(4);
-  EXPECT_EQ(result, 12);
+  value = 4;
+  result = seed_map_layer->map_seed(&value);
+  EXPECT_EQ(result, true);
+  EXPECT_EQ(value, 12);
 
-  result = seed_map_layer->map_seed(5);
-  EXPECT_EQ(result, 13);
+  value = 5;
+  result = seed_map_layer->map_seed(&value);
+  EXPECT_EQ(result, true);
+  EXPECT_EQ(value, 13);
 
-  result = seed_map_layer->map_seed(6);
-  EXPECT_EQ(result, 14);
+  value = 6;
+  result = seed_map_layer->map_seed(&value);
+  EXPECT_EQ(result, true);
+  EXPECT_EQ(value, 14);
 
-  result = seed_map_layer->map_seed(7);
-  EXPECT_EQ(result, std::nullopt);
+  value = 7;
+  result = seed_map_layer->map_seed(&value);
+  EXPECT_EQ(result, false);
+  EXPECT_EQ(value, 7);
 
   delete seed_map_layer;
 }

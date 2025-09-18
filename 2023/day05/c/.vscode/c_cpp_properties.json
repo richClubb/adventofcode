@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "c day5 advent of code",
+            "cStandard": "c17",
+            "includePath": [
+                "${default}",
+                "${workspaceFolder}/config",
+                "${workspaceFolder}/part_a",
+                "${workspaceFolder}/part_b",
+                "${workspaceFolder}/seed_map",
+                "${workspaceFolder}/seed_map_layer",
+                "${workspaceFolder}/seed_range",
+                "${workspaceFolder}/utils"
+            ]
+        }
+    ],
+    "version": 4,
+    "enableConfigurationSquiggles": true
+}
