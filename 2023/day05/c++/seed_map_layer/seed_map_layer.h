@@ -19,14 +19,13 @@ public:
 
     void add_seed_map(SeedMap);
 
-    std::optional<uint64_t> map_seed(uint64_t input);
+    bool map_seed(uint64_t *input);
 
     void sort_seed_maps();
 
 private:
     std::vector<SeedMap> seed_maps;
     std::string name;
-
 };
 
 #endif

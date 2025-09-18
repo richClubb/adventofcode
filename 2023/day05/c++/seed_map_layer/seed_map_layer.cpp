@@ -25,16 +25,16 @@ void SeedMapLayer::add_seed_map(SeedMap seed_map)
     this->seed_maps.push_back(seed_map);
 }
 
-std::optional<uint64_t> SeedMapLayer::map_seed(uint64_t input)
+bool SeedMapLayer::map_seed(uint64_t *input)
 {
-    if (this->seed_maps.size() == 0) return std::nullopt;
+    // if (this->seed_maps.size() == 0) return false;
 
     // old-school method
     // for(uint64_t index = 0; index < this->seed_maps.size(); index++)
     // {    
-    //     if (std::optional<uint64_t> result; result = this->seed_maps[index]->map_seed(input))
+    //     if (bool result; result = this->seed_maps[index].map_seed(input))
     //     {
-    //         return result;
+    //         return false;
     //     }
     // }
 
@@ -56,13 +56,13 @@ std::optional<uint64_t> SeedMapLayer::map_seed(uint64_t input)
     // more modern method
     for(SeedMap &seed_map : this->seed_maps)
     {
-        if (std::optional<uint64_t> result; result = seed_map.map_seed(input))
+        if (bool result; result = seed_map.map_seed(input))
         {
-            return result;
+            return true;
         }
     }
 
-    return std::nullopt;
+    return false;
 }
 
 // need a sorting algorithm

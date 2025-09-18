@@ -54,29 +54,7 @@
                     "ignoreFailures": true
                 }
             ]
-        },
-        {
-            "name": "Test seed map layers",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/seed_map_layer/test/build-x86/test_seed_map_layer",
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/seed_map_layer/test/build-x86/",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                },
-                {
-                    "description": "Set Disassembly Flavor to Intel",
-                    "text": "-gdb-set disassembly-flavor intel",
-                    "ignoreFailures": true
-                }
-            ]
         }
+
     ]
 }

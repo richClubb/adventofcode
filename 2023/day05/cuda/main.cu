@@ -1,16 +1,82 @@
 #include <stdio.h>
 #include <cuda.h>
 
-__global__ void dkernel()
+#include <stdint.h>
+#include <limits.h>
+
+#define BLOCK_NUM 10
+#define THREAD_NUM 10
+
+typedef struct seed_range_t{
+    uint64_t start;
+    uint64_t size;
+} SEED_RANGE;
+
+__device__ void find_min_value(SEED_RANGE *seed_range, uint64_t *min_value)
+{
+    for(uint64_t index = seed_range->start; index < seed_range->start + seed_range->size; index++)
+    {
+        if ((index % 123456) < *min_value)
+        {
+            *min_value = (index);
+        }
+    }
+}
+
+__global__ void dkernel(SEED_RANGE *seed_ranges,  uint64_t *result)
 { //__global__ indicate it is not normal kernel function but for GPU
-    printf("Hello world \n");
+    const uint32_t blockId = blockIdx.x;
+    const uint32_t threadId = threadIdx.x;
+
+    SEED_RANGE *seed_range = (seed_ranges + blockId);
+
+    uint64_t seed_range_size = seed_range->size;
+
+    thread_range_size = seed_range_size / THREAD_NUM;
+
+    thread_range_start = seed_range_start * threadId
+    thread_range_end = 
+    printf("start %lu, size %lu\n", seed_range->start, seed_range->size);
+
+    // SEED_RANGE test = {blockId+1, 100000000};
+
+    uint64_t min_value = UINT64_MAX;
+    find_min_value(seed_range, &min_value);
+    result[blockId] = min_value;
 }
 
 int main ()
 {
-    dkernel <<<1,1>>>();//<<<no. of blocks,no. of threads in in block>>>
+    
+    SEED_RANGE *seed_ranges = (SEED_RANGE *)calloc(BLOCK_NUM, sizeof(SEED_RANGE));
+
+    for(uint32_t index = 0; index < BLOCK_NUM; index++)
+    {
+        seed_ranges[index].start = (index + 1) * 10;
+        seed_ranges[index].size = (index + 1) * 1000000;
+
+        printf("Starting values %lu %lu\n", seed_ranges[index].start, seed_ranges[index].size);
+    }
+
+    SEED_RANGE *gpu_input;
+    cudaMalloc(&gpu_input, BLOCK_NUM * sizeof(SEED_RANGE));
+
+    cudaMemcpy(gpu_input, seed_ranges, BLOCK_NUM * sizeof(SEED_RANGE), cudaMemcpyHostToDevice);
+
+    uint64_t *cpu_result = (uint64_t *)calloc(BLOCK_NUM, sizeof(uint64_t));
+    uint64_t *gpu_result;
+    cudaMalloc(&gpu_result, BLOCK_NUM * sizeof(uint64_t));
+
+    dkernel <<<BLOCK_NUM, 1>>>(gpu_input, gpu_result);//<<<no. of blocks,no. of threads in in block>>>
+
+    cudaMemcpy(cpu_result, gpu_result, BLOCK_NUM * sizeof(uint64_t), cudaMemcpyDeviceToHost);
 
     cudaDeviceSynchronize(); //Tells GPU to do all work than synchronize GPU buffer with CPU.
+
+    for(uint32_t index = 0; index < BLOCK_NUM; index++)
+    {
+        printf("Block %lu, result: %lu\n", index, *(cpu_result + index));
+    }
 
     return 0;
 

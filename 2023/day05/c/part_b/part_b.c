@@ -101,6 +101,7 @@ unsigned long part_b(const CONFIG *config)
 
             if (range_min < curr_seed_min)
             {
+                printf("Input was %u, %u\n", seed_index, range_min);
                 curr_seed_min = range_min;
             }
         }

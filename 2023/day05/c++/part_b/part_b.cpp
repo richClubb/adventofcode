@@ -46,6 +46,11 @@ uint64_t part_b(const CONFIG &config)
         curr_layer->add_seed_map(SeedMap(line));
     }
 
+    // for(uint32_t index = 0; index < seed_map_layers.size(); index++)
+    // {
+    //     seed_map_layers[index].sort_seed_maps();
+    // }
+
     uint64_t min_value = UINT64_MAX;
     
     for(SeedRange &seed_range : seed_ranges)
@@ -60,10 +65,7 @@ uint64_t part_b(const CONFIG &config)
             uint64_t value = seed;
             for (uint64_t index = 0; index < seed_map_layers.size(); index++)
             {
-                if (std::optional<uint64_t> result; result = seed_map_layers[index].map_seed(value))
-                {
-                    value = result.value();
-                }
+                seed_map_layers[index].map_seed(&value);
             }
 
             if (value < range_min)

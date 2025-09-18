@@ -51,10 +51,7 @@ uint64_t part_a(const CONFIG &config)
         uint64_t value = seed;
         for (uint64_t index = 0; index < seed_map_layers.size(); index++)
         {
-            if (std::optional<uint64_t> result; result = seed_map_layers[index].map_seed(value))
-            {
-                value = result.value();
-            }
+            seed_map_layers[index].map_seed(&value);
         }
 
         if (value < min_value)
