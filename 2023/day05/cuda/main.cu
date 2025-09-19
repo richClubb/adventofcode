@@ -7,10 +7,7 @@
 #define BLOCK_NUM 10
 #define THREAD_NUM 10
 
-typedef struct seed_range_t{
-    uint64_t start;
-    uint64_t size;
-} SEED_RANGE;
+#include "seed_range.cuh"
 
 __device__ void find_min_value(SEED_RANGE *seed_range, uint64_t *min_value)
 {
@@ -32,13 +29,7 @@ __global__ void dkernel(SEED_RANGE *seed_ranges,  uint64_t *result)
 
     uint64_t seed_range_size = seed_range->size;
 
-    thread_range_size = seed_range_size / THREAD_NUM;
-
-    thread_range_start = seed_range_start * threadId
-    thread_range_end = 
     printf("start %lu, size %lu\n", seed_range->start, seed_range->size);
-
-    // SEED_RANGE test = {blockId+1, 100000000};
 
     uint64_t min_value = UINT64_MAX;
     find_min_value(seed_range, &min_value);
@@ -46,8 +37,7 @@ __global__ void dkernel(SEED_RANGE *seed_ranges,  uint64_t *result)
 }
 
 int main ()
-{
-    
+{ 
     SEED_RANGE *seed_ranges = (SEED_RANGE *)calloc(BLOCK_NUM, sizeof(SEED_RANGE));
 
     for(uint32_t index = 0; index < BLOCK_NUM; index++)
@@ -60,7 +50,6 @@ int main ()
 
     SEED_RANGE *gpu_input;
     cudaMalloc(&gpu_input, BLOCK_NUM * sizeof(SEED_RANGE));
-
     cudaMemcpy(gpu_input, seed_ranges, BLOCK_NUM * sizeof(SEED_RANGE), cudaMemcpyHostToDevice);
 
     uint64_t *cpu_result = (uint64_t *)calloc(BLOCK_NUM, sizeof(uint64_t));

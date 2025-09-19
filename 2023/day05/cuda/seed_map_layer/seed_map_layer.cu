@@ -26,12 +26,30 @@ void seed_map_layer_term(SEED_MAP_LAYER *seed_map_layer)
     free(seed_map_layer);
 }
 
+void seed_map_layers_term(SEED_MAP_LAYER **seed_map_layers, unsigned int num_seed_map_layers)
+{
+    for(unsigned int index = 0; index < num_seed_map_layers; index++)
+    {
+        seed_map_layer_term(seed_map_layers[index]);
+        seed_map_layers[index] = NULL;
+    }
+    free(seed_map_layers);
+    seed_map_layers = NULL;
+}
+
 void seed_map_layer_add_map(SEED_MAP_LAYER *seed_map_layer, SEED_MAP *seed_map)
 {
     assert(seed_map_layer != NULL);
 
-    seed_map_layer->seed_maps = (SEED_MAP *)realloc(seed_map_layer->seed_maps, seed_map_layer->num_seed_maps + 2 * sizeof(SEED_MAP));
-    memcpy((seed_map_layer->seed_maps + seed_map_layer->num_seed_maps), seed_map, sizeof(SEED_MAP));
+    seed_map_layer->seed_maps = (SEED_MAP *)realloc(
+        seed_map_layer->seed_maps, 
+        (seed_map_layer->num_seed_maps + 2) * sizeof(SEED_MAP)
+    );
+    memcpy(
+        (seed_map_layer->seed_maps + seed_map_layer->num_seed_maps), 
+        seed_map, 
+        sizeof(SEED_MAP)
+    );
     seed_map_layer->num_seed_maps += 1;
 }
 

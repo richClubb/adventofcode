@@ -247,15 +247,49 @@ void test_unflatten_seed_map_layer_2_maps(void)
     free(flat_seed_map_layer);
 }
 
+void test_2_map_layers(void)
+{
+    SEED_MAP_LAYER *seed_map_layer_1 = NULL;
+    SEED_MAP_LAYER *seed_map_layer_2 = NULL;
+    seed_map_layer_init(&seed_map_layer_1);
+    seed_map_layer_init(&seed_map_layer_2);
+
+    SEED_MAP *seed_map_1 = get_seed_map("1 2 3\n");
+    SEED_MAP *seed_map_2 = get_seed_map("4 5 6\n");
+    SEED_MAP *seed_map_3 = get_seed_map("7 8 9\n");
+    SEED_MAP *seed_map_4 = get_seed_map("10 11 12\n");
+    SEED_MAP *seed_map_5 = get_seed_map("13 14 15\n");
+
+    seed_map_layer_add_map(seed_map_layer_1, seed_map_1);
+    seed_map_layer_add_map(seed_map_layer_1, seed_map_2);
+    seed_map_layer_add_map(seed_map_layer_2, seed_map_3);
+    seed_map_layer_add_map(seed_map_layer_2, seed_map_4);
+    seed_map_layer_add_map(seed_map_layer_2, seed_map_5);
+
+    free(seed_map_1);
+    free(seed_map_2);
+    free(seed_map_3);
+    free(seed_map_4);
+    free(seed_map_5);
+
+    seed_map_layer_term(seed_map_layer_1);
+    seed_map_layer_term(seed_map_layer_2);
+
+}
+
 int main()
 {
     CU_initialize_registry();
-    CU_pSuite suite = CU_add_suite("SeedMapLayerTests", 0, 0);
-    CU_add_test(suite, "Test init map layer", test_init);
-    CU_add_test(suite, "Test add map", test_add_seed_map);
-    CU_add_test(suite, "Test flatten map layer 1 map", test_flatten_seed_map_layer_1_map);
-    CU_add_test(suite, "Test unflatten map layer 1 map", test_unflatten_seed_map_layer_1_map);
-    CU_add_test(suite, "Test flatten map layer 2 maps", test_flatten_seed_map_layer_2_maps);
+    CU_pSuite seedMapLayerSuite = CU_add_suite("SeedMapLayerTests", 0, 0);
+    CU_add_test(seedMapLayerSuite, "Test init map layer", test_init);
+    CU_add_test(seedMapLayerSuite, "Test add map", test_add_seed_map);
+    CU_add_test(seedMapLayerSuite, "Test flatten map layer 1 map", test_flatten_seed_map_layer_1_map);
+    CU_add_test(seedMapLayerSuite, "Test unflatten map layer 1 map", test_unflatten_seed_map_layer_1_map);
+    CU_add_test(seedMapLayerSuite, "Test flatten map layer 2 maps", test_flatten_seed_map_layer_2_maps);
+
+    CU_pSuite seedMapLayersSuite = CU_add_suite("SeedMapLayersTests", 0, 0);
+    CU_add_test(seedMapLayersSuite, "Test 2 map layers", test_2_map_layers);
+
     CU_basic_run_tests();
     CU_cleanup_registry();
     return 0;
