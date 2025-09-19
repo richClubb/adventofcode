@@ -12,8 +12,16 @@ typedef struct seed_map_layer_t
     uint32_t num_seed_maps;
 } SEED_MAP_LAYER;
 
+typedef struct seed_map_layers_t
+{
+    SEED_MAP *seed_map_layers;
+    uint32_t num_seed_map_layers;
+} SEED_MAP_LAYERS;
+
 void seed_map_layer_init(SEED_MAP_LAYER **seed_map_layer);
 void seed_map_layer_term(SEED_MAP_LAYER *seed_map_layer);
+
+void seed_map_layers_term(SEED_MAP_LAYER **seed_map_layers, unsigned int num_seed_map_layers);
 
 void seed_map_layer_add_map(SEED_MAP_LAYER *seed_map_layer, SEED_MAP *seed_map);
 

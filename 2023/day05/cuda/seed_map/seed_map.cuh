@@ -11,5 +11,7 @@ typedef struct seed_map_t
     uint64_t size;
 } SEED_MAP;
 
+SEED_MAP *get_seed_map(char *line);
+
 #endif
 
