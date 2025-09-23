@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.14)
-project(test_seed_range)
+project(test_seed_range LANGUAGES CUDA C CXX)
 
 enable_testing()
 
 add_executable(
   "${PROJECT_NAME}"
-  test_seed_range.c
-  "${PROJECT_SOURCE_DIR}/../seed_range.c"
-  "${PROJECT_SOURCE_DIR}/../../utils/utils.c"
+  test_seed_range.cu
+  "${PROJECT_SOURCE_DIR}/../seed_range.cu"
+  "${PROJECT_SOURCE_DIR}/../../utils/utils.cu"
 )
 
 target_include_directories(

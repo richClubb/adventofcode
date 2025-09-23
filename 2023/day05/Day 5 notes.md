@@ -53,7 +53,7 @@ becomes
 3227221259  47952959 
 1828835733   9607836
 
-This ends up with about 2 billion seeds (1,975,502,102).
+This ends up with about 2 billion seeds (1,975,502,102). Doing anything 2 billion times is a time consuming thing
 
 ## Bredth First approach
 
@@ -67,7 +67,7 @@ This change immediately throws a spanner in the works. Our previous approach wor
 
 ### Parallel Computation
 
-It is very easy to set this up as a parallel processing job. On the sample data this sped up the results significantly. Each process takes slightly longer but they can work in parallel. d
+It is very easy to set this up as a parallel processing job. On the sample data this sped up the results significantly. Each process takes slightly longer but they can work in parallel. 
 
 --------------------------------------------------------------------------------------
 
@@ -183,7 +183,7 @@ Map   20 5 3
 
 Would result in: (1 4) (20 22) (8 10)
 
-This is harder to figure out but computationally you end up significantly less to do. There were 11 cases where the seed interacts (and 2 where it doesn't) with the map. I could possibly reduce these with a little more thinking but this would be a sub optimisation. Look at 'Range Analysis Notes.pdf' for my hand written notes.
+This is harder to figure out mentally but computationally you end up significantly less to do. There were 11 cases where the seed interacts (and 2 where it doesn't) with the map. I could possibly reduce these with a little more thinking but this would be a sub optimisation. Look at 'Range Analysis Notes.pdf' for my hand written notes.
 
 I decided to code the cases in cascading functions as it seemed nicer than having them as a number of if else if statements. Which I thought was easier to read and debug. You could unit test each case individually if you wanted rather than having to unit test the entire if-else statement.
 

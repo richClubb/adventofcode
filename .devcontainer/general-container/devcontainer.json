@@ -14,7 +14,11 @@
 		"ghcr.io/devcontainers/features/git:1": {
             "version": "latest",
             "ppa": "false"
-        }
+        },
+		"ghcr.io/devcontainers-extra/features/zig:1": {
+			"version" : "0.15.1"
+		},
+		"ghcr.io/devcontainers/features/go:1" : {}
 	},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [5000, 5001],
@@ -48,7 +52,8 @@
 		"vscode": {
 			"extensions": [
 				"ms-vscode.cpptools",
-				"ms-vscode.cmake-tools"
+				"ms-vscode.cmake-tools",
+				"ziglang.vscode-zig"
 			]
 		}
 	}
