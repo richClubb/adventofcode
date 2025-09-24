@@ -1,14 +1,15 @@
 # Languages
 
 I decided to write this is a variety of languages to challenge myself to solve a problem in different languages idiomatically to practice. For this I chose:
-* C
-* C++
-* Cuda
-* F#
-* Go
-* Python
-* Rust
-* Zig
+
+* [C](./c/) - COMPLETE
+* [C++](./c++/) - COMPLETE
+* [Cuda]() - COMPLETE (ISH)
+* [F#](./f_sharp/) - COMPLETE
+* [Go](./go/) - INCOMPLETE
+* [Python](./python/) - COMPLETE
+* [Rust](./rust/) - COMPLETE
+* [Zig](./zig/) - INCOMPLETE
 
 I'll go through each language and let you know what I thought of each
 
@@ -18,13 +19,11 @@ I'll go through each language and let you know what I thought of each
 
 I tried to set up devcontainers for the project so that it's easier to manage dependencies.
 
-
-
 ### Project organisation
 
-I've tried to develop these examples with a heavy TDD approach with high levels of unit test coverage.
+I've tried to develop these examples with a heavy TDD approach with high levels of unit test coverage, each 'module' is it's own folder in the `src` tree and this contains all the associated source and includes (where appropriate) as well as the test code for each module.
 
-I've organised the projects into foldes that contain each module.
+I've organised the projects into folders that contain each module, this way each part is logically separated from each other. It does make the CMake files a little more frustrating as there are more lines to add in the include directives, but again there are ways to arrange this logically in the CMake to make maintenance easier and more visible.
 
 ```
 src/
@@ -71,21 +70,25 @@ I have tried to set up some debug targets in the `.vscode` folder for each proje
 
 I like C as a language, but OMG does it need some quality of life improvements. I tried to use just raw C with as few bells and whistles as possible but I didn't arbitrarily limit myself to just C99. If the C standards have been released then they are good enough for me.
 
-### Toolchain
+I used this as an excuse to heavily use memory management as it's not something I'm very comfortable using, and I made sure to use 'valgrind' heavily during unit tests and system testing to make sure I validated the different pieces of code cleaned up their memory correctly.
 
-I've had to learn more about CMake for my current job as most of the build systems are done with CMake. It's good enough but it is very frustrating.
+### Toolchain frustrations
+
+I've had to learn more about CMake for my current job as most of the build systems are done with CMake. It's good enough but it is very frustrating and longwinded.
 
 ### Unit testing
 
-I used CUnit for the unit testing framwork. It's pretty pleasant and easy to use.
+I used CUnit for the unit testing framework. It's pretty pleasant and easy to use, but requires a lot of manual wrangling in comparison to more modern languages (like Rust).
 
 ## C++
 
-I'm having to do more C++ for my job at the moment, and I'm finding it pretty pleasant. 
+I'm having to do more C++ for my job at the moment, and I'm finding it pretty pleasant as there are some quality of life improvements over C. 
+
+After seeing the drastic difference in performance between C and C++ I had to use `gprof` to profile the code to see exactly what was taking the most time. I'm going to analyse this further in the [C++ Readme](./c++/README.md)
 
 ### GoogleTest
 
-I used googletest for the unit testing and I'm not sure which one I prefer. I think that googletest has better support for mocking than Cunit.
+I used googletest for the unit testing and I'm not sure which one I prefer. I think that googletest has better support for mocking than Cunit, there is less boilerplate than in CUnit but I like the use of the different functions for assertions as it's a little clearer what is happening.
 
 ### HORRIFIC PERFORMANCE IMPLICATIONS
 
@@ -101,7 +104,7 @@ My solution 'works' but isn't very good and could definitely use some more work 
 
 ### Unit testing
 
-I
+I used CUnit for the main C code and this can be used to test the cuda code (grey box ish) by calling the `__global__` code but none of the `__device__` code could be tested without frustrating test harnesses.
 
 ## f#
 
@@ -109,16 +112,16 @@ This was an experiment to program specifically in a functional lanugage without 
 
 ## go
 
-Not done this one yet as I couldn't get the devcontainer feature to work correctly. May come back to this at a later date.
+Initial feel is that I don't like Go very much as the language seems very picky about what is 'allowed' and the conventions seem forced.
 
 ## Python
 
-This was the first implementation which was quick and dirty. Worked well and was very useful for helping when I wanted to figure out the range based calculation. I really didn't want to have to do that in C
+This was the first implementation which was quick and dirty. Worked well and was very useful for helping when I wanted to figure out the range based calculation. I really didn't want to have to do that in C.
 
 ## Rust
 
-A lot smoother than I'd anticipated. The use of the rayon crate and the 'par_iter' function was beautiful.
+A lot smoother than I'd anticipated. The use of the rayon crate and the 'par_iter' function was beautiful. I like Rust a lot.
 
 ## Zig 
 
-I don't like zig very much. I dislike the build system. The syntax isn't bad and I like the use of the test code inside the module.
+I don't like zig very much. I dislike the build system as it's a bit difficult to fathom. The syntax isn't bad and I like the use of the test code inside the module.
