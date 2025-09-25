@@ -1,3 +1,5 @@
+use crate::seed_range::SeedRange;
+
 pub struct SeedMap {
     pub dest_start: u64,
     pub dest_end: u64,

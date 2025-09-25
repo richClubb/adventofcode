@@ -122,6 +122,8 @@ This was the first implementation which was quick and dirty. Worked well and was
 
 A lot smoother than I'd anticipated. The use of the rayon crate and the 'par_iter' function was beautiful. I like Rust a lot.
 
+I don't like rust's import system. It's really clunky and very frustrating.
+
 ## Zig 
 
 I don't like zig very much. I dislike the build system as it's a bit difficult to fathom. The syntax isn't bad and I like the use of the test code inside the module.
