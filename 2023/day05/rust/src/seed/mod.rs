@@ -2,6 +2,8 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 use regex::Regex;
 
+#[derive(Debug)]
+#[derive(PartialEq)]
 pub struct Seed {
     pub value: u64
 }
