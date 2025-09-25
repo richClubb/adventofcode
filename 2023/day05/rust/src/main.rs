@@ -6,7 +6,7 @@ mod day5;
 use crate::day5::day5::{
     Seed, 
     SeedRange, 
-    MapLayer, 
+    SeedMapLayer,
     get_lowest_seed_in_range, 
     get_map_layers_from_file, 
     get_seed_ranges_from_file, 
@@ -54,7 +54,7 @@ fn main() {
 fn part_a(path: &String){
 
     let seeds:Vec<Seed> = get_seeds_from_file(&path);
-    let map_layers:Vec<MapLayer> = get_map_layers_from_file(&path); 
+    let map_layers:Vec<SeedMapLayer> = get_map_layers_from_file(&path); 
 
     let mut min_value = std::u64::MAX;
     for seed in seeds
@@ -73,7 +73,7 @@ fn part_a(path: &String){
 fn part_b_forward(path: &String){
 
     let seed_ranges:Vec<SeedRange> = get_seed_ranges_from_file(&path);
-    let map_layers:Vec<MapLayer> = get_map_layers_from_file(&path);
+    let map_layers:Vec<SeedMapLayer> = get_map_layers_from_file(&path);
 
     let min_value = seed_ranges.iter().map(|a| get_lowest_seed_in_range(a, &map_layers)).min().unwrap();
 
@@ -84,7 +84,7 @@ fn part_b_forward(path: &String){
 fn part_b_parallel_forward(path: &String){
 
     let seed_ranges:Vec<SeedRange> = get_seed_ranges_from_file(&path);
-    let map_layers:Vec<MapLayer> = get_map_layers_from_file(&path);
+    let map_layers:Vec<SeedMapLayer> = get_map_layers_from_file(&path);
 
     let result = seed_ranges.par_iter().map(|s| get_lowest_seed_in_range(s, &map_layers)).min().unwrap();
 
@@ -96,7 +96,7 @@ fn part_b_inverse(path: &String)
 {
 
     let seed_ranges:Vec<SeedRange> = get_seed_ranges_from_file(&path);
-    let map_layers:Vec<MapLayer> = get_map_layers_from_file(&path);
+    let map_layers:Vec<SeedMapLayer> = get_map_layers_from_file(&path);
 
     let mut curr_val: u64 = 0;
     'main_iter: loop 
@@ -120,7 +120,7 @@ fn part_b_inverse(path: &String)
 fn part_b_parallel_inverse(path: &String)
 {
     let seed_ranges:Vec<SeedRange> = get_seed_ranges_from_file(&path);
-    let map_layers:Vec<MapLayer> = get_map_layers_from_file(&path);
+    let map_layers:Vec<SeedMapLayer> = get_map_layers_from_file(&path);
 
     let blocksize:u64 = 1000;
     let mut block:u64 = 0;
@@ -154,7 +154,7 @@ fn part_b_parallel_inverse(path: &String)
 fn part_b_ranges(path: &String)
 {
     let seed_ranges:Vec<SeedRange> = get_seed_ranges_from_file(&path);
-    let map_layers:Vec<MapLayer> = get_map_layers_from_file(&path);
+    let map_layers:Vec<SeedMapLayer> = get_map_layers_from_file(&path);
 
     let mut result: Vec<SeedRange> = Vec::new();
 

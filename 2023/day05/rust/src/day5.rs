@@ -15,46 +15,11 @@ pub mod day5{
         pub size: u64
     }
 
-    pub struct Map {
-        pub dest_start: u64,
-        pub dest_end: u64,
-        pub src_start: u64,
-        pub src_end: u64,
-        pub size: u64,
+    pub struct SeedMapLayer {
+        maps: Vec<SeedMap>
     }
 
-    impl Map {
-
-        pub fn map_seed_range(&self, seed_range: &SeedRange) -> (Option<Vec<SeedRange>>, Option<SeedRange>)
-        {
-            return self.case_1(seed_range);
-        }
-
-        fn case_1(&self, seed_range: &SeedRange) -> (Option<Vec<SeedRange>>, Option<SeedRange>)
-        {
-            if seed_range.end < self.src_start
-            {
-                return (None, None);
-            }
-
-            return self.case_2(seed_range);
-        }
-
-        fn case_2(&self, seed_range: &SeedRange) -> (Option<Vec<SeedRange>>, Option<SeedRange>)
-        {     
-            if seed_range.start > self.src_end
-            {
-                return (None, None);
-            }
-            return (None, None)
-        }
-    }
-
-    pub struct MapLayer {
-        maps: Vec<Map>
-    }
-
-    impl MapLayer {
+    impl SeedMapLayer {
 
         fn map_seed_ranges(seed_ranges: &Vec<SeedRange>) -> Vec<SeedRange>
         {
@@ -119,9 +84,9 @@ pub mod day5{
         return seed_ranges
     }
 
-    pub fn get_map_layers_from_file(path: &String) -> Vec<MapLayer>
+    pub fn get_map_layers_from_file(path: &String) -> Vec<SeedMapLayer>
     {
-        let mut map_layers: Vec<MapLayer> = Vec::new();
+        let mut map_layers: Vec<SeedMapLayer> = Vec::new();
 
         let file: File = File::open(path).expect("Could not open file");
         let buf_reader = BufReader::new(file);
@@ -131,7 +96,7 @@ pub mod day5{
         let map_title_regex: Regex = Regex::new(r"[a-z]{1,}\-to\-[a-z]{1,}\smap\:").unwrap();
         let map_regex: Regex = Regex::new(r"([0-9]{1,})\s([0-9]{1,})\s([0-9]{1,})").unwrap();
 
-        let mut curr_maps: Vec<Map> = Vec::new();
+        let mut curr_maps: Vec<SeedMap> = Vec::new();
         let mut started: bool = false;
         // parse the file and get the seeds
         for line in buf_reader.lines()
@@ -146,7 +111,7 @@ pub mod day5{
                 let dest: u64 = map_raw[1].parse().unwrap();
                 let src: u64 = map_raw[2].parse().unwrap();
                 let size: u64 = map_raw[3].parse().unwrap();
-                curr_maps.push(Map{dest_start: dest, dest_end: dest+ size -1, src_start: src, src_end: src+size-1, size:size});
+                curr_maps.push(SeedMap{dest_start: dest, dest_end: dest+ size -1, src_start: src, src_end: src+size-1, size:size});
             }
 
             if map_title_regex.is_match(&line.as_ref().unwrap())
@@ -156,19 +121,19 @@ pub mod day5{
                     started = true;
                 }
                 else {
-                    map_layers.push(MapLayer{maps:curr_maps});
+                    map_layers.push(SeedMapLayer{maps:curr_maps});
                     curr_maps = Vec::new();
                 }
                 continue;
             }
         }
 
-        map_layers.push(MapLayer{maps:curr_maps});
+        map_layers.push(SeedMapLayer{maps:curr_maps});
 
         return map_layers
     } 
 
-    pub fn map_seed(seed: &Seed, map_layers: &Vec<MapLayer>) -> Seed
+    pub fn map_seed(seed: &Seed, map_layers: &Vec<SeedMapLayer>) -> Seed
     {
 
         let mut result: Seed = Seed{ value: seed.value};
@@ -187,7 +152,7 @@ pub mod day5{
         return result;
     }
 
-    pub fn map_seed_inverse(seed: &Seed, map_layers: &Vec<MapLayer>) -> Seed
+    pub fn map_seed_inverse(seed: &Seed, map_layers: &Vec<SeedMapLayer>) -> Seed
     {
 
         let mut result: Seed = Seed{ value: seed.value};
@@ -206,7 +171,7 @@ pub mod day5{
         return result;
     }
 
-    pub fn map_inverse_block_find_lowest_val(start: u64, end: u64, seed_ranges: &Vec<SeedRange>, map_layers: &Vec<MapLayer>) -> Option<u64>
+    pub fn map_inverse_block_find_lowest_val(start: u64, end: u64, seed_ranges: &Vec<SeedRange>, map_layers: &Vec<SeedMapLayer>) -> Option<u64>
     {
         
         for value in start..end
@@ -227,7 +192,7 @@ pub mod day5{
     }
 
 
-    pub fn get_lowest_seed_in_range(seed_range: &SeedRange, map_layers: &Vec<MapLayer>) -> u64
+    pub fn get_lowest_seed_in_range(seed_range: &SeedRange, map_layers: &Vec<SeedMapLayer>) -> u64
     {
         let mut min_value = std::u64::MAX;
 
@@ -253,7 +218,7 @@ mod tests
     fn test_case_1()
     {
         let seed_range = day5::SeedRange{ start: 1, end: 3, size: 3};
-        let map = day5::Map{src_start: 5, src_end: 7, dest_start: 10, dest_end: 12, size: 2};
+        let map = day5::SeedMap{src_start: 5, src_end: 7, dest_start: 10, dest_end: 12, size: 2};
 
         let (mapped, unmapped) = map.map_seed_range(&seed_range);
 

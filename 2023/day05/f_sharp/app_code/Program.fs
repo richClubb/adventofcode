@@ -17,8 +17,8 @@ let convert (athing: string array) =
 
 task {
     // Uncomment the line for the file you want. Haven't got command line params working yet.
-    //let path = "../../input.txt"
-    let path = "../../part_a_sample.txt"
+    //let path = "../../full_data.txt"
+    let path = "../../sample_data.txt"
 
     let! content = File.ReadAllTextAsync path
     let blocks = content.Split("\n\n")
