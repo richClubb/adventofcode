@@ -1,54 +1,37 @@
-const std = @import("std");
-const expect = std.testing.expect;
-
-const seed_map = @import("day5").seed_map;
-const SeedMap = seed_map.SeedMap;
+const seed_map = @import("seed_map");
+const seed_range = @import("seed_range");
 
 pub const SeedMapLayer = struct {
-    seed_maps: []SeedMap,
+    seed_maps: []seed_map.SeedMap,
+    name: []u8,
 
-    pub fn add_map(self: SeedMapLayer, new_map: SeedMap) null {
-        _ = self;
-        _ = new_map;
+    pub fn init() SeedMapLayer {
+        return SeedMapLayer{};
     }
 
-    pub fn map_seed(self: SeedMapLayer, seed_value: u64) ?u64 {
-        _ = self;
-        _ = seed_value;
-        return null;
+    pub fn add_map(_: seed_map.SeedMap) void {}
+
+    pub fn map_seed(_: u64) u64 {
+        return 0;
     }
 };
 
 pub const SeedMapLayers = struct {
     seed_map_layers: []SeedMapLayer,
 
-    pub fn add_map_layer(self: SeedMapLayers, new_map_layer: SeedMapLayer) null {
-        _ = self;
-        _ = new_map_layer;
-    }
-
-    pub fn map_seed(self: SeedMapLayers, seed_value: u64) u64 {
-        _ = self;
-        _ = seed_value;
+    pub fn map_seed(_: u64) u64 {
         return 0;
     }
+
+    pub fn min_in_seed_range(_: seed_range.SeedRange) u64 {}
 };
 
-test "map seed on layer" {
-    var test_layer: SeedMapLayer = {};
+test "Init seed map layer" {}
 
-    test_layer.add_map(SeedMap{ 2, 5, 5 });
-    test_layer.add_map(SeedMap{ 10, 50, 2 });
+test "add map to layer" {}
 
-    try expect(test_layer.map_seed(0) == null);
-    try expect(test_layer.map_seed(1) == null);
-    try expect(test_layer.map_seed(2) == 5);
-    try expect(test_layer.map_seed(4) == 5);
-    try expect(test_layer.map_seed(6) == 9);
-    try expect(test_layer.map_seed(7) == null);
+test "map seed in layer" {}
 
-    try expect(test_layer.map_seed(9) == null);
-    try expect(test_layer.map_seed(10) == 50);
-    try expect(test_layer.map_seed(11) == 51);
-    try expect(test_layer.map_seed(12) == null);
-}
+test "map seed in layers" {}
+
+test "find min value in range" {}

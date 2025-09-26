@@ -58,7 +58,7 @@ test "map seed" {
     try expect(test_map.map_seed(10) == null);
 }
 
-test "seed map parse from string" {
+test "seed map parse from list" {
     const test_map: SeedMap = try SeedMap.init_from_string("1 10 5");
 
     try expect(test_map.source == 10);
