@@ -1,7 +1,7 @@
 use::rayon::prelude::*;
 
 use crate::seed::Seed;
-use crate::seed_range::{SeedRange, get_seed_ranges_from_file, get_lowest_seed_in_range};
+use crate::seed_range::{SeedRange, get_seed_ranges_from_file};
 use crate::seed_map_layer::{get_map_layers_from_file, map_seed_inverse, map_inverse_block_find_lowest_val};
 
 pub fn part_b_forward(path: &String){
@@ -9,7 +9,7 @@ pub fn part_b_forward(path: &String){
     let seed_ranges:Vec<SeedRange> = get_seed_ranges_from_file(&path);
     let map_layers = get_map_layers_from_file(&path);
 
-    let min_value = seed_ranges.iter().map(|a| get_lowest_seed_in_range(a, &map_layers)).min().unwrap();
+    let min_value = seed_ranges.iter().map(|a| a.get_lowest_seed_in_range(&map_layers)).min().unwrap();
 
     println!("Part B forward brute force: {min_value}");
 }
@@ -19,10 +19,9 @@ pub fn part_b_forward_ptr(path: &String){
     let seed_ranges:Vec<SeedRange> = get_seed_ranges_from_file(&path);
     let map_layers = get_map_layers_from_file(&path);
 
-    let min_value = seed_ranges.iter().map(|a| get_lowest_seed_in_range(a, &map_layers)).min().unwrap();
+    let min_value = seed_ranges.iter().map(|a| a.get_lowest_seed_in_range_ptr(&map_layers)).min().unwrap();
 
     println!("Part B forward brute force: {min_value}");
-
 }
 
 
@@ -31,7 +30,7 @@ pub fn part_b_parallel_forward(path: &String){
     let seed_ranges:Vec<SeedRange> = get_seed_ranges_from_file(&path);
     let map_layers = get_map_layers_from_file(&path);
 
-    let result = seed_ranges.par_iter().map(|s| get_lowest_seed_in_range(s, &map_layers)).min().unwrap();
+    let result = seed_ranges.par_iter().map(|s| s.get_lowest_seed_in_range(&map_layers)).min().unwrap();
 
     println!("Part B forward parallel: {result}");
 

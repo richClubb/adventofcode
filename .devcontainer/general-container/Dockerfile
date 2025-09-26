@@ -1,6 +1,4 @@
-# [Choice] Debian version (use bullseye on local arm64/Apple Silicon): trixie, bookworm, bullseye, buster
-ARG VARIANT="trixie"
-FROM buildpack-deps:${VARIANT}-curl
+FROM mcr.microsoft.com/devcontainers/base:ubuntu-24.04
 
 # [Optional] Uncomment this section to install additional OS packages.
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \

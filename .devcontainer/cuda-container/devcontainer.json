@@ -2,5 +2,17 @@
     "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
     "features": {
         "ghcr.io/devcontainers/features/nvidia-cuda:2": {}
-    }
+    },
+    "remoteUser": "vscode",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-vscode.cpptools",
+				"ms-vscode.cmake-tools",
+				"ziglang.vscode-zig",
+				"rust-lang.rust-analyzer",
+				"ms-dotnettools.csdevkit"
+			]
+		}
+	}
 }

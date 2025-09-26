@@ -23,6 +23,8 @@
 		"ghcr.io/devcontainers/features/rust:1": {},
 		"ghcr.io/devcontainers/features/dotnet:2": {
 			"version": "8.0"
+		},
+		"ghcr.io/devcontainers/features/python:1": {
 		}
 	},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

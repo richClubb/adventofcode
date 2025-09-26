@@ -10,3 +10,8 @@ clap = { version = "4.4.18", features = ["derive"] }
 dict = "0.1.5"
 rayon = "1.8.1"
 regex = "1.10.3"
+
+[profile.dev]
+# These make a massive difference 19 minutes to 1.5 minutes difference......
+opt-level = 3
+overflow-checks = false
