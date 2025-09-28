@@ -80,7 +80,7 @@ I've had to learn more about CMake for my current job as most of the build syste
 
 ### Unit testing
 
-I used CUnit for the unit testing framework. It's pretty pleasant and easy to use, but requires a lot of manual wrangling in comparison to more modern languages (like Rust).
+I used CUnit for the unit testing framework. It's pretty pleasant and easy to use, but requires a lot of manual wrangling in comparison to more modern languages (like Rust, go and zig). You have to maintain the make / cmake files which is just a PITA
 
 ## C++
 
@@ -92,11 +92,13 @@ After seeing the drastic difference in performance between C and C++ I had to us
 
 I used googletest for the unit testing and I'm not sure which one I prefer. I think that googletest has better support for mocking than Cunit, there is less boilerplate than in CUnit but I like the use of the different functions for assertions as it's a little clearer what is happening.
 
+Suffers from the same problem as the C unit testing in that there is a fair amount of wrangling to do.
+
 ### HORRIFIC PERFORMANCE IMPLICATIONS
 
 I decided to use the `optional` keyword to return `nullptr` or a `uint64_t` value from the map seeds functions. The problem is that this cost a huge amount, almost doubling the execution time of the code. 
 
-The use of vector iterators was also another serious performance hit which was hard to stomach in some cases.
+The use of vector iterators was also another serious performance hit which was hard to stomach in some cases. Especially when it's being executed millions of times. So don't use them for performance critical things.
 
 ## Cuda
 
@@ -114,7 +116,11 @@ This was an experiment to program specifically in a functional lanugage without 
 
 ## go
 
-Initial feel is that I don't like Go very much as the language seems very picky about what is 'allowed' and the conventions seem forced.
+Initial feel is that I don't like Go very much as the language seems very picky about what is 'allowed' and the conventions seem forced. 
+
+I have managed to get a hold of the syntax rules and some other bits but I'm still not a huge fan. I really don't like the package management.
+
+I like the unit testing conventions of keeping the unit tests close to the source it's testing, but I still don't like the way the package imports work.
 
 ## Python
 

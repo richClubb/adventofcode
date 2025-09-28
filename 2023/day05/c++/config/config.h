@@ -5,8 +5,6 @@
 #define LOAD_CONFIG_RTN_HELP 1
 #define LOAD_CONFIG_FAIL 2
 
-#include <string>
-
 typedef struct config_t
 {
     char input_file_path[512];

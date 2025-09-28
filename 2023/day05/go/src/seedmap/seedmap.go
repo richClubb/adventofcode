@@ -1,6 +1,9 @@
 package seedmap
 
-import "fmt"
+import (
+	"strconv"
+	"strings"
+)
 
 type SeedMap struct {
 	SourceStart uint64
@@ -10,7 +13,7 @@ type SeedMap struct {
 	Size        uint64
 }
 
-func New(source uint64, target uint64, size uint64) *SeedMap {
+func SeedMapNew(source uint64, target uint64, size uint64) *SeedMap {
 	sm := new(SeedMap)
 	sm.SourceStart = source
 	sm.SourceEnd = source + size
@@ -21,19 +24,32 @@ func New(source uint64, target uint64, size uint64) *SeedMap {
 	return sm
 }
 
-func NewFromString(seedMapString string) *SeedMap {
-	sm := new(SeedMap)
+func SeedMapNewFromString(seedMapString string) (*SeedMap, bool) {
 
-	return sm
-}
+	// number_string, number_string_found := strings.CutPrefix(seedMapString, "seeds: ")
+	// if !number_string_found {
+	// 	fmt.Println("blahs")
+	// 	return nil, false
+	// }
 
-func (sm *SeedMap) MapSeed(value *uint64) bool {
-	fmt.Println("Mapping seed")
+	number_strings := strings.Split(seedMapString, " ")
 
-	if (*value >= sm.SourceStart) && (*value < sm.SourceEnd) {
-		*value = *value - sm.SourceStart + sm.TargetStart
-		return true
+	if len(number_strings) != 3 {
+		return nil, false
 	}
 
-	return false
+	target, _ := strconv.ParseUint(number_strings[0], 10, 64)
+	source, _ := strconv.ParseUint(number_strings[1], 10, 64)
+	size, _ := strconv.ParseUint(number_strings[2], 10, 64)
+
+	return SeedMapNew(source, target, size), true
+}
+
+func (sm *SeedMap) MapSeed(value uint64) (uint64, bool) {
+
+	if (value >= sm.SourceStart) && (value < sm.SourceEnd) {
+		return value - sm.SourceStart + sm.TargetStart, true
+	}
+
+	return value, false
 }

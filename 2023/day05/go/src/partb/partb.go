@@ -1,4 +1,4 @@
-package parta
+package partb
 
 import (
 	"bufio"
@@ -13,8 +13,12 @@ import (
 	"example.com/day5/src/seedmaplayer"
 )
 
-func extractSeedsFromString(line string) ([]uint64, bool) {
+type SeedRange struct {
+	start uint64
+	size  uint64
+}
 
+func extractSeedRangesFromString(line string) ([]SeedRange, bool) {
 	numbers_string, number_string_found := strings.CutPrefix(line, "seeds: ")
 	if !number_string_found {
 		fmt.Println("blahs")
@@ -23,18 +27,35 @@ func extractSeedsFromString(line string) ([]uint64, bool) {
 
 	number_strings := strings.Split(numbers_string, " ")
 
-	seeds := []uint64{}
-	// for _, SeedMap := range sml.SeedMaps {
+	seedRanges := []SeedRange{}
 
-	for _, number_string := range number_strings {
-		number, _ := strconv.ParseUint(number_string, 10, 64)
-		seeds = append(seeds, number)
+	for index := 0; index < len(number_strings)/2; index += 2 {
+		start, _ := strconv.ParseUint(number_strings[index], 10, 64)
+		size, _ := strconv.ParseUint(number_strings[index+1], 10, 64)
+		seedRanges = append(seedRanges, SeedRange{start: start, size: size})
 	}
 
-	return seeds, true
+	return seedRanges, true
 }
 
-func PartA(input_file_path string) uint64 {
+func findMinValueInSeedRange(seed_range SeedRange, seed_map_layers []seedmaplayer.SeedMapLayer) uint64 {
+
+	var min_value uint64 = math.MaxUint64
+
+	seedRangeStart := seed_range.start
+	seedRangeEnd := seed_range.start + seed_range.size
+	for seed := seedRangeStart; seed < seedRangeEnd; seed++ {
+		value := seedmaplayer.MapSeedInLayers(seed_map_layers, seed)
+
+		if value < min_value {
+			min_value = value
+		}
+	}
+
+	return min_value
+}
+
+func PartB(input_file_path string) uint64 {
 
 	// open file
 	f, err := os.Open(input_file_path)
@@ -47,7 +68,7 @@ func PartA(input_file_path string) uint64 {
 	// read the file line by line using scanner
 	scanner := bufio.NewScanner(f)
 
-	var seeds []uint64
+	var seedRanges []SeedRange
 	var seedMapLayers []seedmaplayer.SeedMapLayer
 	var currSeedMapLayer *seedmaplayer.SeedMapLayer
 
@@ -57,7 +78,7 @@ func PartA(input_file_path string) uint64 {
 		}
 
 		if strings.Contains(scanner.Text(), "seeds: ") {
-			seeds, _ = extractSeedsFromString(scanner.Text())
+			seedRanges, _ = extractSeedRangesFromString(scanner.Text())
 			continue
 		}
 
@@ -78,12 +99,11 @@ func PartA(input_file_path string) uint64 {
 
 	var min_value uint64 = math.MaxUint64
 
-	for _, seed := range seeds {
+	for _, seedRange := range seedRanges {
 
-		if value := seedmaplayer.MapSeedInLayers(seedMapLayers, seed); value < min_value {
-			min_value = value
+		if range_min_value := findMinValueInSeedRange(seedRange, seedMapLayers); range_min_value < min_value {
+			min_value = range_min_value
 		}
-
 	}
 
 	return min_value

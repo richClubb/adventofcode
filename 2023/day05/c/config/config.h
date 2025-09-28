@@ -7,7 +7,8 @@
 
 typedef struct config_t
 {
-    char input_file_path[256];
+    char input_file_path[512];
+    char run_type[512];
 } CONFIG;
 
 int load_config(CONFIG *config, int argc, char** argv);
