@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.28)
 
 project(day5)
 
+set(CMAKE_CXX_FLAGS "-O3")
+
 add_executable(
     "${PROJECT_NAME}"
     "${PROJECT_SOURCE_DIR}/main.cpp"

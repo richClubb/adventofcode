@@ -45,7 +45,7 @@ uint64_t part_a(const CONFIG &config)
         curr_layer->add_seed_map(SeedMap(line));
     }
 
-    uint64_t min_value = UINT32_MAX;
+    uint64_t min_value = UINT64_MAX;
     for(const auto &seed : seeds)
     {
         uint64_t value = seed;

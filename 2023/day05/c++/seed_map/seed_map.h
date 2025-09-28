@@ -15,6 +15,7 @@ public:
     SeedMap(std::string);
     ~SeedMap();
     bool map_seed(uint64_t *);
+    std::optional<uint64_t> map_seed_opt(uint64_t input);
 
     uint64_t get_source(){ return source; }
     uint64_t get_source_end(){ return this->source_end; }

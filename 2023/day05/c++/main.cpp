@@ -2,6 +2,7 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <string.h>
 
 #include "part_a.h"
 #include "part_b.h"
@@ -18,13 +19,32 @@ int main(int argc, char **argv)
 
     result = load_config(&config, argc, argv);
 
-    unsigned long part_a_min = part_a(config);
+    if(strcmp(config.run_type, "part_a") == 0)
+    {
+        printf("Running Part A\n");
+        unsigned long part_a_min = part_a(config);
 
-    printf("Part A: min value is '%d'\n", part_a_min);
+        printf("Part A: min value is '%lu'\n", part_a_min);
+    }
+    else if(strcmp(config.run_type, "part_b_ptr") == 0)
+    {
+        printf("Running Part B ptr version\n");
+        unsigned long part_b_min = part_b_ptr_version(config);
 
-    unsigned long part_b_min = part_b(config);
+        printf("Part B: min value is '%lu'\n", part_b_min);
+    }
+    else if(strcmp(config.run_type, "part_b_optional") == 0)
+    {
+        printf("Running Part B optional version\n");
+        unsigned long part_b_min = part_b_optional_version(config);
 
-    printf("Part B: min value is '%d'\n", part_b_min);
+        printf("Part B: min value is '%lu'\n", part_b_min);
+    }
+    else
+    {
+        printf("Invalid run\n");
+        return 1;
+    }
 
     return result;
 }

@@ -20,6 +20,7 @@ public:
     void add_seed_map(SeedMap);
 
     bool map_seed(uint64_t *input);
+    uint64_t map_seed_opt(uint64_t input);
 
     void sort_seed_maps();
 

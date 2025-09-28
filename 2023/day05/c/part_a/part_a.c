@@ -11,8 +11,6 @@
 #include "seed_map_layer.h"
 #include "utils.h"
 
-
-
 unsigned long part_a(const CONFIG *config)
 {
     FILE *input_file = fopen(config->input_file_path, "r");

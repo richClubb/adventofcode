@@ -6,7 +6,7 @@ I decided to write this is a variety of languages to challenge myself to solve a
 * [C++](./c++/) - COMPLETE
 * [Cuda]() - COMPLETE (ISH)
 * [F#](./f_sharp/) - COMPLETE
-* [Go](./go/) - INCOMPLETE
+* Go - Not going to do this one
 * [Python](./python/) - COMPLETE
 * [Rust](./rust/) - COMPLETE
 * [Zig](./zig/) - INCOMPLETE
@@ -70,7 +70,9 @@ I have tried to set up some debug targets in the `.vscode` folder for each proje
 
 I like C as a language, but OMG does it need some quality of life improvements. I tried to use just raw C with as few bells and whistles as possible but I didn't arbitrarily limit myself to just C99. If the C standards have been released then they are good enough for me.
 
-I used this as an excuse to heavily use memory management as it's not something I'm very comfortable using, and I made sure to use 'valgrind' heavily during unit tests and system testing to make sure I validated the different pieces of code cleaned up their memory correctly.
+I used this as an excuse to heavily use memory management as it's not something I'm very comfortable using, and I made sure to use 'valgrind' heavily during unit and system testing to make sure I validated the different pieces of code cleaned up their memory correctly.
+
+I want to try and find a better method of unit testing the "memory safety".
 
 ### Toolchain frustrations
 
@@ -124,6 +126,12 @@ A lot smoother than I'd anticipated. The use of the rayon crate and the 'par_ite
 
 ~~I don't like rust's import system. It's really clunky and very frustrating.~~ I take that back, it was a skill issue.
 
+OH MY GOD the performance implications of using the release optimisations in rust! I turned up the optimisations to the max and turned off the integer overflow checking and it sped up the program by at least 10x.
+
 ## Zig 
 
-I don't like zig very much. I dislike the build system as it's a bit difficult to fathom. The syntax isn't bad and I like the use of the test code inside the module.
+I don't like zig very much. I dislike the build system as it's a bit difficult to fathom, and you have to define what modules are visible to other modules explicitly. I can see why this decision was chosen but  The syntax isn't bad and I like the use of the test code inside the module.
+
+The low-level ness of the language seems to go overboard, I need to look up the purpose of the 'allocator' for things, it just seems to create a level of unnecessary control
+
+I knew that I was stepping into a hornets nest by looking at a pre 1.0 release but the flux in the API is pretty frustrating.

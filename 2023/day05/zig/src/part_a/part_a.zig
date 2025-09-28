@@ -2,24 +2,22 @@ const std = @import("std");
 
 const seed_map_layer = @import("seed_map_layer");
 
-pub fn part_a(_: []const u8) u64 {
-    // const allocator = std.heap.page_allocator;
+pub fn part_a(file_path: []const u8) !u64 {
+    const file = try std.fs.cwd().openFile(file_path, .{});
+    defer file.close();
 
-    // // Open the file
-    // var file = try std.fs.cwd().openFile(file_path, .{});
-    // defer file.close();
-
-    // // Read the file contents
-    // const contents = try file.readToEndAlloc(allocator, 2048);
-
-    // defer allocator.free(contents);
-
-    // // Print the file contents
-    // std.debug.print("{s}", .{contents});
+    var file_buffer: [4096]u8 = undefined;
+    var reader = file.reader(&file_buffer);
+    while (reader.interface.takeDelimiterExclusive('\n')) |line| {
+        std.debug.print("{s}\n", .{line});
+    } else |err| switch (err) {
+        error.EndOfStream => {}, // Normal termination
+        else => return err, // Propagate error
+    }
 
     return 0;
 }
 
-test "read file" {
-    _ = part_a("/workspaces/adventofcode/2023/day05/sample_data.txt");
-}
+// test "read file" {
+//     _ = part_a("/workspaces/adventofcode/2023/day05/sample_data.txt");
+// }

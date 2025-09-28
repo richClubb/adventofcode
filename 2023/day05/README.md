@@ -8,7 +8,7 @@ See [the languages page](./Languages.md) for more details on the implementations
 * [C++](./c++/) - COMPLETE
 * [Cuda]() - COMPLETE (ISH)
 * [F#](./f_sharp/) - COMPLETE
-* [Go](./go/) - INCOMPLETE
+* [Go](./go/) - Not going to do this
 * [Python](./python/) - COMPLETE
 * [Rust](./rust/) - COMPLETE
 * [Zig](./zig/) - INCOMPLETE

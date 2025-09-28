@@ -30,13 +30,13 @@ bool SeedMapLayer::map_seed(uint64_t *input)
     // if (this->seed_maps.size() == 0) return false;
 
     // old-school method
-    // for(uint64_t index = 0; index < this->seed_maps.size(); index++)
-    // {    
-    //     if (bool result; result = this->seed_maps[index].map_seed(input))
-    //     {
-    //         return false;
-    //     }
-    // }
+    for(uint64_t index = 0; index < this->seed_maps.size(); index++)
+    {    
+        if (bool result; result = this->seed_maps[index].map_seed(input))
+        {
+            return false;
+        }
+    }
 
     // iterator method
     // std::vector<SeedMap *>::iterator seedMapIter;
@@ -54,15 +54,28 @@ bool SeedMapLayer::map_seed(uint64_t *input)
     // }
 
     // more modern method
+    // for(SeedMap &seed_map : this->seed_maps)
+    // {
+    //     if (bool result; result = seed_map.map_seed(input))
+    //     {
+    //         return true;
+    //     }
+    // }
+
+    return false;
+}
+
+uint64_t SeedMapLayer::map_seed_opt(uint64_t input)
+{
     for(SeedMap &seed_map : this->seed_maps)
     {
-        if (bool result; result = seed_map.map_seed(input))
+        if (std::optional<uint64_t> result; result = seed_map.map_seed_opt(input))
         {
-            return true;
+            return result.value();
         }
     }
 
-    return false;
+    return input;
 }
 
 // need a sorting algorithm

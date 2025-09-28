@@ -1,5 +1,6 @@
 #include "seed_map.h"
 
+#include <stdio.h>
 #include <assert.h>
 
 #include <bits/stdc++.h>
@@ -56,4 +57,16 @@ bool SeedMap::map_seed(uint64_t *input)
     }
 
     return false;
+}
+
+std::optional<uint64_t> SeedMap::map_seed_opt(uint64_t input)
+{
+    if (
+        (input >= this->source) &&
+        (input < this->source + this->size)
+    )
+    {
+        return input - this->source + this->target;
+    }
+    return std::nullopt;
 }

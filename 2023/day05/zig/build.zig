@@ -21,6 +21,19 @@ pub fn build(b: *std.Build) void {
     // target and optimize options) will be listed when running `zig build --help`
     // in this directory.
 
+    const seed = b.addModule("seed", .{
+        // The root source file is the "entry point" of this module. Users of
+        // this module will only be able to access public declarations contained
+        // in this file, which means that if you have declarations that you
+        // intend to expose to consumers that were defined in other files part
+        // of this module, you will have to make sure to re-export them from
+        // the root file.
+        .root_source_file = b.path("src/seed/seed.zig"),
+        // Later on we'll use this module as the root module of a test executable
+        // which requires us to specify a target.
+        .target = target,
+    });
+
     const seed_range = b.addModule("seed_range", .{
         // The root source file is the "entry point" of this module. Users of
         // this module will only be able to access public declarations contained
@@ -86,6 +99,7 @@ pub fn build(b: *std.Build) void {
             // repeated because you are allowed to rename your imports, which
             // can be extremely useful in case of collisions (which can happen
             // importing modules from different packages).
+            .{ .name = "seed", .module = seed },
             .{ .name = "seed_map_layer", .module = seed_map_layer },
         },
     });
@@ -107,6 +121,7 @@ pub fn build(b: *std.Build) void {
             // repeated because you are allowed to rename your imports, which
             // can be extremely useful in case of collisions (which can happen
             // importing modules from different packages).
+            .{ .name = "seed_range", .module = seed_range },
             .{ .name = "seed_map_layer", .module = seed_map_layer },
         },
     });
@@ -205,6 +220,10 @@ pub fn build(b: *std.Build) void {
         .root_module = seed_map_layer,
     });
 
+    const seed_tests = b.addTest(.{
+        .root_module = seed,
+    });
+
     const seed_range_tests = b.addTest(.{
         .root_module = seed_range,
     });
@@ -214,6 +233,7 @@ pub fn build(b: *std.Build) void {
     const run_part_b_tests = b.addRunArtifact(part_b_tests);
     const run_seed_map_tests = b.addRunArtifact(seed_map_tests);
     const run_seed_map_layer_tests = b.addRunArtifact(seed_map_layer_tests);
+    const run_seed_tests = b.addRunArtifact(seed_tests);
     const run_seed_range_tests = b.addRunArtifact(seed_range_tests);
 
     // Creates an executable that will run `test` blocks from the executable's
@@ -230,6 +250,7 @@ pub fn build(b: *std.Build) void {
     // times and since the two run steps do not depend on one another, this will
     // make the two of them run in parallel.
     const test_step = b.step("test", "Run tests");
+    test_step.dependOn(&run_seed_tests.step);
     test_step.dependOn(&run_seed_range_tests.step);
     test_step.dependOn(&run_seed_map_layer_tests.step);
     test_step.dependOn(&run_seed_map_tests.step);
