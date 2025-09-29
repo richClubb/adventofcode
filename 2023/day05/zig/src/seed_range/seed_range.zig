@@ -1,7 +1,7 @@
 const std = @import("std");
 const expect = std.testing.expect;
 
-const SeedRange = struct {
+pub const SeedRange = struct {
     start: u64,
     end: u64,
     size: u64,

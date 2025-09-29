@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.25)
 
 project(day5)
 
-set(CMAKE_C_FLAGS "-O3")
+#set(CMAKE_C_FLAGS "-O3")
 
 add_executable(
     "${PROJECT_NAME}"

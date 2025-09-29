@@ -100,6 +100,7 @@ pub fn build(b: *std.Build) void {
             // can be extremely useful in case of collisions (which can happen
             // importing modules from different packages).
             .{ .name = "seed", .module = seed },
+            .{ .name = "seed_map", .module = seed_map },
             .{ .name = "seed_map_layer", .module = seed_map_layer },
         },
     });
@@ -122,6 +123,7 @@ pub fn build(b: *std.Build) void {
             // can be extremely useful in case of collisions (which can happen
             // importing modules from different packages).
             .{ .name = "seed_range", .module = seed_range },
+            .{ .name = "seed_map", .module = seed_map },
             .{ .name = "seed_map_layer", .module = seed_map_layer },
         },
     });
