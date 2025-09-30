@@ -73,25 +73,14 @@ impl SeedRanges{
         self.seed_ranges.push(seed_range);
     }
 
-    pub fn split_ranges(&mut self, max_size: u64) {
-        println!("Size {}", self.seed_ranges.len());
+    pub fn split_ranges(&mut self, new_number: u64) {
+        
+        // can't be bothered with this case at the moment
+        // if new_number <= self.seed_ranges.len() {
+        //     return;
+        // }
+
         let total = self.seed_ranges.iter().fold(0, |mut total, seed_range| {total += seed_range.size; total});
-
-        let ideal_size = total / max_size;
-        let ideal_size_remainder = total % max_size;
-
-        if ((ideal_size_remainder == 0) && (total == max_size))
-        {
-            println!("Size-of 1");
-        }
-        else if (ideal_size_remainder == 0)
-        {
-            println!("no remainder");
-        }
-        else 
-        {
-            println!("Remainder");
-        }  
     }
 }
 

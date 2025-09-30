@@ -15,11 +15,9 @@ See [the languages page](./Languages.md) for more details on the implementations
 
 ## Overview
 
-This has become a bit of a learning experiment for me. It is a cool problem that has a very simple problem that can be handled in a number of different ways to optimise the solution.
+This has become a bit of a learning experiment for me. It is a cool problem that has a very simple soluttion but can be handled in a number of different ways and has a lot of cool methods to optimise the result.
 
-[Original Page](https://adventofcode.com/2023/day/5) You'll need to be signed up for the advent of code to be able to view it. Each person gets their own input data so you can't just copy someone elses values. I've copied out the text into [problem.md](./problem.md)
-
-My sample data
+[Original Page](https://adventofcode.com/2023/day/5) You'll need to be signed up for the advent of code to be able to view it. Each person gets their own input data so you can't just copy someone elses values. I've copied out the text into [problem.md](./docs/problem.md)
 
 ## Problem TLDR
 
@@ -52,7 +50,7 @@ Initially in "Part A" of the problem you have 20 input values, and in "Part B" t
 
 Note: For all of these I'm ignoring the number of 'layers' or 'maps' in the O(n) calculation as the problem focuses on the number of input values being the major variable.
 
-### "Obvious" depth first A
+### "Obvious" depth first
 
 1) Take an input value
 2) Pass it through each layer

@@ -1,5 +1,5 @@
 [package]
-name = "reorg_seed_ranges"
+name = "reorg_seed_ranges_rust"
 version = "0.1.0"
 edition = "2024"
 
