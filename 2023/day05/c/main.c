@@ -25,7 +25,7 @@ int main(int argc, char **argv)
     }
     else if(strcmp(config.run_type, "part_b") == 0)
     {
-        printf("Running Part B ptr version\n");
+        printf("Running Part B\n");
         unsigned long part_b_min = part_b(&config);
 
         printf("Part B: min value is '%lu'\n", part_b_min);
