@@ -2,7 +2,6 @@ package parta
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"math"
 	"os"
@@ -17,7 +16,6 @@ func extractSeedsFromString(line string) ([]uint64, bool) {
 
 	numbers_string, number_string_found := strings.CutPrefix(line, "seeds: ")
 	if !number_string_found {
-		fmt.Println("blahs")
 		return nil, false
 	}
 
@@ -27,7 +25,10 @@ func extractSeedsFromString(line string) ([]uint64, bool) {
 	// for _, SeedMap := range sml.SeedMaps {
 
 	for _, number_string := range number_strings {
-		number, _ := strconv.ParseUint(number_string, 10, 64)
+		number, err := strconv.ParseUint(number_string, 10, 64)
+		if err != nil {
+			return nil, false
+		}
 		seeds = append(seeds, number)
 	}
 

@@ -2,7 +2,6 @@ package partb
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"math"
 	"os"
@@ -21,7 +20,6 @@ type SeedRange struct {
 func extractSeedRangesFromString(line string) ([]SeedRange, bool) {
 	numbers_string, number_string_found := strings.CutPrefix(line, "seeds: ")
 	if !number_string_found {
-		fmt.Println("blahs")
 		return nil, false
 	}
 
@@ -29,9 +27,16 @@ func extractSeedRangesFromString(line string) ([]SeedRange, bool) {
 
 	seedRanges := []SeedRange{}
 
-	for index := 0; index < len(number_strings)/2; index += 2 {
-		start, _ := strconv.ParseUint(number_strings[index], 10, 64)
-		size, _ := strconv.ParseUint(number_strings[index+1], 10, 64)
+	for index := 0; index < len(number_strings); index += 2 {
+		start, err := strconv.ParseUint(number_strings[index], 10, 64)
+		if err != nil {
+			return nil, false
+		}
+		size, err := strconv.ParseUint(number_strings[index+1], 10, 64)
+		if err != nil {
+			return nil, false
+		}
+
 		seedRanges = append(seedRanges, SeedRange{start: start, size: size})
 	}
 
