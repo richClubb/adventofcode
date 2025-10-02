@@ -1,4 +1,5 @@
 {
+	"name": "Advent of code dev container",
 	"build": {
 		"dockerfile": "./Dockerfile",
 		"context": "."

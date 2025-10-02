@@ -28,13 +28,15 @@ def part_a(file_path: str):
                     current_seed_map_layer = SeedMapLayer()
                     seed_map_layers = []
                 else:
+                    current_seed_map_layer.sort_maps()
                     seed_map_layers.append(current_seed_map_layer)
                     current_seed_map_layer = None
                     current_seed_map_layer = SeedMapLayer()
                 continue
 
             current_seed_map_layer.add_map(SeedMap.init_from_string(line))
-    
+        
+        current_seed_map_layer.sort_maps()
         seed_map_layers.append(current_seed_map_layer)
 
     min_value = 10**30

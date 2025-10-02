@@ -12,10 +12,14 @@ pub struct SeedRange{
 }
 
 impl SeedRange {
+
+    pub fn new(start: u64, size: u64) -> SeedRange {
+        return SeedRange{start: start, end: start + size, size:size}
+    }
+
     pub fn get_lowest_seed_in_range(&self, map_layers: &SeedMapLayers) -> u64
     {
         let mut min_value = std::u64::MAX;
-        println!("Seed range {} to {}", self.start, self.end);
 
         for seed_val in self.start..self.end
         {
@@ -32,7 +36,6 @@ impl SeedRange {
     pub fn get_lowest_seed_in_range_ptr(&self, map_layers: &SeedMapLayers) -> u64
     {
         let mut min_value = std::u64::MAX;
-        println!("Seed range {} to {}", self.start, self.end);
 
         for seed_val in self.start..self.end
         {
@@ -48,7 +51,7 @@ impl SeedRange {
     }
 }
 
-pub fn get_seed_ranges_from_file(path: &String) -> Vec<SeedRange>
+pub fn get_seed_ranges_from_file(path: &String, max_range_size: u64) -> Vec<SeedRange>
 {
     let mut seed_ranges: Vec<SeedRange> = Vec::new();
     let file: File = File::open(path).expect("Could not open file");
@@ -67,8 +70,20 @@ pub fn get_seed_ranges_from_file(path: &String) -> Vec<SeedRange>
                 let start = seed_values[seed_index*2];
                 let size = seed_values[seed_index*2+1];
                 let end = start + size;
-                
-                seed_ranges.push(SeedRange {start: start, end: end, size:size});
+
+                let mut remaining = size;
+                let mut curr_start = start;
+                while(remaining > 0){
+                    if (remaining >= max_range_size){
+                        seed_ranges.push(SeedRange::new(curr_start, max_range_size));
+                        remaining -= max_range_size;
+                        curr_start += max_range_size;
+                    }
+                    else {
+                        seed_ranges.push(SeedRange::new(curr_start, remaining));
+                        remaining = 0
+                    }
+                }
             }
         }
     }

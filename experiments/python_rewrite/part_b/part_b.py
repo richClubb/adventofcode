@@ -91,10 +91,14 @@ def part_b_forward_parallel(file_path):
 
     pool_arguments = []
 
+    new_seed_ranges = []
     for seed_range in seed_ranges:
+        new_seed_ranges = new_seed_ranges + seed_range.split_into_chunks(1000000)
+
+    for seed_range in new_seed_ranges:
         pool_arguments.append((seed_range, seed_map_layers))
 
-    with Pool(4) as p:
+    with Pool(15) as p:
         results = p.map(find_lowest_location, pool_arguments)
 
     return min(results)

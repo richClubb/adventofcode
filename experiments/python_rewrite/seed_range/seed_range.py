@@ -4,8 +4,6 @@ from seed_map_layer import seed_map_layer
 
 class SeedRange:
 
-    
-
     def __init__(self, start: int, size: int):
         self.start = start
         self.end = start + size
@@ -28,3 +26,20 @@ class SeedRange:
                 min_value = value
 
         return min_value
+    
+    def split_into_chunks(self, chunk_size):
+        new_seed_ranges = []
+
+        remaining = self.size
+        current_start = self.start
+        while(remaining > 0):
+
+            if(remaining >= chunk_size):
+                new_seed_ranges.append(SeedRange(current_start, chunk_size))
+                remaining = remaining - chunk_size
+                current_start = current_start + chunk_size
+            else:
+                new_seed_ranges.append(SeedRange(current_start, remaining))
+                remaining = 0
+
+        return new_seed_ranges

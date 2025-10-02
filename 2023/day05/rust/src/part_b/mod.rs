@@ -6,7 +6,7 @@ use crate::seed_map_layer::{get_map_layers_from_file, map_seed_inverse, map_inve
 
 pub fn part_b_forward(path: &String){
 
-    let seed_ranges:Vec<SeedRange> = get_seed_ranges_from_file(&path);
+    let seed_ranges:Vec<SeedRange> = get_seed_ranges_from_file(&path, 1000000000000);
     let map_layers = get_map_layers_from_file(&path);
 
     let min_value = seed_ranges.iter().map(|a| a.get_lowest_seed_in_range(&map_layers)).min().unwrap();
@@ -16,7 +16,7 @@ pub fn part_b_forward(path: &String){
 
 pub fn part_b_forward_ptr(path: &String){
 
-    let seed_ranges:Vec<SeedRange> = get_seed_ranges_from_file(&path);
+    let seed_ranges:Vec<SeedRange> = get_seed_ranges_from_file(&path, 1000000000000);
     let map_layers = get_map_layers_from_file(&path);
 
     let min_value = seed_ranges.iter().map(|a| a.get_lowest_seed_in_range_ptr(&map_layers)).min().unwrap();
@@ -27,7 +27,7 @@ pub fn part_b_forward_ptr(path: &String){
 
 pub fn part_b_parallel_forward(path: &String){
 
-    let seed_ranges:Vec<SeedRange> = get_seed_ranges_from_file(&path);
+    let seed_ranges:Vec<SeedRange> = get_seed_ranges_from_file(&path, 1000000);
     let map_layers = get_map_layers_from_file(&path);
 
     let result = seed_ranges.par_iter().map(|s| s.get_lowest_seed_in_range(&map_layers)).min().unwrap();
@@ -39,7 +39,7 @@ pub fn part_b_parallel_forward(path: &String){
 pub fn part_b_inverse(path: &String)
 {
 
-    let seed_ranges:Vec<SeedRange> = get_seed_ranges_from_file(&path);
+    let seed_ranges:Vec<SeedRange> = get_seed_ranges_from_file(&path, 1000000000000);
     let map_layers = get_map_layers_from_file(&path);
 
     let mut curr_val: u64 = 0;
@@ -63,25 +63,21 @@ pub fn part_b_inverse(path: &String)
 
 pub fn part_b_parallel_inverse(path: &String)
 {
-    let seed_ranges:Vec<SeedRange> = get_seed_ranges_from_file(&path);
+    let seed_ranges:Vec<SeedRange> = get_seed_ranges_from_file(&path, 100000000);
     let map_layers = get_map_layers_from_file(&path);
 
-    let blocksize:u64 = 1000;
+    let blocksize:u64 = 1000000;
     let mut block:u64 = 0;
-    let par_num:u64 = 4;
+    let par_num:u64 = 20;
 
     loop {
         
-        //let results: Option<u64> = (0..par_num).into_par_iter().for_each(|a:u64| map_inverse_block_find_lowest_val(block*a, (block*a)+blocksize, &map_layers).unwrap());
-        let results:Vec<u64> = (0..par_num)
+        let results:Vec<u64> = (0..20)
                                                 .into_par_iter()
                                                 .map(|a:u64| map_inverse_block_find_lowest_val(block+(blocksize*a), block+((blocksize*a)+blocksize), &seed_ranges, &map_layers))
                                                 .filter(|a| a.is_some())
                                                 .map(|a| a.unwrap())
                                                 .collect();
-        
-        // leaving this here just as reference
-        // results.iter().for_each(|a| println!("{}", a));
 
         // exit condition
         if results.len() > 0
@@ -97,7 +93,7 @@ pub fn part_b_parallel_inverse(path: &String)
 
 pub fn part_b_ranges(path: &String)
 {
-    let _:Vec<SeedRange> = get_seed_ranges_from_file(&path);
+    let _:Vec<SeedRange> = get_seed_ranges_from_file(&path, 1000000000000);
     let _ = get_map_layers_from_file(&path);
 
     let _: Vec<SeedRange> = Vec::new();

@@ -6,7 +6,7 @@ I decided to write this is a variety of languages to challenge myself to solve a
 * [C++](./c++/) - COMPLETE
 * [Cuda]() - COMPLETE (ISH)
 * [F#](./f_sharp/) - COMPLETE
-* Go - Not going to do this one
+* [Go](./..) - 
 * [Python](./python/) - COMPLETE
 * [Rust](./rust/) - COMPLETE
 * [Zig](./zig/) - INCOMPLETE

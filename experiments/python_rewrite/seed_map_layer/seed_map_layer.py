@@ -13,7 +13,7 @@ class SeedMapLayer:
         pass
 
     def sort_maps(self):
-        pass
+        self.seed_maps = sorted(self.seed_maps, key=lambda x: x.source)
 
     def map_seed(self, value: int):
 

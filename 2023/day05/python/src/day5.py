@@ -15,12 +15,10 @@ class Mapping_Direction(Enum):
 
 
 def do_mapping(input, dest, src, length, direction=Mapping_Direction.INPUT_TO_OUTPUT):
-    if direction == Mapping_Direction.INPUT_TO_OUTPUT:
-        if input >= src and input < src + length:
-            return dest + (input - src)
-    elif direction == Mapping_Direction.OUTPUT_TO_INPUT:
-        if input >= dest and input < dest + length:
-            return src + (input - dest)
+    
+    if input >= src and input < src + length:
+        return dest + (input - src)
+
     # implicit return None
 
 
