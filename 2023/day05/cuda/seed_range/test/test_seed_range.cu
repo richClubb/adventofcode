@@ -97,7 +97,7 @@ void test_split_seed_ranges(void)
 
     CU_ASSERT_EQUAL(num_seed_ranges, 2);
 
-    SEED_RANGE **new_ranges = seed_ranges_split_by_size(seed_ranges, num_seed_ranges, 1000000000, NULL);
+    SEED_RANGE **new_ranges = seed_ranges_split_by_size(seed_ranges, num_seed_ranges, 10);
 
     CU_ASSERT_PTR_NOT_NULL_FATAL(new_ranges);
 
