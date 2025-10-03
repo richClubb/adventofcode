@@ -26,7 +26,7 @@ pub fn split_range(input_range: SeedRange, new_max_size: u64) -> Vec<SeedRange> 
         println!("even split");
         let start_1: u64 = input_range.start;
         let size_1: u64 = new_max_size;
-        let start_2: u64 = input_range.start + new_max_size - 1;
+        let start_2: u64 = input_range.start + new_max_size;
         let size_2: u64 = input_range.size - new_max_size;
 
         return vec![
@@ -40,12 +40,15 @@ pub fn split_range(input_range: SeedRange, new_max_size: u64) -> Vec<SeedRange> 
         vec![
             SeedRange::new(input_range.start, new_max_size)], 
             split_range(
-                SeedRange::new(input_range.start - 1 + new_max_size, input_range.size - new_max_size), 
+                SeedRange::new(input_range.start + new_max_size, input_range.size - new_max_size), 
                 new_max_size
             )
             ].concat()
 }
 
+pub fn split_ranges(Vec<SeedRanges> seed_ranges, new_max_size: u64) Vec<SeedRanges> {
+    
+}
 
 fn main() {
     println!("Hello, world!");
@@ -63,6 +66,7 @@ mod tests {
 
         assert_eq!(new_ranges.len(), 1);
         assert_eq!(new_ranges[0].start, 1);
+        assert_eq!(new_ranges[0].end,  11);
         assert_eq!(new_ranges[0].size, 10);
 
     }
@@ -77,7 +81,8 @@ mod tests {
 
         assert_eq!(new_ranges[0].start, 1);
         assert_eq!(new_ranges[0].size,  9);
-        assert_eq!(new_ranges[1].start, 9);
+        assert_eq!(new_ranges[0].end,  10);
+        assert_eq!(new_ranges[1].start,10);
         assert_eq!(new_ranges[1].size,  1);
     }
 
@@ -90,10 +95,40 @@ mod tests {
         assert_eq!(new_ranges.len(), 3);
 
         assert_eq!(new_ranges[0].start, 1);
+        assert_eq!(new_ranges[0].end,   5);
         assert_eq!(new_ranges[0].size,  4);
-        assert_eq!(new_ranges[1].start, 4);
+
+        assert_eq!(new_ranges[1].start, 5);
+        assert_eq!(new_ranges[1].end,   9);
         assert_eq!(new_ranges[1].size,  4);
-        assert_eq!(new_ranges[2].start, 8);
+        
+        assert_eq!(new_ranges[2].start, 9);
+        assert_eq!(new_ranges[2].end,  11);
         assert_eq!(new_ranges[2].size,  2);
+    }
+
+    #[test]
+    fn split_map_4() {
+        let test_map: SeedRange = SeedRange::new(1, 10);
+
+        let new_ranges = split_range(test_map, 3);
+
+        assert_eq!(new_ranges.len(), 4);
+
+        assert_eq!(new_ranges[0].start, 1);
+        assert_eq!(new_ranges[0].end,   4);
+        assert_eq!(new_ranges[0].size,  3);
+
+        assert_eq!(new_ranges[1].start, 4);
+        assert_eq!(new_ranges[1].end,   7);
+        assert_eq!(new_ranges[1].size,  3);
+        
+        assert_eq!(new_ranges[2].start, 7);
+        assert_eq!(new_ranges[2].end,  10);
+        assert_eq!(new_ranges[2].size,  3);
+
+        assert_eq!(new_ranges[3].start, 10);
+        assert_eq!(new_ranges[3].end,   11);
+        assert_eq!(new_ranges[3].size,   1);
     }
 }
