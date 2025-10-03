@@ -20,7 +20,9 @@
 			"version" : "0.15.1"
 		},
 		"ghcr.io/devcontainers/features/go:1" : {},
-		"ghcr.io/devcontainers/features/nvidia-cuda:2": {},
+		"ghcr.io/devcontainers/features/nvidia-cuda:2": {
+			"installToolkit": true
+		},
 		"ghcr.io/devcontainers/features/rust:1": {},
 		"ghcr.io/devcontainers/features/dotnet:2": {
 			"version": "8.0"
@@ -66,5 +68,8 @@
 				"ms-dotnettools.csdevkit"
 			]
 		}
-	}
+	},
+	"hostRequirements": {
+    	"gpu": "optional" 
+  	}
 }
