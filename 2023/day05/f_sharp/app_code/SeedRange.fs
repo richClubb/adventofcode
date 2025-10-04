@@ -2,13 +2,18 @@ namespace app_code
 
 open System
 
+
 type SeedRange(start : int64, size : int64) = 
     member this.SeedStart = start
-    member this.SeedEnd = start + size - int64(1)
+    member this.Size = size
+    member this.SeedEnd = start + size
     // This works in a more traditionally functional way, but eats memory.
     member this.FindMinSeedInRange( mappingLayers : List<MappingLayer> ) = 
 
         let seeds = [|this.SeedStart .. this.SeedEnd|]
+
+
+
         let processed_values = Array.map (fun seed -> (seed, mappingLayers) ||> List.scan (fun s v -> v.TranslateSeedForward(s))) seeds
         Array.map (fun a -> List.last a) processed_values |> Array.min
 
@@ -23,3 +28,7 @@ type SeedRange(start : int64, size : int64) =
             if seed_val < min_value then min_value <- seed_val
             seed <- seed + int64(1)
         min_value
+
+let split_range (seed_range: SeedRange, new_max_size: uint64) = 
+
+    if (seed_range.Size < new_max_size) then 
