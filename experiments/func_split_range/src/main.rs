@@ -16,10 +16,8 @@ impl SeedRange{
 pub fn split_range(input_range: &SeedRange, new_max_size: u64) -> Vec<SeedRange> {
 
     let ideal_size = find_ideal_size(&input_range.size, &new_max_size);
-    println!("Ideal size: {} {}", ideal_size, new_max_size);
 
     if input_range.size <= ideal_size {
-        println!("small or equal {}, {}", input_range.start, input_range.size);
         return vec![
             SeedRange::new(input_range.start, input_range.size)
         ]
@@ -32,14 +30,12 @@ pub fn split_range(input_range: &SeedRange, new_max_size: u64) -> Vec<SeedRange>
         let start_2: u64 = input_range.start + ideal_size;
         let size_2: u64 = input_range.size - ideal_size;
 
-        println!("even split {}, {}, {}, {}", start_1, size_1, start_2, size_2);
         return vec![
             SeedRange::new(start_1, size_1),
             SeedRange::new(start_2, size_2)
         ]
     }
 
-    println!("recurse {}, {}, {}, {}", input_range.start, ideal_size, input_range.start + ideal_size, input_range.size - ideal_size);
     return vec![ 
         vec![
             SeedRange::new(input_range.start, ideal_size)], 
@@ -52,47 +48,40 @@ pub fn split_range(input_range: &SeedRange, new_max_size: u64) -> Vec<SeedRange>
 
 pub fn find_ideal_size(range_len: &u64, new_max_size: &u64) -> u64 {
 
-    println!("find ideal {}, {}", range_len, new_max_size);
-    // array two small - return
-    if new_max_size > range_len {
-        println!("Bigger");
+    if *new_max_size == 1 {
+        return 1;
+    }
+
+    if *range_len <= *new_max_size {
+        return *range_len;
+    }
+
+    let initial_attempt = range_len / new_max_size;
+    let initial_attempt_rem = range_len % new_max_size;
+
+    if initial_attempt_rem == 0 {
         return *new_max_size;
     }
 
-    let starting_value = range_len / new_max_size;
-    let starting_value_rem = range_len % new_max_size;
-
-    println!("starting val {}.{}", starting_value, starting_value_rem);
-    // even division - return
-    if starting_value_rem == 0 {
-        return *new_max_size;
-    }
-
-    let next_new_max_size = new_max_size - 1;
-    let next_starting_value = (range_len / next_new_max_size);
-    let next_starting_value_rem = (range_len % next_new_max_size);
-    println!("next starting val {}.{}", next_starting_value, next_starting_value_rem);
-
-    // tries to find where the boundary is before it goes into the next integer
-    if (next_starting_value > starting_value)
+    if (initial_attempt == 2) && (initial_attempt_rem == 0)
     {
-        if next_starting_value >= (starting_value + 1)
-        {
-            return starting_value;
-        }
-
-        if next_new_max_size == 1 {
-            return *new_max_size;
-        }
-
-        if range_len % next_new_max_size == 0 {
-            return *new_max_size - 1
-        }
-
-        return *new_max_size;
+        return *range_len / 2;
     }
 
-    return find_ideal_size(range_len, &next_new_max_size)
+    let next_max_size = new_max_size - 1;
+    let next_attempt = range_len / next_max_size;
+    let next_attempt_rem = range_len % next_max_size;
+
+    if (next_attempt == (initial_attempt + 1)) && (next_attempt_rem == 0)
+    {
+        return next_max_size;
+    }
+
+    if next_attempt > initial_attempt
+    {
+        return *new_max_size;
+    }
+    return find_ideal_size(range_len, &(*new_max_size - 1));
 }
 
 
@@ -115,188 +104,225 @@ pub fn split_ranges(seed_ranges: &Vec<SeedRange>, new_max_size: u64) -> Vec<Seed
 
 pub fn split_ranges_by_num(seed_ranges: &Vec<SeedRange>, new_max_num_ranges: u64) -> Vec<SeedRange> {
 
-    if seed_ranges.len() < new_max_num_ranges.try_into().unwrap() {
+    if seed_ranges.len() as u64 >= new_max_num_ranges {
         return seed_ranges.clone();
     }
 
     let total: u64 = seed_ranges.into_iter().fold(0, |acc, seed_range| acc + seed_range.size);
 
-    let num_ranges_rem = total % new_max_num_ranges;
-    
-    let num_ranges = if num_ranges_rem == 0 {
+    let ideal_range_size_rem = total % new_max_num_ranges;
+
+    let ideal_range_size = if ideal_range_size_rem == 0 {
         total / new_max_num_ranges
     }
     else {
         (total / new_max_num_ranges) + 1
     };
 
-    let new_max_range_size = if total % num_ranges == 0 {
-        total / num_ranges
-    } else {
-        (total / num_ranges) + 1
-    };
+    if seed_ranges.len() == 1 {
+        return split_range(&seed_ranges[0], ideal_range_size);
+    }
 
-    return split_ranges(seed_ranges, new_max_range_size);
-
+    let base_ranges = split_range(&seed_ranges[0], ideal_range_size);
+    let next_ranges = split_ranges_by_num(&seed_ranges[1..].to_vec(), new_max_num_ranges - base_ranges.len() as u64);
+    return vec![base_ranges, next_ranges].concat()
 }
 
 fn main() {
     println!("Hello, world!");
 
-    // let seed_ranges: Vec<SeedRange> = vec![SeedRange::new(1, 2), SeedRange::new(3, 4)];
+    let test_ranges = vec![SeedRange::new(1, 10), SeedRange::new(21,10)];
 
-    // split_ranges(&seed_ranges, 10);
+    let result = split_ranges_by_num(&test_ranges, 4);
+    println!("result {}", result.len());
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    // #[test]
-    // fn split_range_1() {
-    //     let test_map: SeedRange = SeedRange::new(1, 10);
+    #[test]
+    fn split_range_1() {
+        let test_map: SeedRange = SeedRange::new(1, 10);
 
-    //     let new_ranges = split_range(&test_map, 10);
+        let new_ranges = split_range(&test_map, 10);
 
-    //     assert_eq!(new_ranges.len(), 1);
-    //     assert_eq!(new_ranges[0].start, 1);
-    //     assert_eq!(new_ranges[0].end,  11);
-    //     assert_eq!(new_ranges[0].size, 10);
+        assert_eq!(new_ranges.len(), 1);
+        assert_eq!(new_ranges[0].start, 1);
+        assert_eq!(new_ranges[0].end,  11);
+        assert_eq!(new_ranges[0].size, 10);
 
-    // }
-
-    // #[test]
-    // fn split_range_2() {
-    //     let test_map: SeedRange = SeedRange::new(1, 10);
-
-    //     let new_ranges = split_range(&test_map, 9);
-
-    //     assert_eq!(new_ranges.len(), 2);
-
-    //     assert_eq!(new_ranges[0].start, 1);
-    //     assert_eq!(new_ranges[0].size,  5);
-    //     assert_eq!(new_ranges[0].end,   6);
-    //     assert_eq!(new_ranges[1].start, 6);
-    //     assert_eq!(new_ranges[1].size,  5);
-    //     assert_eq!(new_ranges[1].end,   11);
-    // }
-
-    // #[test]
-    // fn split_range_3() {
-    //     let test_map: SeedRange = SeedRange::new(1, 10);
-
-    //     let new_ranges = split_range(&test_map, 4);
-
-    //     assert_eq!(new_ranges.len(), 3);
-
-    //     assert_eq!(new_ranges[0].start, 1);
-    //     assert_eq!(new_ranges[0].end,   5);
-    //     assert_eq!(new_ranges[0].size,  4);
-
-    //     assert_eq!(new_ranges[1].start, 5);
-    //     assert_eq!(new_ranges[1].end,   8);
-    //     assert_eq!(new_ranges[1].size,  3);
-        
-    //     assert_eq!(new_ranges[2].start, 8);
-    //     assert_eq!(new_ranges[2].end,  11);
-    //     assert_eq!(new_ranges[2].size,  3);
-    // }
-
-    // #[test]
-    // fn split_range_4() {
-    //     let test_map: SeedRange = SeedRange::new(1, 10);
-
-    //     let new_ranges = split_range(&test_map, 3);
-
-    //     assert_eq!(new_ranges.len(), 4);
-
-    //     assert_eq!(new_ranges[0].start, 1);
-    //     assert_eq!(new_ranges[0].end,   4);
-    //     assert_eq!(new_ranges[0].size,  3);
-
-    //     assert_eq!(new_ranges[1].start, 4);
-    //     assert_eq!(new_ranges[1].end,   7);
-    //     assert_eq!(new_ranges[1].size,  3);
-        
-    //     assert_eq!(new_ranges[2].start, 7);
-    //     assert_eq!(new_ranges[2].end,   9);
-    //     assert_eq!(new_ranges[2].size,  2);
-
-    //     assert_eq!(new_ranges[3].start,  9);
-    //     assert_eq!(new_ranges[3].end,   11);
-    //     assert_eq!(new_ranges[3].size,   2);
-    // }
-
-    // #[test]
-    // fn split_ranges_1() {
-    //     let test_ranges: Vec<SeedRange> = vec![SeedRange::new(1, 10), SeedRange::new(20,10)];
-
-    //     let new_ranges = split_ranges(&test_ranges, 5);
-
-    //     assert_eq!(new_ranges.len(), 4);
-
-    //     assert_eq!(new_ranges[0].start, 1);
-    //     assert_eq!(new_ranges[0].end,   6);
-    //     assert_eq!(new_ranges[0].size,  5);
-
-    //     assert_eq!(new_ranges[1].start, 6);
-    //     assert_eq!(new_ranges[1].end,   11);
-    //     assert_eq!(new_ranges[1].size,  5);
-        
-    //     assert_eq!(new_ranges[2].start, 20);
-    //     assert_eq!(new_ranges[2].end,   25);
-    //     assert_eq!(new_ranges[2].size,   5);
-
-    //     assert_eq!(new_ranges[3].start, 25);
-    //     assert_eq!(new_ranges[3].end,   30);
-    //     assert_eq!(new_ranges[3].size,   5);
-    // }
-
-    // #[test]
-    // fn split_ranges_2() {
-    //     let test_ranges: Vec<SeedRange> = vec![SeedRange::new(1, 10), SeedRange::new(20,6)];
-
-    //     let new_ranges = split_ranges(&test_ranges, 3);
-
-    //     assert_eq!(new_ranges.len(), 6);
-
-    //     assert_eq!(new_ranges[0].start, 1);
-    //     assert_eq!(new_ranges[0].end,   4);
-    //     assert_eq!(new_ranges[0].size,  3);
-
-    //     assert_eq!(new_ranges[1].start, 4);
-    //     assert_eq!(new_ranges[1].end,   7);
-    //     assert_eq!(new_ranges[1].size,  3);
-        
-    //     assert_eq!(new_ranges[2].start, 7);
-    //     assert_eq!(new_ranges[2].end,   10);
-    //     assert_eq!(new_ranges[2].size,   3);
-
-    //     assert_eq!(new_ranges[3].start, 10);
-    //     assert_eq!(new_ranges[3].end,   11);
-    //     assert_eq!(new_ranges[3].size,   1);
-
-    //     assert_eq!(new_ranges[4].start, 20);
-    //     assert_eq!(new_ranges[4].end,   23);
-    //     assert_eq!(new_ranges[4].size,   3);
-
-    //     assert_eq!(new_ranges[5].start, 23);
-    //     assert_eq!(new_ranges[5].end,   26);
-    //     assert_eq!(new_ranges[5].size,   3);
-    // }
+    }
 
     #[test]
-    fn find_ideal_size_test() {
+    fn split_range_2() {
+        let test_map: SeedRange = SeedRange::new(1, 10);
+
+        let new_ranges = split_range(&test_map, 9);
+
+        assert_eq!(new_ranges.len(), 2);
+
+        assert_eq!(new_ranges[0].start, 1);
+        assert_eq!(new_ranges[0].size,  5);
+        assert_eq!(new_ranges[0].end,   6);
+        assert_eq!(new_ranges[1].start, 6);
+        assert_eq!(new_ranges[1].size,  5);
+        assert_eq!(new_ranges[1].end,   11);
+    }
+
+    #[test]
+    fn split_range_3() {
+        let test_map: SeedRange = SeedRange::new(1, 10);
+
+        let new_ranges = split_range(&test_map, 4);
+
+        assert_eq!(new_ranges.len(), 3);
+
+        assert_eq!(new_ranges[0].start, 1);
+        assert_eq!(new_ranges[0].end,   5);
+        assert_eq!(new_ranges[0].size,  4);
+
+        assert_eq!(new_ranges[1].start, 5);
+        assert_eq!(new_ranges[1].end,   8);
+        assert_eq!(new_ranges[1].size,  3);
+        
+        assert_eq!(new_ranges[2].start, 8);
+        assert_eq!(new_ranges[2].end,  11);
+        assert_eq!(new_ranges[2].size,  3);
+
+        let new_ranges = split_range(&test_map, 5);
+
+        assert_eq!(new_ranges.len(), 2);
+
+        assert_eq!(new_ranges[0].start, 1);
+        assert_eq!(new_ranges[0].end,   6);
+        assert_eq!(new_ranges[0].size,  5);
+
+        assert_eq!(new_ranges[1].start, 6);
+        assert_eq!(new_ranges[1].end,   11);
+        assert_eq!(new_ranges[1].size,  5);
+    }
+
+    #[test]
+    fn split_range_4() {
+        let test_map: SeedRange = SeedRange::new(1, 10);
+
+        let new_ranges = split_range(&test_map, 3);
+
+        assert_eq!(new_ranges.len(), 4);
+
+        assert_eq!(new_ranges[0].start, 1);
+        assert_eq!(new_ranges[0].end,   4);
+        assert_eq!(new_ranges[0].size,  3);
+
+        assert_eq!(new_ranges[1].start, 4);
+        assert_eq!(new_ranges[1].end,   7);
+        assert_eq!(new_ranges[1].size,  3);
+        
+        assert_eq!(new_ranges[2].start, 7);
+        assert_eq!(new_ranges[2].end,   9);
+        assert_eq!(new_ranges[2].size,  2);
+
+        assert_eq!(new_ranges[3].start,  9);
+        assert_eq!(new_ranges[3].end,   11);
+        assert_eq!(new_ranges[3].size,   2);
+    }
+
+    #[test]
+    fn split_range_5() {
+        let test_map: SeedRange = SeedRange::new(28965817, 302170009);
+
+        let new_ranges = split_range(&test_map, 100000000);
+
+        assert_eq!(new_ranges.len(), 4);
+    }
+
+    #[test]
+    fn split_ranges_1() {
+        let test_ranges: Vec<SeedRange> = vec![SeedRange::new(1, 10), SeedRange::new(20,10)];
+
+        let new_ranges = split_ranges(&test_ranges, 5);
+
+        assert_eq!(new_ranges.len(), 4);
+
+        assert_eq!(new_ranges[0].start, 1);
+        assert_eq!(new_ranges[0].end,   6);
+        assert_eq!(new_ranges[0].size,  5);
+
+        assert_eq!(new_ranges[1].start, 6);
+        assert_eq!(new_ranges[1].end,   11);
+        assert_eq!(new_ranges[1].size,  5);
+        
+        assert_eq!(new_ranges[2].start, 20);
+        assert_eq!(new_ranges[2].end,   25);
+        assert_eq!(new_ranges[2].size,   5);
+
+        assert_eq!(new_ranges[3].start, 25);
+        assert_eq!(new_ranges[3].end,   30);
+        assert_eq!(new_ranges[3].size,   5);
+    }
+
+    #[test]
+    fn split_ranges_2() {
+        let test_ranges: Vec<SeedRange> = vec![SeedRange::new(1, 10), SeedRange::new(20,6)];
+
+        let new_ranges = split_ranges(&test_ranges, 3);
+
+        assert_eq!(new_ranges.len(), 6);
+
+        assert_eq!(new_ranges[0].start, 1);
+        assert_eq!(new_ranges[0].end,   4);
+        assert_eq!(new_ranges[0].size,  3);
+
+        assert_eq!(new_ranges[1].start, 4);
+        assert_eq!(new_ranges[1].end,   7);
+        assert_eq!(new_ranges[1].size,  3);
+        
+        assert_eq!(new_ranges[2].start,  7);
+        assert_eq!(new_ranges[2].end,    9);
+        assert_eq!(new_ranges[2].size,   2);
+
+        assert_eq!(new_ranges[3].start,  9);
+        assert_eq!(new_ranges[3].end,   11);
+        assert_eq!(new_ranges[3].size,   2);
+
+        assert_eq!(new_ranges[4].start, 20);
+        assert_eq!(new_ranges[4].end,   23);
+        assert_eq!(new_ranges[4].size,   3);
+
+        assert_eq!(new_ranges[5].start, 23);
+        assert_eq!(new_ranges[5].end,   26);
+        assert_eq!(new_ranges[5].size,   3);
+    }
+
+    #[test]
+    fn find_ideal_size_oversize_test() {
 
         let new_value = find_ideal_size(&19, &50);
-        assert_eq!(new_value, 50);
+        assert_eq!(new_value, 19);
 
         let new_value = find_ideal_size(&19, &20);
-        assert_eq!(new_value, 20);
+        assert_eq!(new_value, 19);
+    }
+
+    #[test]
+    fn find_ideal_size_equal_test() {
 
         let new_value = find_ideal_size(&19, &19);
         assert_eq!(new_value, 19);
 
+        let new_value = find_ideal_size(&20, &20);
+        assert_eq!(new_value, 20);
+
+        let new_value = find_ideal_size(&1, &1);
+        assert_eq!(new_value, 1);
+
+        let new_value = find_ideal_size(&15, &15);
+        assert_eq!(new_value, 15);
+    }
+
+    #[test]
+    fn find_ideal_size_odd() {
         let new_value = find_ideal_size(&19, &18);
         assert_eq!(new_value, 10);
 
@@ -350,11 +376,241 @@ mod tests {
 
         let new_value = find_ideal_size(&19, &1);
         assert_eq!(new_value, 1);
+    }
 
-        let new_value = find_ideal_size(&10, &9);
+    #[test]
+    fn find_ideal_size_even() {
+        let new_value = find_ideal_size(&20, &20);
+        assert_eq!(new_value, 20);
+
+        let new_value = find_ideal_size(&20, &19);
+        assert_eq!(new_value, 10);
+
+        let new_value = find_ideal_size(&20, &18);
+        assert_eq!(new_value, 10);
+
+        let new_value = find_ideal_size(&20, &17);
+        assert_eq!(new_value, 10);
+
+        let new_value = find_ideal_size(&20, &16);
+        assert_eq!(new_value, 10);
+
+        let new_value = find_ideal_size(&20, &15);
+        assert_eq!(new_value, 10);
+
+        let new_value = find_ideal_size(&20, &14);
+        assert_eq!(new_value, 10);
+
+        let new_value = find_ideal_size(&20, &13);
+        assert_eq!(new_value, 10);
+
+        let new_value = find_ideal_size(&20, &12);
+        assert_eq!(new_value, 10);
+
+        let new_value = find_ideal_size(&20, &11);
+        assert_eq!(new_value, 10);
+
+        let new_value = find_ideal_size(&20, &10);
+        assert_eq!(new_value, 10);
+
+        let new_value = find_ideal_size(&20, &9);
+        assert_eq!(new_value, 7);
+
+        let new_value = find_ideal_size(&20, &8);
+        assert_eq!(new_value, 7);
+
+        let new_value = find_ideal_size(&20, &7);
+        assert_eq!(new_value, 7);
+
+        let new_value = find_ideal_size(&20, &6);
         assert_eq!(new_value, 5);
 
-        let new_value = find_ideal_size(&4, &3);
+        let new_value = find_ideal_size(&20, &5);
+        assert_eq!(new_value, 5);
+
+        let new_value = find_ideal_size(&20, &4);
+        assert_eq!(new_value, 4);
+
+        let new_value = find_ideal_size(&20, &3);
+        assert_eq!(new_value, 3);
+
+        let new_value = find_ideal_size(&20, &2);
         assert_eq!(new_value, 2);
+
+        let new_value = find_ideal_size(&20, &1);
+        assert_eq!(new_value, 1);
+    }
+
+    #[test]
+    fn find_ideal_size_large_numbers() {
+        assert_eq!(find_ideal_size(&302170009, &100000000), 4);
+
+        // assert_eq!(find_ideal_size(&48290258, &10000000), 5);
+
+        // assert_eq!(find_ideal_size(&243492043, &100000000), 3);
+
+        // assert_eq!(find_ideal_size(&385349830, &100000000), 4);
+
+        // assert_eq!(find_ideal_size(&350474859, &100000000), 4);
+
+        // assert_eq!(find_ideal_size(&17565716, &10000000), 2);
+
+        // assert_eq!(find_ideal_size(&291402104, &100000000), 3);
+
+        // assert_eq!(find_ideal_size(&279196488, &100000000), 3);
+
+        // assert_eq!(find_ideal_size(&47952959, &10000000), 5);
+
+        // assert_eq!(find_ideal_size(&9607836, &1000000), 10);
+
+        // assert_eq!(find_ideal_size(&302170009, &10000000), 31);
+
+        // assert_eq!(find_ideal_size(&302170009, &1000000), 303);
+
+        // assert_eq!(find_ideal_size(&302170009, &100000), 3022);
+
+        // assert_eq!(find_ideal_size(&302170009, &10000), 30218);
+
+        // assert_eq!(find_ideal_size(&302170009, &1000), 302171);
+
+        // assert_eq!(find_ideal_size(&302170009, &100), 3021701);
+
+        // assert_eq!(find_ideal_size(&302170009, &10), 30217001);
+
+        // assert_eq!(find_ideal_size(&302170009, &1), 302170009);
+    }
+
+    #[test]
+    fn split_ranges_by_num_test() {
+        
+        let test_ranges = vec![SeedRange::new(1, 10), SeedRange::new(21,10)];
+
+        let result = split_ranges_by_num(&test_ranges, 2);
+        assert_eq!(result.len(), 2);
+
+        assert_eq!(result[0].start,   1);
+        assert_eq!(result[0].end,    11);
+        assert_eq!(result[0].size,   10);
+
+        assert_eq!(result[1].start,  21);
+        assert_eq!(result[1].end,    31);
+        assert_eq!(result[1].size,   10);
+
+        let result = split_ranges_by_num(&test_ranges, 1);
+        assert_eq!(result.len(), 2);
+
+        assert_eq!(result[0].start,   1);
+        assert_eq!(result[0].end,    11);
+        assert_eq!(result[0].size,   10);
+
+        assert_eq!(result[1].start,  21);
+        assert_eq!(result[1].end,    31);
+        assert_eq!(result[1].size,   10);
+
+        let result = split_ranges_by_num(&test_ranges, 4);
+        assert_eq!(result.len(), 4);
+
+        assert_eq!(result[0].start,  1);
+        assert_eq!(result[0].end,    6);
+        assert_eq!(result[0].size,   5);
+
+        assert_eq!(result[1].start,  6);
+        assert_eq!(result[1].end,   11);
+        assert_eq!(result[1].size,   5);
+    
+        assert_eq!(result[2].start, 21);
+        assert_eq!(result[2].end,   26);
+        assert_eq!(result[2].size,   5);
+
+        assert_eq!(result[3].start, 26);
+        assert_eq!(result[3].end,   31);
+        assert_eq!(result[3].size,   5);
+
+        let result = split_ranges_by_num(&test_ranges, 3);
+        assert_eq!(result.len(), 3);
+
+        assert_eq!(result[0].start,  1);
+        assert_eq!(result[0].end,    6);
+        assert_eq!(result[0].size,   5);
+
+        assert_eq!(result[1].start,  6);
+        assert_eq!(result[1].end,   11);
+        assert_eq!(result[1].size,   5);
+    
+        assert_eq!(result[2].start, 21);
+        assert_eq!(result[2].end,   31);
+        assert_eq!(result[2].size,  10);
+
+        let result = split_ranges_by_num(&test_ranges, 7);
+        assert_eq!(result.len(), 7);
+
+        assert_eq!(result[0].start,  1);
+        assert_eq!(result[0].end,    4);
+        assert_eq!(result[0].size,   3);
+
+        assert_eq!(result[1].start,  4);
+        assert_eq!(result[1].end,    7);
+        assert_eq!(result[1].size,   3);
+    
+        assert_eq!(result[2].start,  7);
+        assert_eq!(result[2].end,    9);
+        assert_eq!(result[2].size,   2);
+
+        assert_eq!(result[3].start,  9);
+        assert_eq!(result[3].end,   11);
+        assert_eq!(result[3].size,   2);
+
+        assert_eq!(result[4].start, 21);
+        assert_eq!(result[4].end,   25);
+        assert_eq!(result[4].size,   4);
+
+        assert_eq!(result[5].start, 25);
+        assert_eq!(result[5].end,   28);
+        assert_eq!(result[5].size,   3);
+
+        assert_eq!(result[6].start, 28);
+        assert_eq!(result[6].end,   31);
+        assert_eq!(result[6].size,   3);
+
+    }
+
+    #[test]
+    fn split_range_by_num_large_ranges() {
+        
+        let test_ranges = vec![
+            SeedRange::new( 1828835733,   9607836),
+            SeedRange::new( 2566296746,  17565716),
+            SeedRange::new( 3227221259,  47952959),
+            SeedRange::new( 1752849261,  48290258),
+            SeedRange::new(  804904201, 243492043),
+            SeedRange::new(  447111316, 279196488),
+            SeedRange::new( 3543571814, 291402104),
+            SeedRange::new(   28965817, 302170009), 
+            SeedRange::new( 1267802202, 350474859),
+            SeedRange::new( 2150339939, 385349830),
+        ];
+
+        let result = split_ranges_by_num(&test_ranges, 11);
+        assert!(result.len() <= 3000);
+    }
+
+    #[test]
+    fn split_ranges_by_num_sample_data_test() {
+        
+        let test_ranges = vec![
+            SeedRange::new( 1828835733,   9607836),
+            SeedRange::new( 2566296746,  17565716),
+            SeedRange::new( 3227221259,  47952959),
+            SeedRange::new( 1752849261,  48290258),
+            SeedRange::new(  804904201, 243492043),
+            SeedRange::new(  447111316, 279196488),
+            SeedRange::new( 3543571814, 291402104),
+            SeedRange::new(   28965817, 302170009), 
+            SeedRange::new( 1267802202, 350474859),
+            SeedRange::new( 2150339939, 385349830),
+        ];
+
+        let result = split_ranges_by_num(&test_ranges, 11);
+        assert!(result.len() <= 3000);
     }
 }
