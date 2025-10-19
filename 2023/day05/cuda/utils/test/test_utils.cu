@@ -14,6 +14,7 @@ void test_extract_numbers()
         CU_ASSERT_EQUAL(length, 1);
         CU_ASSERT_PTR_NOT_NULL_FATAL(numbers);
         CU_ASSERT_EQUAL(numbers[0], 1);
+        free(numbers);
     }
 
     {
@@ -24,6 +25,7 @@ void test_extract_numbers()
         CU_ASSERT_PTR_NOT_NULL_FATAL(numbers);
         CU_ASSERT_EQUAL(numbers[0], 1);
         CU_ASSERT_EQUAL(numbers[1], 2);
+        free(numbers);
     }
 
     {
@@ -38,6 +40,7 @@ void test_extract_numbers()
         CU_ASSERT_EQUAL(numbers[3], 5);
         CU_ASSERT_EQUAL(numbers[4], 8);
         CU_ASSERT_EQUAL(numbers[5], 1000000);
+        free(numbers);
     }
 }
 
@@ -49,6 +52,7 @@ void test_extract_numbers_errors()
     
         CU_ASSERT_EQUAL(length, 0);
         CU_ASSERT_PTR_NULL_FATAL(numbers);
+        free(numbers);
     }
 }
 

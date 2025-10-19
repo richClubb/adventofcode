@@ -586,6 +586,10 @@ void test_flatten_layers()
     CU_ASSERT_EQUAL(*(flat_layers + 22), 5);
     CU_ASSERT_EQUAL(*(flat_layers + 23), 12);
     CU_ASSERT_EQUAL(*(flat_layers + 24), 7);
+
+    seed_map_layers_term(layers);
+    free(layers_num_maps);
+    free(flat_layers);
 }
 
 int main()

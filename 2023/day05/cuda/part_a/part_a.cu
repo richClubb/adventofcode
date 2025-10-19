@@ -121,6 +121,7 @@ uint64_t part_a(const CONFIG* config)
         seed_map_layers->num_seed_map_layers * sizeof(uint64_t),
         cudaMemcpyHostToDevice
     );
+    free(seed_map_layers_sizes);
 
     uint64_t *gpu_flat_seed_map_layers;
     cudaMalloc(&gpu_flat_seed_map_layers, flat_layers_total_size * sizeof(uint64_t));
@@ -131,6 +132,7 @@ uint64_t part_a(const CONFIG* config)
         flat_layers_total_size * sizeof(uint64_t),
         cudaMemcpyHostToDevice
     );
+    free(flattened_seed_map_layers);
 
     uint64_t *gpu_result;
     cudaMalloc(&gpu_result, num_seeds * sizeof(SEED));
@@ -146,13 +148,18 @@ uint64_t part_a(const CONFIG* config)
     );
 
     cudaDeviceSynchronize();
+
+    seed_map_layers_term(seed_map_layers);
     
     cudaFree(gpu_seeds);
+    cudaFree(gpu_seed_map_layers_sizes);
+    cudaFree(gpu_flat_seed_map_layers);
 
     SEED min_value = UINT64_MAX;
 
     uint64_t *results = (uint64_t *)calloc(num_seeds, sizeof(SEED));
     cudaMemcpy(results, gpu_result, num_seeds * sizeof(SEED), cudaMemcpyDeviceToHost);
+    cudaFree(gpu_result);
 
     for(uint32_t index = 0; index < num_seeds; index++)
     {
@@ -162,11 +169,9 @@ uint64_t part_a(const CONFIG* config)
         }
     }
 
-    cudaFree(gpu_result);
+    
     free(results);
 
-    seed_map_layers_term(seed_map_layers);
-    
     return min_value;
 }
 

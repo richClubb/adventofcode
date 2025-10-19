@@ -42,6 +42,7 @@ SEED_RANGE *get_seed_ranges_from_line(const char* line, uint64_t *num_seed_range
 
         seed_ranges[index/2] = temp;
     }
+    free(numbers);
 
     return seed_ranges;
 }

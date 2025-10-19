@@ -17,6 +17,7 @@ void test_get_seed_ranges()
         CU_ASSERT_EQUAL(seed_ranges[0].size, 2);
         CU_ASSERT_EQUAL(seed_ranges[1].start, 3);
         CU_ASSERT_EQUAL(seed_ranges[1].size, 4);
+        free(seed_ranges);
     }
 
     {
@@ -31,6 +32,7 @@ void test_get_seed_ranges()
         CU_ASSERT_EQUAL(seed_ranges[1].size, 4);
         CU_ASSERT_EQUAL(seed_ranges[2].start, 5000000000);
         CU_ASSERT_EQUAL(seed_ranges[2].size, 1000000000);
+        free(seed_ranges);
     }
 }
 
@@ -51,6 +53,7 @@ void test_sort_by_size()
         CU_ASSERT_EQUAL(seed_ranges[1].size,  3);
         CU_ASSERT_EQUAL(seed_ranges[2].start, 5);
         CU_ASSERT_EQUAL(seed_ranges[2].size,  6);
+        free(seed_ranges);
     }
 }
 
@@ -71,6 +74,7 @@ void test_sort_by_start()
         CU_ASSERT_EQUAL(seed_ranges[1].size,  3);
         CU_ASSERT_EQUAL(seed_ranges[2].start, 5);
         CU_ASSERT_EQUAL(seed_ranges[2].size,  6);
+        free(seed_ranges);
     }
 }
 

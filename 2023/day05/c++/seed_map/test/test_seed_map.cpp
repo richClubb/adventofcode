@@ -23,25 +23,39 @@ TEST(SeedMapTests, MapSeed)
 {
   SeedMap seed_map(2, 10, 5);
 
-  uint64_t input = 1;
-
-  EXPECT_EQ(seed_map.map_seed(input), std::nullopt);
-
-  input = 2;
-  EXPECT_EQ(seed_map.map_seed(input), 10);
-
-  input = 3;
-  EXPECT_EQ(seed_map.map_seed(input), 11);
-
-  input = 4;
-  EXPECT_EQ(seed_map.map_seed(input), 12);
-
-  input = 5;
-  EXPECT_EQ(seed_map.map_seed(input), 13);
-
-  input = 6;
-  EXPECT_EQ(seed_map.map_seed(input), 14);
-
-  input = 7;
-  EXPECT_EQ(seed_map.map_seed(input), std::nullopt);
+  {
+    uint64_t input = 1;
+    EXPECT_EQ(seed_map.map_seed(&input), false);
+    EXPECT_EQ(input, 1);
+  }
+  {
+    uint64_t input = 2;
+    EXPECT_EQ(seed_map.map_seed(&input), true);
+    EXPECT_EQ(input, 10);
+  }
+  {
+    uint64_t input = 3;
+    EXPECT_EQ(seed_map.map_seed(&input), true);
+    EXPECT_EQ(input, 11);
+  }
+  {
+    uint64_t input = 4;
+    EXPECT_EQ(seed_map.map_seed(&input), true);
+    EXPECT_EQ(input, 12);
+  }
+  {
+    uint64_t input = 5;
+    EXPECT_EQ(seed_map.map_seed(&input), true);
+    EXPECT_EQ(input, 13);
+  }
+  {
+    uint64_t input = 6;
+    EXPECT_EQ(seed_map.map_seed(&input), true);
+    EXPECT_EQ(input, 14);
+  }
+  {
+    uint64_t input = 7;
+    EXPECT_EQ(seed_map.map_seed(&input), false);
+    EXPECT_EQ(input, 7);
+  }
 }
