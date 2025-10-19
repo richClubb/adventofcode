@@ -46,11 +46,6 @@ uint64_t part_b_ptr_version(const CONFIG &config)
         curr_layer->add_seed_map(SeedMap(line));
     }
 
-    // for(uint32_t index = 0; index < seed_map_layers.size(); index++)
-    // {
-    //     seed_map_layers[index].sort_seed_maps();
-    // }
-
     uint64_t min_value = UINT64_MAX;
     
     for(SeedRange &seed_range : seed_ranges)
@@ -58,7 +53,6 @@ uint64_t part_b_ptr_version(const CONFIG &config)
         uint64_t start = seed_range.get_start();
         uint64_t size = seed_range.get_size();
         uint64_t end = seed_range.get_end();
-        uint64_t range_min = UINT64_MAX;
 
         for(uint64_t seed = start; seed <= end; seed++)
         {
@@ -68,14 +62,7 @@ uint64_t part_b_ptr_version(const CONFIG &config)
                 seed_map_layers[index].map_seed(&value);
             }
 
-            if (value < range_min)
-            {
-                range_min = value;
-            }    
-        }
-        if (range_min < min_value)
-        {
-            min_value = range_min;
+            if (value < min_value) min_value = value;
         }
     }
     
@@ -127,7 +114,6 @@ uint64_t part_b_optional_version(const CONFIG &config)
         uint64_t start = seed_range.get_start();
         uint64_t size = seed_range.get_size();
         uint64_t end = seed_range.get_end();
-        uint64_t range_min = UINT64_MAX;
 
         for(uint64_t seed = start; seed <= end; seed++)
         {
@@ -137,15 +123,9 @@ uint64_t part_b_optional_version(const CONFIG &config)
                 value = seed_map_layers[index].map_seed_opt(value.value());
             }
 
-            if (value < range_min)
-            {
-                range_min = value.value();
-            }    
+            if (value < min_value) min_value = value.value();   
         }
-        if (range_min < min_value)
-        {
-            min_value = range_min;
-        }
+        
     }
     
     return min_value;

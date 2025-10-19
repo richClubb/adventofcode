@@ -58,11 +58,13 @@ void test_seed_map_from_string_errors()
     {
         SEED_MAP *seed_map = seed_map_from_string("1 2");
         CU_ASSERT_PTR_NULL(seed_map);
+        free(seed_map);
     }
 
     {
         SEED_MAP *seed_map = seed_map_from_string("4 5 6 6\n");
         CU_ASSERT_PTR_NULL(seed_map);
+        free(seed_map);
     }
 }
 
@@ -167,7 +169,7 @@ int main()
     CU_initialize_registry();
     CU_pSuite suite = CU_add_suite("Seed Tests", 0, 0);
     CU_add_test(suite, "", test_seed_map_from_string);
-    CU_add_test(suite, "", test_seed_map_from_string_errors);
+    CU_add_test(suite, "", test_seed_map_from_string_errors); // leaks memory
     CU_add_test(suite, "", test_seed_map_map_seed);
     CU_basic_run_tests();
     CU_cleanup_registry();

@@ -11,8 +11,10 @@ mkdir build-x86
 cd build-x86/
 cmake ../
 make
-./day5 -i [path]
+./day5 -i [path] -r [run]
 ```
+
+run can be `part_a` or `part_b`
 
 ## Test
 

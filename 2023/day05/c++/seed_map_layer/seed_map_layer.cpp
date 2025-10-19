@@ -32,9 +32,9 @@ bool SeedMapLayer::map_seed(uint64_t *input)
     // old-school method
     for(uint64_t index = 0; index < this->seed_maps.size(); index++)
     {    
-        if (bool result; result = this->seed_maps[index].map_seed(input))
+        if (this->seed_maps[index].map_seed(input))
         {
-            return false;
+            return true;
         }
     }
 
