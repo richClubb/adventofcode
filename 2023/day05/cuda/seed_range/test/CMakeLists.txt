@@ -1,14 +1,11 @@
-cmake_minimum_required(VERSION 3.25)
-set(CMAKE_CUDA_ARCHITECTURES "native")
-set(CMAKE_CUDA_COMPILER "/usr/local/cuda-11.8/bin/nvcc")
-
-project(test_seed_range LANGUAGES CUDA C CXX)
+cmake_minimum_required(VERSION 3.14)
+project(test_seed_range LANGUAGES C CXX CUDA)
 
 enable_testing()
 
 add_executable(
   "${PROJECT_NAME}"
-  test_seed_range.cu
+  "test_seed_range.cu"
   "${PROJECT_SOURCE_DIR}/../seed_range.cu"
   "${PROJECT_SOURCE_DIR}/../../utils/utils.cu"
 )

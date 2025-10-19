@@ -19,6 +19,7 @@ fn extract_seeds_from_string(seed_string: []const u8) error{ OutOfMemory, Invali
 }
 
 pub fn part_a(file_path: []const u8) !u64 {
+    
     const file = try std.fs.cwd().openFile(file_path, .{});
     defer file.close();
 

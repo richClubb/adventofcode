@@ -8,9 +8,6 @@ add_executable(
   "test_part_a.cu"
   "${PROJECT_SOURCE_DIR}/../part_a.cu"
   "${PROJECT_SOURCE_DIR}/../../config/config.cu"
-  "${PROJECT_SOURCE_DIR}/../../seed_map/seed_map.cu"
-  "${PROJECT_SOURCE_DIR}/../../seed_map_layer/seed_map_layer.cu"
-  "${PROJECT_SOURCE_DIR}/../../utils/utils.cu"
 )
 
 target_include_directories(
@@ -18,9 +15,6 @@ target_include_directories(
   PRIVATE
   "${PROJECT_SOURCE_DIR}/../"
   "${PROJECT_SOURCE_DIR}/../../config"
-  "${PROJECT_SOURCE_DIR}/../../seed_map"
-  "${PROJECT_SOURCE_DIR}/../../seed_map_layer"
-  "${PROJECT_SOURCE_DIR}/../../utils"
 )
 
 target_link_libraries(
