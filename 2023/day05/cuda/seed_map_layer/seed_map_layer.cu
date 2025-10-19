@@ -1,83 +1,148 @@
 #include "seed_map_layer.cuh"
 
-#include <assert.h>
+#include <stdio.h>
 
-#include <stdlib.h>
-
-#include "seed_map.cuh"
-
-void seed_map_layer_init(SEED_MAP_LAYER **seed_map_layer)
+SEED_MAP_LAYER *seed_map_layer_init()
 {
-    SEED_MAP_LAYER *temp;
-    *seed_map_layer = (SEED_MAP_LAYER *)calloc(1, sizeof(SEED_MAP_LAYER));
-    temp = *seed_map_layer;
-    temp->seed_maps = (SEED_MAP *)calloc(0, sizeof(SEED_MAP));
-    temp->num_seed_maps = 0;
+    SEED_MAP_LAYER *layer = (SEED_MAP_LAYER *)calloc(1, sizeof(SEED_MAP_LAYER));
+    layer->seed_maps = (SEED_MAP *)calloc(0, sizeof(SEED_MAP));
+    layer->num_seed_maps = 0;
+    return layer;
 }
 
 void seed_map_layer_term(SEED_MAP_LAYER *seed_map_layer)
 {
-    assert(seed_map_layer != NULL);
+    if(seed_map_layer == NULL)
+    {
+        return;
+    }
 
-    free(seed_map_layer->seed_maps);
+    if(seed_map_layer->seed_maps != NULL)
+    {
+        free(seed_map_layer->seed_maps);
+    }
 
     seed_map_layer->num_seed_maps = 0;
 
     free(seed_map_layer);
 }
 
-void seed_map_layers_term(SEED_MAP_LAYER **seed_map_layers, unsigned int num_seed_map_layers)
-{
-    for(unsigned int index = 0; index < num_seed_map_layers; index++)
-    {
-        seed_map_layer_term(seed_map_layers[index]);
-        seed_map_layers[index] = NULL;
-    }
-    free(seed_map_layers);
-    seed_map_layers = NULL;
-}
-
 void seed_map_layer_add_map(SEED_MAP_LAYER *seed_map_layer, SEED_MAP *seed_map)
 {
-    assert(seed_map_layer != NULL);
+    const uint64_t index = seed_map_layer->num_seed_maps;
+    ++seed_map_layer->num_seed_maps;
 
-    seed_map_layer->seed_maps = (SEED_MAP *)realloc(
-        seed_map_layer->seed_maps, 
-        (seed_map_layer->num_seed_maps + 2) * sizeof(SEED_MAP)
-    );
-    memcpy(
-        (seed_map_layer->seed_maps + seed_map_layer->num_seed_maps), 
-        seed_map, 
-        sizeof(SEED_MAP)
-    );
-    seed_map_layer->num_seed_maps += 1;
+    seed_map_layer->seed_maps = (SEED_MAP *)realloc(seed_map_layer->seed_maps, seed_map_layer->num_seed_maps * sizeof(SEED_MAP));
+    seed_map_layer->seed_maps[index] = *seed_map;
 }
 
-uint8_t *seed_map_layer_flatten(SEED_MAP_LAYER *seed_map_layer, uint32_t *size)
+void seed_map_layer_sort_maps(SEED_MAP_LAYER *seed_map_layer)
 {
-    uint8_t *result = (uint8_t *)calloc(seed_map_layer->num_seed_maps, sizeof(SEED_MAP));
-
-    memcpy(result, seed_map_layer->seed_maps, seed_map_layer->num_seed_maps * sizeof(SEED_MAP));
-
-    *size = seed_map_layer->num_seed_maps * sizeof(SEED_MAP);
-    return result;
+    uint64_t num_maps = seed_map_layer->num_seed_maps;
+    for (uint64_t index_1 = 0; index_1 < num_maps; index_1++)
+    {
+        for (uint64_t index_2 = 0; index_2 < num_maps - index_1 - 1; index_2++)
+        {
+            SEED_MAP seed_map_1 = seed_map_layer->seed_maps[index_2];
+            SEED_MAP seed_map_2 = seed_map_layer->seed_maps[index_2 + 1];
+            if(seed_map_1.source_start > seed_map_2.source_start)
+            {
+                SEED_MAP seed_map_temp = seed_map_1;
+                seed_map_layer->seed_maps[index_2] = seed_map_2;
+                seed_map_layer->seed_maps[index_2 + 1] = seed_map_temp;
+            }
+        }
+    }
 }
 
-SEED_MAP_LAYER *seed_map_layer_unflatten(uint8_t *data, uint32_t size)
+SEED seed_map_layer_map_seed(SEED_MAP_LAYER *seed_map_layer, SEED seed)
 {
-    uint32_t seed_map_layer_count = size / sizeof(SEED_MAP);
-    assert(size % sizeof(SEED_MAP) == 0);
+    SEED seed_val = seed;
+    for (uint64_t index = 0; index < seed_map_layer->num_seed_maps; index++)
+    {
+        SEED_MAP *curr_map = &seed_map_layer->seed_maps[index];
+        if(seed_map_map_seed(curr_map, &seed_val))
+        {
+            return seed_val;
+        }
+    }
+
+    return seed_val;
+}
+
+SEED_MAP_LAYERS *seed_map_layers_init()
+{
+    SEED_MAP_LAYERS *layers = (SEED_MAP_LAYERS *)calloc(1, sizeof(SEED_MAP_LAYERS));
+    layers->seed_map_layers = (SEED_MAP_LAYER **)calloc(0, sizeof(SEED_MAP_LAYER *));
+    layers->num_seed_map_layers = 0;
+    return layers;
+}
+
+void seed_map_layers_term(SEED_MAP_LAYERS *seed_map_layers)
+{
+    if(seed_map_layers == NULL)
+    {
+        return;
+    }
+
+    if(seed_map_layers->seed_map_layers != NULL)
+    {
+        for (uint64_t index = 0; index < seed_map_layers->num_seed_map_layers; index++)
+        {
+            seed_map_layer_term(seed_map_layers->seed_map_layers[index]);
+        }
+
+        free(seed_map_layers->seed_map_layers);
+    }
+
+    seed_map_layers->num_seed_map_layers = 0;
+
+    free(seed_map_layers);
+}
+
+void seed_map_layers_add_layer(SEED_MAP_LAYERS *seed_map_layers, SEED_MAP_LAYER *seed_map_layer)
+{
+    const uint64_t index = seed_map_layers->num_seed_map_layers;
+    ++seed_map_layers->num_seed_map_layers;
+
+    seed_map_layers->seed_map_layers = (SEED_MAP_LAYER **)realloc(seed_map_layers->seed_map_layers, seed_map_layers->num_seed_map_layers * sizeof(SEED_MAP_LAYER *));
+    seed_map_layers->seed_map_layers[index] = seed_map_layer;
+}
+
+SEED seed_map_layers_map_seed(SEED_MAP_LAYERS *seed_map_layers, SEED seed)
+{
+    SEED seed_val = seed;
+    for( uint64_t index = 0; index < seed_map_layers->num_seed_map_layers; index++)
+    {
+        SEED_MAP_LAYER *curr_layer = seed_map_layers->seed_map_layers[index];
+        seed_val = seed_map_layer_map_seed(curr_layer, seed_val);
+    }
+
+    return seed_val;
+}
+
+uint64_t *flatten_layers(SEED_MAP_LAYERS *seed_map_layers, uint64_t *seed_map_layers_sizes, uint64_t *total_size)
+{
+    uint64_t total_map_count = 0;
+    for(uint64_t index_1 = 0; index_1 < seed_map_layers->num_seed_map_layers; index_1++)
+    {
+        uint64_t num_maps = seed_map_layers->seed_map_layers[index_1]->num_seed_maps;
+        seed_map_layers_sizes[index_1] = num_maps;
+        total_map_count += num_maps;
+    }
+
+    *total_size = total_map_count * 5;
+
+    uint64_t *flat_layers = (uint64_t *)calloc(*total_size, sizeof(uint64_t));
+
+    uint64_t overall_index = 0;
+    for(uint64_t index_1 = 0; index_1 < seed_map_layers->num_seed_map_layers; index_1++)
+    {
+        SEED_MAP_LAYER *curr_layer = seed_map_layers->seed_map_layers[index_1];
+        memcpy((flat_layers + overall_index), curr_layer->seed_maps, curr_layer->num_seed_maps * 5 * sizeof(uint64_t));
     
-    SEED_MAP_LAYER *seed_map_layer = (SEED_MAP_LAYER *)calloc(1, sizeof(SEED_MAP_LAYER));
-    seed_map_layer->seed_maps = (SEED_MAP *)calloc(seed_map_layer_count + 1, sizeof(SEED_MAP));
-    memcpy(seed_map_layer->seed_maps, data, sizeof(uint8_t) * size);
+        overall_index += (curr_layer->num_seed_maps) * 5;
+    }
 
-    seed_map_layer->num_seed_maps = seed_map_layer_count;
-
-    return seed_map_layer;
-}
-
-__device__ void seed_map_layer_map_seed(SEED_MAP_LAYER *seed_map_layer, uint32_t seed)
-{
-
+    return flat_layers;
 }

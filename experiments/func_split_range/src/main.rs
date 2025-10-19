@@ -49,10 +49,12 @@ pub fn split_range(input_range: &SeedRange, new_max_size: u64) -> Vec<SeedRange>
 pub fn find_ideal_size(range_len: &u64, new_max_size: &u64) -> u64 {
 
     if *new_max_size == 1 {
+        println!("a");
         return 1;
     }
 
     if *range_len <= *new_max_size {
+        println!("b");
         return *range_len;
     }
 
@@ -60,28 +62,28 @@ pub fn find_ideal_size(range_len: &u64, new_max_size: &u64) -> u64 {
     let initial_attempt_rem = range_len % new_max_size;
 
     if initial_attempt_rem == 0 {
+        println!("c");
         return *new_max_size;
     }
 
     if (initial_attempt == 2) && (initial_attempt_rem == 0)
     {
+        println!("d");
         return *range_len / 2;
     }
 
-    let next_max_size = new_max_size - 1;
-    let next_attempt = range_len / next_max_size;
-    let next_attempt_rem = range_len % next_max_size;
+    let divisor = initial_attempt + 1;
+    let new_size_initial = range_len / divisor;
+    let new_size_initial_rem = range_len % divisor;
 
-    if (next_attempt == (initial_attempt + 1)) && (next_attempt_rem == 0)
+    if new_size_initial_rem == 0
     {
-        return next_max_size;
+        println!("e");
+        return new_size_initial;
     }
-
-    if next_attempt > initial_attempt
-    {
-        return *new_max_size;
-    }
-    return find_ideal_size(range_len, &(*new_max_size - 1));
+    
+    println!("f");
+    return new_size_initial + 1;
 }
 
 
@@ -443,41 +445,41 @@ mod tests {
 
     #[test]
     fn find_ideal_size_large_numbers() {
-        assert_eq!(find_ideal_size(&302170009, &100000000), 4);
+        assert_eq!(find_ideal_size(&302170009, &100000000), 75542503);
 
-        // assert_eq!(find_ideal_size(&48290258, &10000000), 5);
+        assert_eq!(find_ideal_size(&48290258, &10000000), 9658052);
 
-        // assert_eq!(find_ideal_size(&243492043, &100000000), 3);
+        assert_eq!(find_ideal_size(&243492043, &100000000), 81164015);
 
-        // assert_eq!(find_ideal_size(&385349830, &100000000), 4);
+        assert_eq!(find_ideal_size(&385349830, &100000000), 96337458);
 
-        // assert_eq!(find_ideal_size(&350474859, &100000000), 4);
+        assert_eq!(find_ideal_size(&350474859, &100000000), 87618715);
 
-        // assert_eq!(find_ideal_size(&17565716, &10000000), 2);
+        assert_eq!(find_ideal_size(&17565716, &10000000), 8782858);
 
-        // assert_eq!(find_ideal_size(&291402104, &100000000), 3);
+        assert_eq!(find_ideal_size(&291402104, &100000000), 97134035);
 
-        // assert_eq!(find_ideal_size(&279196488, &100000000), 3);
+        assert_eq!(find_ideal_size(&279196488, &100000000), 93065496);
 
-        // assert_eq!(find_ideal_size(&47952959, &10000000), 5);
+        assert_eq!(find_ideal_size(&47952959, &10000000), 9590592);
 
-        // assert_eq!(find_ideal_size(&9607836, &1000000), 10);
+        assert_eq!(find_ideal_size(&9607836, &1000000), 960784);
 
-        // assert_eq!(find_ideal_size(&302170009, &10000000), 31);
+        assert_eq!(find_ideal_size(&302170009, &10000000), 9747420);
 
-        // assert_eq!(find_ideal_size(&302170009, &1000000), 303);
+        assert_eq!(find_ideal_size(&302170009, &1000000), 997261);
 
-        // assert_eq!(find_ideal_size(&302170009, &100000), 3022);
+        assert_eq!(find_ideal_size(&302170009, &100000), 99991);
 
-        // assert_eq!(find_ideal_size(&302170009, &10000), 30218);
+        assert_eq!(find_ideal_size(&302170009, &10000), 10000);
 
-        // assert_eq!(find_ideal_size(&302170009, &1000), 302171);
+        assert_eq!(find_ideal_size(&302170009, &1000), 1000);
 
-        // assert_eq!(find_ideal_size(&302170009, &100), 3021701);
+        assert_eq!(find_ideal_size(&302170009, &100), 100);
 
-        // assert_eq!(find_ideal_size(&302170009, &10), 30217001);
+        assert_eq!(find_ideal_size(&302170009, &10), 10);
 
-        // assert_eq!(find_ideal_size(&302170009, &1), 302170009);
+        assert_eq!(find_ideal_size(&302170009, &1), 1);
     }
 
     #[test]

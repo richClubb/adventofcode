@@ -1,249 +1,194 @@
 #include "part_a.cuh"
 
-#include <cuda.h>
-
 #include <assert.h>
-#include <stdint.h>
 #include <stdio.h>
+#include <stdint.h>
 
-#include "seed_map.cuh"
+#include "seed.cuh"
 #include "seed_map_layer.cuh"
-#include "utils.cuh"
 
 const uint32_t block_count = 1;
-const uint32_t thread_count = 10;
 
-__global__ void part_a_kernel(
-    uint8_t *flat_seed_map_layers,
-    uint32_t flat_seed_map_layers_size,
-    uint32_t *seed_map_layer_sizes,
-    uint32_t num_seed_map_layers,
-    uint64_t *seed_values,
-    uint32_t num_seeds,
-    uint64_t *result
-)
+void injest_file(const char *file_path, SEED **seeds, uint64_t *num_seeds, SEED_MAP_LAYERS *seed_map_layers)
 {
-    const uint32_t blockId = blockIdx.x;
-    const uint32_t threadId = threadIdx.x;
-
-    //uint64_t *flat_seed_map_layers_ptr;
-
-    uint64_t seed_value = seed_values[threadId];
-    result[threadId] = 0;
-
-    if(seed_value == 0)
-    {
-        return;
-    }
-
-    printf("Initial value %lu\n", seed_value);
-    uint32_t flat_seed_map_layers_index_ptr = 0;
-    for(uint32_t index_1 = 0; index_1 < num_seed_map_layers; index_1++)
-    {
-        uint32_t seed_map_layer_size = seed_map_layer_sizes[index_1];
-        uint32_t num_maps = seed_map_layer_size / sizeof(SEED_MAP);
-        bool layer_match_found = false;
-        
-        for (uint32_t index_2 = 0; index_2 < num_maps; index_2++)
-        {
-            uint64_t map_offset = flat_seed_map_layers_index_ptr + (index_2 * sizeof(SEED_MAP));
-            printf("map_offset %lu\n", map_offset);
-            uint64_t *source = (uint64_t *)(flat_seed_map_layers + (map_offset));
-            uint64_t *target = (uint64_t *)(flat_seed_map_layers + (map_offset + ( 1 * sizeof(uint64_t))));
-            uint64_t *size =   (uint64_t *)(flat_seed_map_layers + (map_offset + ( 2 * sizeof(uint64_t))));
-
-            printf("source %lu\n", *source);
-            if (
-                (seed_value >= *source) && 
-                (seed_value < *source + *size)
-            )
-            {
-                layer_match_found = true;
-                seed_value = (seed_value - *source) + *target;
-                break;
-            }
-        }
-        flat_seed_map_layers_index_ptr += seed_map_layer_sizes[index_1];
-
-        if (layer_match_found)
-        {
-            continue;
-        }
-    }
-
-    printf("Final value: %lu\n", seed_value);
-    result[threadId] = seed_value;
-}
-
-
-uint64_t part_a(const CONFIG *config)
-{
-    FILE *input_file = fopen(config->input_file_path, "r");
+    FILE *input_file = fopen(file_path, "r");
 
     // bomb out if the file is NULL
     assert(input_file != NULL);
 
-    uint64_t *seeds;
-    unsigned int num_seeds;
-    // check for memory usage
-    SEED_MAP_LAYER **seed_map_layers = (SEED_MAP_LAYER **)calloc(1, sizeof(SEED_MAP_LAYER *));
-    unsigned int num_seed_map_layers = 0;
+    SEED_MAP_LAYER *curr_layer;
 
     for(
         char line[256]; 
         fgets(line, sizeof(line), input_file) != NULL;
     ) 
     {
-        SEED_MAP_LAYER *curr_layer;
-        if ( strlen(line) == 1 )
+        if ( strlen(line) <= 1 )
         {
+            // empty line skip
             continue;
         }
 
         if ( strstr(line, "seeds:") != NULL )
         {
-            seeds = get_seeds(line, &num_seeds);
-            
-            assert(seeds != NULL);
-            
+            *seeds = seed_get_seeds_from_line(line, num_seeds);
             continue;
         }
 
         if ( strstr(line, ":") != NULL )
         {
-            //memory check
-            seed_map_layers = (SEED_MAP_LAYER **)realloc(seed_map_layers, sizeof(SEED_MAP_LAYER *) * (num_seed_map_layers + 2));
-
-            seed_map_layers[num_seed_map_layers] = NULL;
-            seed_map_layer_init(&seed_map_layers[num_seed_map_layers]);
-            curr_layer = seed_map_layers[num_seed_map_layers];
-            
-            num_seed_map_layers += 1;
-            
+            curr_layer = seed_map_layer_init();
+            seed_map_layers_add_layer(seed_map_layers, curr_layer);
             continue;
         }
 
-        //if nothing else then it must be a seed map line
-        SEED_MAP *seed_map = get_seed_map(line);
-        seed_map_layer_add_map(curr_layer, seed_map);
+        SEED_MAP *curr_map = seed_map_from_string(line);
+        seed_map_layer_add_map(curr_layer, curr_map);
+        free(curr_map);
     }
 
     fclose(input_file);
+}
 
-    uint32_t flat_seed_map_layers_size = 0;
-    uint8_t *flat_seed_map_layers = (uint8_t *)calloc(0, sizeof(uint8_t));
+__global__ void part_a_kernel(
+    uint64_t *seeds_flattened,
+    uint64_t num_seeds,
+    uint64_t *seed_map_layer_sizes,
+    uint64_t num_seed_map_layers,
+    uint64_t *flat_seed_map_layers,
+    uint64_t flat_seed_map_layers_size,
+    uint64_t *result
+)
+{
+    const uint32_t block_id = blockIdx.x;
+    const uint32_t thread_id = threadIdx.x;
 
-    uint32_t *map_layer_sizes = (uint32_t *)calloc(num_seed_map_layers, sizeof(uint32_t));
-    for (uint32_t index = 0; index < num_seed_map_layers; index++)
+    SEED seed_value = seeds_flattened[thread_id];
+
+    uint64_t layer_index = 0;
+    for (uint64_t index_1 = 0; index_1 < num_seed_map_layers; index_1++)
     {
-        uint32_t flat_map_layer_size = 0;
-        uint8_t *flat_map_layer = seed_map_layer_flatten(seed_map_layers[index], &flat_map_layer_size);
-        map_layer_sizes[index] = flat_map_layer_size;
-
-        flat_seed_map_layers_size += flat_map_layer_size;
-        flat_seed_map_layers = (uint8_t *)realloc(
-            flat_seed_map_layers, 
-            (flat_seed_map_layers_size * sizeof(uint8_t))
-        );
-        memcpy(flat_seed_map_layers + (flat_seed_map_layers_size - flat_map_layer_size), flat_map_layer, flat_map_layer_size);
-    }
-
-    uint8_t *gpu_seed_map_input;
-    cudaMalloc(
-        &gpu_seed_map_input, 
-        flat_seed_map_layers_size * sizeof(uint8_t)
-    );
-    cudaMemcpy(
-        gpu_seed_map_input, 
-        flat_seed_map_layers, 
-        flat_seed_map_layers_size * sizeof(uint8_t), 
-        cudaMemcpyHostToDevice
-    );
-
-    uint32_t *gpu_seed_map_sizes;
-    cudaMalloc(
-        &gpu_seed_map_sizes, 
-        flat_seed_map_layers_size * sizeof(uint8_t)
-    );
-    cudaMemcpy(
-        gpu_seed_map_sizes, 
-        map_layer_sizes, 
-        num_seed_map_layers * sizeof(uint32_t), 
-        cudaMemcpyHostToDevice
-    );
-
-    uint64_t min_value = UINT64_MAX;
-    uint32_t seeds_remaining = num_seeds;
-    uint32_t seed_index = 0;
-    
-    while(seeds_remaining)
-    {
-        uint64_t *batch_seeds = (uint64_t *)calloc(thread_count, sizeof(uint64_t));
-        uint32_t batch_count = 0;
-
-        if(seeds_remaining >= thread_count)
+        uint64_t num_maps = seed_map_layer_sizes[index_1];
+        for (uint64_t index_2 = 0; index_2 < num_maps; index_2++)
         {
-            memcpy(batch_seeds, (seeds + seed_index), thread_count * sizeof(uint64_t));
-            seeds_remaining -= thread_count;
-            batch_count = thread_count;
-            seed_index += thread_count;
-        }
-        else
-        {
-            memcpy(batch_seeds, (seeds + seed_index), seeds_remaining * sizeof(uint64_t));
-            batch_count = seeds_remaining;
-            seeds_remaining = 0;
-        }
+            uint64_t map_index = (5 * index_2);
+            uint64_t source_start = *(flat_seed_map_layers + layer_index + map_index + 0);
+            uint64_t source_end = *(flat_seed_map_layers + layer_index + map_index + 1);
+            uint64_t target_start = *(flat_seed_map_layers + layer_index + map_index + 2);
 
-        uint64_t *gpu_seeds;
-        cudaMalloc(
-            &gpu_seeds, 
-            thread_count * sizeof(uint64_t)
-        );
-
-        cudaMemcpy(
-            gpu_seeds, 
-            batch_seeds, 
-            thread_count * sizeof(uint64_t), 
-            cudaMemcpyHostToDevice
-        );
-
-        uint64_t *gpu_result;
-        cudaMalloc(&gpu_result, batch_count * sizeof(uint64_t));
-
-        part_a_kernel <<<block_count, thread_count>>>(
-            gpu_seed_map_input,
-            flat_seed_map_layers_size,
-            gpu_seed_map_sizes, 
-            num_seed_map_layers,
-            gpu_seeds,
-            batch_count,
-            gpu_result
-        );
-
-        cudaDeviceSynchronize();
-
-        uint64_t *results = (uint64_t *)calloc(thread_count, sizeof(uint64_t));
-        cudaMemcpy(results, gpu_result, batch_count * sizeof(uint64_t), cudaMemcpyDeviceToHost);
-
-        for(uint32_t index = 0; index < batch_count; index++)
-        {
-            //printf("%lu\n", results[index]);
-            if (results[index] < min_value)
+            if ((seed_value >= source_start) && (seed_value < source_end))
             {
-                min_value = results[index];
+                seed_value = seed_value - source_start + target_start;
+                break;
             }
         }
-        
-        free(results);
-        free(batch_seeds);
-        cudaFree(gpu_seeds);
-        cudaFree(gpu_result);
+        layer_index += num_maps * 5;
+    }
+    
+    result[thread_id] = seed_value;
+}
+
+uint64_t part_a(const CONFIG* config)
+{
+    SEED *seeds;
+    uint64_t num_seeds = 0;
+
+    SEED_MAP_LAYERS *seed_map_layers = seed_map_layers_init();
+
+    injest_file(config->input_file_path, &seeds, &num_seeds, seed_map_layers);
+
+    uint64_t *gpu_seeds;
+    cudaMalloc(&gpu_seeds, num_seeds * sizeof(SEED));
+
+    cudaMemcpy(
+        gpu_seeds, 
+        seeds, 
+        num_seeds * sizeof(SEED), 
+        cudaMemcpyHostToDevice
+    );
+    free(seeds);
+
+    uint64_t flat_layers_total_size = 0;
+    uint64_t *seed_map_layers_sizes = (uint64_t *)calloc(seed_map_layers->num_seed_map_layers, sizeof(uint64_t));
+    uint64_t *flattened_seed_map_layers = flatten_layers(seed_map_layers, seed_map_layers_sizes, &flat_layers_total_size);
+
+    uint64_t *gpu_seed_map_layers_sizes;
+    cudaMalloc(&gpu_seed_map_layers_sizes, seed_map_layers->num_seed_map_layers * sizeof(uint64_t));
+
+    cudaMemcpy(
+        gpu_seed_map_layers_sizes,
+        seed_map_layers_sizes,
+        seed_map_layers->num_seed_map_layers * sizeof(uint64_t),
+        cudaMemcpyHostToDevice
+    );
+
+    uint64_t *gpu_flat_seed_map_layers;
+    cudaMalloc(&gpu_flat_seed_map_layers, flat_layers_total_size * sizeof(uint64_t));
+
+    cudaMemcpy(
+        gpu_flat_seed_map_layers,
+        flattened_seed_map_layers,
+        flat_layers_total_size * sizeof(uint64_t),
+        cudaMemcpyHostToDevice
+    );
+
+    uint64_t *gpu_result;
+    cudaMalloc(&gpu_result, num_seeds * sizeof(SEED));
+
+    part_a_kernel <<<block_count, num_seeds>>>(
+        gpu_seeds,
+        num_seeds,
+        gpu_seed_map_layers_sizes,
+        seed_map_layers->num_seed_map_layers,
+        gpu_flat_seed_map_layers,
+        flat_layers_total_size,
+        gpu_result
+    );
+
+    cudaDeviceSynchronize();
+    
+    cudaFree(gpu_seeds);
+
+    SEED min_value = UINT64_MAX;
+
+    uint64_t *results = (uint64_t *)calloc(num_seeds, sizeof(SEED));
+    cudaMemcpy(results, gpu_result, num_seeds * sizeof(SEED), cudaMemcpyDeviceToHost);
+
+    for(uint32_t index = 0; index < num_seeds; index++)
+    {
+        if (results[index] < min_value)
+        {
+            min_value = results[index];
+        }
     }
 
-    seed_map_layers_term(seed_map_layers, num_seed_map_layers);
+    cudaFree(gpu_result);
+    free(results);
+
+    seed_map_layers_term(seed_map_layers);
+    
+    return min_value;
+}
+
+uint64_t part_a_non_kernel(const CONFIG* config)
+{
+    SEED *seeds;
+    uint64_t num_seeds = 0;
+
+    SEED_MAP_LAYERS *seed_map_layers = seed_map_layers_init();
+
+    injest_file(config->input_file_path, &seeds, &num_seeds, seed_map_layers);
+
+    SEED min_value = UINT64_MAX;
+    for(uint64_t index = 0; index < num_seeds; index++)
+    {
+        uint64_t result = seed_map_layers_map_seed(seed_map_layers, seeds[index]);
+
+        if (result < min_value) min_value = result;
+    }
 
     free(seeds);
+    seed_map_layers_term(seed_map_layers);
     
     return min_value;
 }
