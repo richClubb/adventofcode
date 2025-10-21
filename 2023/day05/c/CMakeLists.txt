@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.25)
 
 project(day5)
 
-set(CMAKE_C_FLAGS "-O3")
+set(CMAKE_C_FLAGS "-O3 -fopenmp")
+
+find_package(OpenMP)
 
 add_executable(
     "${PROJECT_NAME}"
@@ -27,4 +29,10 @@ target_include_directories(
     "${PROJECT_SOURCE_DIR}/seed_map_layer/"
     "${PROJECT_SOURCE_DIR}/seed_range/"
     "${PROJECT_SOURCE_DIR}/utils/"
+)
+
+target_link_libraries(
+    "${PROJECT_NAME}" 
+    PUBLIC 
+    "OpenMP::OpenMP_CXX"
 )

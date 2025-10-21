@@ -5,5 +5,6 @@
 #include "config.h"
 
 unsigned long part_b(const CONFIG *config);
+unsigned long part_b_parallel(const CONFIG *config);
 
 #endif 
