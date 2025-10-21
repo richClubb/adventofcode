@@ -8,6 +8,9 @@
 #include "seed_range.cuh"
 #include "seed_map_layer.cuh"
 
+#define BLOCK_COUNT 3
+#define THREAD_COUNT 1000
+
 void injest_file(const char *file_path, SEED_RANGE **seed_ranges, uint64_t *num_seed_ranges, SEED_MAP_LAYERS *seed_map_layers)
 {
     FILE *input_file = fopen(file_path, "r");
@@ -62,10 +65,12 @@ __global__ void part_b_kernel(
     const uint32_t block_id = blockIdx.x;
     const uint32_t thread_id = threadIdx.x;
 
+    const uint64_t thread_index = (block_id * 1000) + thread_id;
+
     SEED_RANGE *temp_seed_ranges = (SEED_RANGE *)seed_ranges;
 
-    uint64_t seed_start = temp_seed_ranges[thread_id].start;
-    uint64_t seed_end = temp_seed_ranges[thread_id].start + temp_seed_ranges[thread_id].size;
+    uint64_t seed_start = temp_seed_ranges[thread_index].start;
+    uint64_t seed_end = temp_seed_ranges[thread_index].start + temp_seed_ranges[thread_index].size;
 
     uint64_t min_value = UINT64_MAX;
     for(uint64_t seed = seed_start; seed < seed_end; seed++)
@@ -94,7 +99,7 @@ __global__ void part_b_kernel(
         if (seed_value < min_value) min_value = seed_value;
     }
 
-    result[thread_id] = min_value;
+    result[thread_index] = min_value;
 }
 
 uint64_t part_b(const CONFIG* config)
@@ -108,11 +113,19 @@ uint64_t part_b(const CONFIG* config)
 
     sort_seed_ranges_by_size(seed_ranges, num_seed_ranges);
     
-    SEED_RANGE *new_seed_ranges = split_seed_ranges_by_number(seed_ranges, &num_seed_ranges, 1000);
+    SEED_RANGE *new_seed_ranges = split_seed_ranges_by_number(seed_ranges, &num_seed_ranges, BLOCK_COUNT * THREAD_COUNT);
     free(seed_ranges);
 
     uint64_t *gpu_seed_ranges;
-    cudaMalloc(&gpu_seed_ranges, num_seed_ranges * sizeof(SEED_RANGE));
+    cudaMalloc(&gpu_seed_ranges, BLOCK_COUNT * THREAD_COUNT * sizeof(SEED_RANGE));
+
+    cudaMemcpy(
+        gpu_seed_ranges, 
+        new_seed_ranges, 
+        num_seed_ranges * sizeof(SEED_RANGE), 
+        cudaMemcpyHostToDevice
+    );
+    free(new_seed_ranges);
 
     uint64_t flat_layers_total_size = 0;
     uint64_t *seed_map_layers_sizes = (uint64_t *)calloc(seed_map_layers->num_seed_map_layers, sizeof(uint64_t));
@@ -141,17 +154,9 @@ uint64_t part_b(const CONFIG* config)
     free(flattened_seed_map_layers);
 
     uint64_t *gpu_result;
-    cudaMalloc(&gpu_result, num_seed_ranges * sizeof(uint64_t));
+    cudaMalloc(&gpu_result, BLOCK_COUNT * THREAD_COUNT * sizeof(uint64_t));
 
-    cudaMemcpy(
-        gpu_seed_ranges, 
-        new_seed_ranges, 
-        num_seed_ranges * sizeof(SEED_RANGE), 
-        cudaMemcpyHostToDevice
-    );
-    free(new_seed_ranges);
-
-    part_b_kernel <<<1, num_seed_ranges>>>(
+    part_b_kernel <<<BLOCK_COUNT, THREAD_COUNT>>>(
         gpu_seed_ranges,
         gpu_seed_map_layers_sizes,
         seed_map_layers->num_seed_map_layers,
@@ -169,11 +174,13 @@ uint64_t part_b(const CONFIG* config)
 
     SEED min_value = UINT64_MAX;
 
-    uint64_t *results = (uint64_t *)calloc(num_seed_ranges, sizeof(SEED));
+    uint64_t *results = (uint64_t *)calloc(BLOCK_COUNT * THREAD_COUNT, sizeof(SEED));
     cudaMemcpy(results, gpu_result, num_seed_ranges * sizeof(SEED), cudaMemcpyDeviceToHost);
 
-    for(uint32_t index = 0; index < num_seed_ranges; index++)
+    for(uint32_t index = 0; index < BLOCK_COUNT * THREAD_COUNT; index++)
     {
+        if (results[index] == 0) continue;
+
         if (results[index] < min_value) min_value = results[index];
     }
 
