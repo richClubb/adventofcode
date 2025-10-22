@@ -22,7 +22,7 @@ uint64_t part_a(const CONFIG *config)
     uint64_t num_seeds;
 
     // check for memory usage
-    SEED_MAP_LAYER **seed_map_layers = (SEED_MAP_LAYER **)malloc(sizeof(SEED_MAP_LAYER *) * 1);
+    SEED_MAP_LAYER **seed_map_layers = (SEED_MAP_LAYER **)calloc(1, sizeof(SEED_MAP_LAYER *));
     uint64_t seed_map_layers_index = 0;
 
     char line[256];
