@@ -30,9 +30,9 @@ int main(int argc, char **argv)
 
         printf("Part B: min value is '%lu'\n", part_b_min);
     }
-    else if(strcmp(config.run_type, "part_b_parallel") == 0)
+    else if(strcmp(config.run_type, "part_b_openmp") == 0)
     {
-        printf("Running Part B\n");
+        printf("Running Part B openmp\n");
         unsigned long part_b_min = part_b_parallel(&config);
 
         printf("Part B: min value is '%lu'\n", part_b_min);

@@ -23,8 +23,8 @@ SEED_MAP *get_seed_map(char *line)
 {
     SEED_MAP *seed_map = (SEED_MAP *)calloc(1, sizeof(SEED_MAP));
 
-    unsigned int length = 0;
-    unsigned long *map_values = extract_number_list(line, &length);
+    uint64_t length = 0;
+    uint64_t *map_values = extract_number_list(line, &length);
 
     seed_map->source = map_values[1];
     seed_map->target = map_values[0];
@@ -35,7 +35,7 @@ SEED_MAP *get_seed_map(char *line)
     return seed_map;
 }
 
-bool seed_map_map_seed(const SEED_MAP *seed_map, unsigned long *seed_value)
+bool seed_map_map_seed(const SEED_MAP *seed_map, uint64_t *seed_value)
 {
     if (
         (*seed_value >= seed_map->source) && 

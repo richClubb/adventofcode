@@ -11,18 +11,19 @@
 #include "seed_map_layer.h"
 #include "utils.h"
 
-unsigned long part_a(const CONFIG *config)
+uint64_t part_a(const CONFIG *config)
 {
     FILE *input_file = fopen(config->input_file_path, "r");
 
     // bomb out if the file is NULL
     assert(input_file != NULL);
 
-    unsigned long *seeds;
-    unsigned int num_seeds;
+    uint64_t *seeds;
+    uint64_t num_seeds;
+
     // check for memory usage
     SEED_MAP_LAYER **seed_map_layers = (SEED_MAP_LAYER **)malloc(sizeof(SEED_MAP_LAYER *) * 1);
-    unsigned int seed_map_layers_index = 0;
+    uint64_t seed_map_layers_index = 0;
 
     char line[256];
     for(
@@ -67,13 +68,13 @@ unsigned long part_a(const CONFIG *config)
         seed_map_layer_add_seed_map(curr_layer, seed_map);
     }
 
-    unsigned long curr_seed_value = 0;
-    unsigned long curr_seed_min = ULONG_MAX;
-    for (int seed_index = 0; seed_index < num_seeds; seed_index++)
+    uint64_t curr_seed_value = 0;
+    uint64_t curr_seed_min = ULONG_MAX;
+    for (uint64_t seed_index = 0; seed_index < num_seeds; seed_index++)
     {
         curr_seed_value = seeds[seed_index];
 
-        for(int seed_map_layer_index = 0; seed_map_layer_index < seed_map_layers_index; seed_map_layer_index++)
+        for(uint64_t seed_map_layer_index = 0; seed_map_layer_index < seed_map_layers_index; seed_map_layer_index++)
         {
             SEED_MAP_LAYER *curr_seed_map_layer = seed_map_layers[seed_map_layer_index];
             seed_map_layer_map_seed(curr_seed_map_layer, &curr_seed_value);

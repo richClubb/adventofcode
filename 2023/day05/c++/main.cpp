@@ -26,6 +26,13 @@ int main(int argc, char **argv)
 
         printf("Part A: min value is '%lu'\n", part_a_min);
     }
+    else if(strcmp(config.run_type, "part_a_openmp") == 0)
+    {
+        printf("Running Part A openmp\n");
+        unsigned long part_a_min = part_a_openmp(config);
+
+        printf("Part A: min value is '%lu'\n", part_a_min);
+    }
     else if(strcmp(config.run_type, "part_b_ptr") == 0)
     {
         printf("Running Part B ptr version\n");
@@ -37,6 +44,13 @@ int main(int argc, char **argv)
     {
         printf("Running Part B optional version\n");
         unsigned long part_b_min = part_b_optional_version(config);
+
+        printf("Part B: min value is '%lu'\n", part_b_min);
+    }
+    else if(strcmp(config.run_type, "part_b_openmp") == 0)
+    {
+        printf("Running Part B openmp version\n");
+        unsigned long part_b_min = part_b_openmp(config);
 
         printf("Part B: min value is '%lu'\n", part_b_min);
     }

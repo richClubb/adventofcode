@@ -13,7 +13,6 @@
 #include "seed_range.h"
 #include "utils.h"
 
-
 uint64_t part_b(const CONFIG *config)
 {
     FILE *input_file = fopen(config->input_file_path, "r");

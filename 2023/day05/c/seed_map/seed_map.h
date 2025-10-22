@@ -4,6 +4,7 @@
 
 #include <stdbool.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 typedef struct seed_map_t
 {
@@ -18,6 +19,6 @@ void seed_map_init(SEED_MAP **seed_map);
 
 void seed_map_term(SEED_MAP *seed_map);
 
-bool seed_map_map_seed(const SEED_MAP *seed_map, unsigned long *seed_value);
+bool seed_map_map_seed(const SEED_MAP *seed_map, uint64_t *seed_value);
 
 #endif

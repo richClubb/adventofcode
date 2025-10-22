@@ -2,8 +2,10 @@
 
 #define __UTILS_H__
 
-unsigned long *get_seeds(const char *line, unsigned int *num_seeds);
+#include <stdint.h>
 
-unsigned long *extract_number_list(const char *number_string, unsigned int *length);
+uint64_t *get_seeds(const char *line, uint64_t *num_seeds);
+
+uint64_t *extract_number_list(const char *number_string, uint64_t *length);
 
 #endif

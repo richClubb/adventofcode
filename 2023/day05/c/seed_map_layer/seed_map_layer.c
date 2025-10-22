@@ -46,9 +46,9 @@ void seed_map_layer_term(SEED_MAP_LAYER *seed_map_layer)
     seed_map_layer = NULL;
 }
 
-void seed_map_layers_term(SEED_MAP_LAYER **seed_map_layers, unsigned int num_seed_map_layers)
+void seed_map_layers_term(SEED_MAP_LAYER **seed_map_layers, uint64_t num_seed_map_layers)
 {
-    for(unsigned int index = 0; index < num_seed_map_layers; index++)
+    for(uint64_t index = 0; index < num_seed_map_layers; index++)
     {
         seed_map_layer_term(seed_map_layers[index]);
         seed_map_layers[index] = NULL;
@@ -65,7 +65,7 @@ void seed_map_layer_add_seed_map(SEED_MAP_LAYER *seed_map_layer, SEED_MAP *seed_
     seed_map_layer->seed_map_count += 1;
 }
 
-bool seed_map_layer_map_seed(const SEED_MAP_LAYER *seed_map_layer, unsigned long *seed_value)
+bool seed_map_layer_map_seed(const SEED_MAP_LAYER *seed_map_layer, uint64_t *seed_value)
 {
     // if this seed_map layer is null then fail
     assert(seed_map_layer != NULL);
@@ -74,7 +74,7 @@ bool seed_map_layer_map_seed(const SEED_MAP_LAYER *seed_map_layer, unsigned long
     assert(seed_map_layer->seed_map_count != 0);
 
     for(
-        unsigned int index = 0; 
+        uint64_t index = 0; 
         index < seed_map_layer->seed_map_count; 
         index++
     )
