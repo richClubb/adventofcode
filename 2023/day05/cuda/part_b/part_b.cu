@@ -8,8 +8,9 @@
 #include "seed_range.cuh"
 #include "seed_map_layer.cuh"
 
+// I'm running this on a RTX 2000 series mobile gpu with 3072 cores
 #define BLOCK_COUNT 3
-#define THREAD_COUNT 1000
+#define THREAD_COUNT 1024
 
 void injest_file(const char *file_path, SEED_RANGE **seed_ranges, uint64_t *num_seed_ranges, SEED_MAP_LAYERS *seed_map_layers)
 {

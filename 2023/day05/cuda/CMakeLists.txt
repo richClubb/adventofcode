@@ -6,6 +6,8 @@ find_package(CUDA)
 
 # can we add in a test target to run all the other tests?
 
+# set(CMAKE_CUDA_FLAGS "-Xptxas -O3")
+
 add_executable(
     ${PROJECT_NAME}
     "${PROJECT_SOURCE_DIR}/main.cu"
