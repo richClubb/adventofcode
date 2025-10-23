@@ -13,20 +13,21 @@
 #include "seed_range.h"
 #include "utils.h"
 
-uint64_t part_b(const CONFIG *config)
+void injest_file_part_b(
+    const char *input_file_path, 
+    SEED_RANGE **seed_ranges_ptr, uint64_t *num_seed_ranges,
+    SEED_MAP_LAYER ***seed_map_layers_ptr, uint64_t *num_seed_map_layers
+)
 {
-    FILE *input_file = fopen(config->input_file_path, "r");
+    FILE *input_file = fopen(input_file_path, "r");
 
     // bomb out if the file is NULL
     assert(input_file != NULL);
 
-    SEED_RANGE *seed_ranges;
-    uint64_t num_seed_ranges;
-
-    // check for memory usage
-    SEED_MAP_LAYER **seed_map_layers = (SEED_MAP_LAYER **)malloc(sizeof(SEED_MAP_LAYER *) * 1);
+    *seed_map_layers_ptr = (SEED_MAP_LAYER **)calloc(1, sizeof(SEED_MAP_LAYER *));
     uint64_t seed_map_layers_index = 0;
 
+    SEED_MAP_LAYER *curr_layer = NULL;
     char line[256];
     for(
         char line[256]; 
@@ -41,31 +42,54 @@ uint64_t part_b(const CONFIG *config)
 
         if ( strstr(line, "seeds:") != NULL )
         {
-            seed_ranges = get_seed_ranges(line, &num_seed_ranges);
+            *seed_ranges_ptr = get_seed_ranges(line, num_seed_ranges);
+            
+            assert(*seed_ranges_ptr != NULL);
+            
             continue;
         }
 
         if ( strstr(line, ":") != NULL )
         {
-            // memory check
-            seed_map_layers = (SEED_MAP_LAYER **)realloc(seed_map_layers, sizeof(SEED_MAP_LAYER *) * (seed_map_layers_index + 2));
+            (*seed_map_layers_ptr) = (SEED_MAP_LAYER **)realloc(*seed_map_layers_ptr, sizeof(SEED_MAP_LAYER *) * (seed_map_layers_index + 2));
 
-            seed_map_layers[seed_map_layers_index] = NULL;
-            seed_map_layer_init(&seed_map_layers[seed_map_layers_index]);
-            curr_layer = seed_map_layers[seed_map_layers_index];
+            (*seed_map_layers_ptr)[seed_map_layers_index] = NULL;
+            (*seed_map_layers_ptr)[seed_map_layers_index + 1] = NULL;
+
+            seed_map_layer_init(&(*seed_map_layers_ptr)[seed_map_layers_index]);
+            // (*seed_map_layers_ptr)[seed_map_layers_index] = (SEED_MAP_LAYER *)calloc(1, sizeof(SEED_MAP_LAYER));
+            // (*seed_map_layers_ptr)[seed_map_layers_index]->seed_map_count = seed_map_layers_index;
+
+            curr_layer = (*seed_map_layers_ptr)[seed_map_layers_index];
 
             curr_layer->name = (char *)calloc(strlen(line), sizeof(char));
             memcpy(curr_layer->name, line, strlen(line) - 2);
             
-            seed_map_layers_index += 1;
-            
+            seed_map_layers_index++;
             continue;
         }
 
-        // if nothing else then it must be a seed map line
-        SEED_MAP *seed_map = get_seed_map(line);
-        seed_map_layer_add_seed_map(curr_layer, seed_map);
+        seed_map_layer_add_seed_map(curr_layer, get_seed_map(line));
     }
+
+    *num_seed_map_layers = seed_map_layers_index;
+    fclose(input_file);
+}
+
+uint64_t part_b(const CONFIG *config)
+{
+    SEED_RANGE *seed_ranges;
+    uint64_t num_seed_ranges;
+
+    // check for memory usage
+    SEED_MAP_LAYER **seed_map_layers;
+    uint64_t num_seed_map_layers = 0;
+
+    injest_file_part_b(
+        config->input_file_path, 
+        &seed_ranges, &num_seed_ranges,
+        &seed_map_layers, &num_seed_map_layers
+    );
 
     uint64_t *results = (uint64_t *)calloc(num_seed_ranges, sizeof(uint64_t));
 
@@ -87,7 +111,7 @@ uint64_t part_b(const CONFIG *config)
             for
             (
                 uint64_t seed_map_layer_index = 0; 
-                seed_map_layer_index < seed_map_layers_index; 
+                seed_map_layer_index < num_seed_map_layers; 
                 seed_map_layer_index++
             )
             {
@@ -112,66 +136,25 @@ uint64_t part_b(const CONFIG *config)
 
     free(seed_ranges);
 
-    seed_map_layers_term(seed_map_layers, seed_map_layers_index);
-
-    fclose(input_file);
+    seed_map_layers_term(seed_map_layers, num_seed_map_layers);
 
     return curr_seed_min;
 }
 
 unsigned long part_b_parallel(const CONFIG *config)
 {
-    FILE *input_file = fopen(config->input_file_path, "r");
-
-    // bomb out if the file is NULL
-    assert(input_file != NULL);
-
     SEED_RANGE *seed_ranges;
     uint64_t num_seed_ranges;
 
     // check for memory usage
-    SEED_MAP_LAYER **seed_map_layers = (SEED_MAP_LAYER **)malloc(sizeof(SEED_MAP_LAYER *) * 1);
-    uint64_t seed_map_layers_index = 0;
+    SEED_MAP_LAYER **seed_map_layers;
+    uint64_t num_seed_map_layers = 0;
 
-    char line[256];
-    for(
-        char line[256]; 
-        fgets(line, sizeof(line), input_file) != NULL;
-    ) 
-    {
-        SEED_MAP_LAYER *curr_layer;
-        if ( strlen(line) == 1 )
-        {
-            continue;
-        }
-
-        if ( strstr(line, "seeds:") != NULL )
-        {
-            seed_ranges = get_seed_ranges(line, &num_seed_ranges);
-            continue;
-        }
-
-        if ( strstr(line, ":") != NULL )
-        {
-            // memory check
-            seed_map_layers = (SEED_MAP_LAYER **)realloc(seed_map_layers, sizeof(SEED_MAP_LAYER *) * (seed_map_layers_index + 2));
-
-            seed_map_layers[seed_map_layers_index] = NULL;
-            seed_map_layer_init(&seed_map_layers[seed_map_layers_index]);
-            curr_layer = seed_map_layers[seed_map_layers_index];
-
-            curr_layer->name = (char *)calloc(strlen(line), sizeof(char));
-            memcpy(curr_layer->name, line, strlen(line) - 2);
-            
-            seed_map_layers_index += 1;
-            
-            continue;
-        }
-
-        // if nothing else then it must be a seed map line
-        SEED_MAP *seed_map = get_seed_map(line);
-        seed_map_layer_add_seed_map(curr_layer, seed_map);
-    }
+    injest_file_part_b(
+        config->input_file_path, 
+        &seed_ranges, &num_seed_ranges,
+        &seed_map_layers, &num_seed_map_layers
+    );
 
     sort_seed_ranges_by_size(seed_ranges, num_seed_ranges);
     
@@ -200,7 +183,7 @@ unsigned long part_b_parallel(const CONFIG *config)
             for
             (
                 uint64_t seed_map_layer_index = 0; 
-                seed_map_layer_index < seed_map_layers_index; 
+                seed_map_layer_index < num_seed_map_layers; 
                 seed_map_layer_index++
             )
             {
@@ -225,9 +208,7 @@ unsigned long part_b_parallel(const CONFIG *config)
 
     free(new_seed_ranges);
 
-    seed_map_layers_term(seed_map_layers, seed_map_layers_index);
-
-    fclose(input_file);
+    seed_map_layers_term(seed_map_layers, num_seed_map_layers);
 
     return curr_seed_min;
 }
