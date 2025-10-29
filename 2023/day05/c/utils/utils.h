@@ -4,8 +4,6 @@
 
 #include <stdint.h>
 
-uint64_t *get_seeds(const char *line, uint64_t *num_seeds);
-
 uint64_t *extract_number_list(const char *number_string, uint64_t *length);
 
 #endif

@@ -12,36 +12,47 @@ int main(int argc, char **argv)
 
     CONFIG config;
 
-    int result = 0;
-
-    result = load_config(&config, argc, argv);
-
-    if(strcmp(config.run_type, "part_a") == 0)
+    if(load_config(&config, argc, argv))
     {
-        printf("Running Part A\n");
-        unsigned long part_a_min = part_a(&config);
-
-        printf("Part A: min value is '%lu'\n", part_a_min);
-    }
-    else if(strcmp(config.run_type, "part_b") == 0)
-    {
-        printf("Running Part B\n");
-        unsigned long part_b_min = part_b(&config);
-
-        printf("Part B: min value is '%lu'\n", part_b_min);
-    }
-    else if(strcmp(config.run_type, "part_b_openmp") == 0)
-    {
-        printf("Running Part B openmp\n");
-        unsigned long part_b_min = part_b_parallel(&config);
-
-        printf("Part B: min value is '%lu'\n", part_b_min);
-    }
-    else
-    {
-        printf("Invalid run\n");
         return 1;
     }
 
-    return result;
+    switch(config.run_type)
+    {
+        case PART_A:
+            printf("Running Part A\n");
+
+            printf("Result is: %lu\n", part_a(&config));
+            break;
+        case PART_A_OPENMP:
+            printf("Running Part A OpenCL\n");
+
+            printf("Result is: %lu\n", part_a_openmp(&config));
+            break;
+        case PART_A_OPENCL:
+            printf("Running Part A OpenCL\n");
+
+            printf("Result is: %lu\n", part_a_opencl(&config));
+            break;
+        case PART_B:
+            printf("Running Part B\n");
+
+            printf("Result is: %lu\n", part_b(&config));
+            break;
+        case PART_B_OPENCL:
+            printf("Running Part B OpenCL\n");
+
+            printf("Result is: %lu\n", part_b_opencl(&config));
+            break;
+        case PART_B_OPENMP:
+            printf("Running Part B OpenMP\n");
+
+            printf("Result is: %lu\n", part_b_openmp(&config));
+            break;
+        default:
+            printf("Unsupported run type");
+            break;
+    }
+
+    return 0;
 }

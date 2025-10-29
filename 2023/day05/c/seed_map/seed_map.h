@@ -8,9 +8,9 @@
 
 typedef struct seed_map_t
 {
-    unsigned long source;
-    unsigned long target;
-    unsigned long size;
+    uint64_t source;
+    uint64_t target;
+    uint64_t size;
 } SEED_MAP;
 
 SEED_MAP *get_seed_map(char *line);

@@ -16,9 +16,9 @@ void test_extract_numbers(void)
 {
     char numbers_string[] = "1 10 6\n";
 
-    unsigned int num_numbers = 0;
+    uint64_t num_numbers = 0;
 
-    unsigned long *numbers = extract_number_list(numbers_string, &num_numbers);
+    uint64_t *numbers = extract_number_list(numbers_string, &num_numbers);
 
     CU_ASSERT_PTR_NOT_NULL_FATAL(numbers);
     CU_ASSERT_EQUAL(num_numbers, 3);
@@ -33,8 +33,8 @@ void test_get_seeds(void)
 {
     char *seeds_line = "seeds: 1 2 3 10 100\n";
 
-    unsigned int num_seeds = 0;
-    unsigned long *seeds = get_seeds(seeds_line, &num_seeds);
+    uint64_t num_seeds = 0;
+    uint64_t *seeds = get_seeds(seeds_line, &num_seeds);
 
     CU_ASSERT_PTR_NOT_NULL_FATAL(seeds);
 

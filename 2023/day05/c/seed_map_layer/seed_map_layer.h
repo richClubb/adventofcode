@@ -23,4 +23,10 @@ bool seed_map_layer_map_seed(const SEED_MAP_LAYER *seed_map_layer, uint64_t *see
 
 void seed_map_layer_sort_seed_maps(SEED_MAP_LAYER *seed_map_layer);
 
+uint64_t *seed_map_layer_flatten_layer(SEED_MAP_LAYER *seed_map_layer, uint64_t *size);
+
+uint64_t *seed_map_layer_flatten_layers(SEED_MAP_LAYER **seed_map_layers, uint64_t num_layers, uint64_t **layer_sizes, uint64_t *total_size);
+
+uint64_t seed_map_layers_map_seed_flat_layers(uint64_t *seed_map_layer_sizes, uint64_t *flat_seed_map_layers, uint64_t num_seed_map_layers, uint64_t seed_value);
+
 #endif

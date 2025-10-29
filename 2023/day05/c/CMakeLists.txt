@@ -4,14 +4,27 @@ project(day5)
 
 set(CMAKE_C_FLAGS "-O3 -fopenmp")
 
+add_definitions("-DCL_TARGET_OPENCL_VERSION=300")
+
+add_subdirectory("part_a/test")
+
+add_test(NAME test_part_a COMMAND "part_a/test_part_a")
+
 find_package(OpenMP)
+find_package(OpenCL REQUIRED)
 
 add_executable(
     "${PROJECT_NAME}"
     "${PROJECT_SOURCE_DIR}/main.c"
     "${PROJECT_SOURCE_DIR}/config/config.c"
     "${PROJECT_SOURCE_DIR}/part_a/part_a.c"
+    "${PROJECT_SOURCE_DIR}/part_a/part_a_opencl.c"
+    "${PROJECT_SOURCE_DIR}/part_a/part_a_openmp.c"
+    "${PROJECT_SOURCE_DIR}/part_a/part_a_utils.c"
     "${PROJECT_SOURCE_DIR}/part_b/part_b.c"
+    "${PROJECT_SOURCE_DIR}/part_b/part_b_openmp.c"
+    "${PROJECT_SOURCE_DIR}/part_b/part_b_opencl.c"
+    "${PROJECT_SOURCE_DIR}/part_b/part_b_utils.c"
     "${PROJECT_SOURCE_DIR}/seed_map/seed_map.c"
     "${PROJECT_SOURCE_DIR}/seed_map_layer/seed_map_layer.c"
     "${PROJECT_SOURCE_DIR}/seed_range/seed_range.c"
@@ -35,4 +48,7 @@ target_link_libraries(
     "${PROJECT_NAME}" 
     PUBLIC 
     "OpenMP::OpenMP_CXX"
+    "OpenCL::OpenCL"
 )
+
+enable_testing()

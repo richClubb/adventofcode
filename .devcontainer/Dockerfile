@@ -6,7 +6,9 @@ RUN apt update && export DEBIAN_FRONTEND=noninteractive \
     cmake \
     libcunit1 libcunit1-dev \
     valgrind \ 
-    opencl-headers ocl-icd-opencl-dev
+    opencl-headers ocl-icd-opencl-dev \
+    pocl-opencl-icd \
+    clinfo 
 
 RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb && \
     dpkg -i cuda-keyring_1.1-1_all.deb && \

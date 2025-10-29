@@ -33,7 +33,7 @@ SEED_RANGE *get_seed_ranges(const char *line, uint64_t *num_seed_ranges)
 
     *num_seed_ranges = num_numbers / 2;
 
-    SEED_RANGE *seed_ranges = (SEED_RANGE *)calloc(*num_seed_ranges, sizeof(SEED_RANGE));
+    SEED_RANGE *seed_ranges = (SEED_RANGE *)calloc((*num_seed_ranges + 1), sizeof(SEED_RANGE));
 
     for(uint64_t index = 0; index < num_numbers; index += 2)
     {
@@ -44,6 +44,10 @@ SEED_RANGE *get_seed_ranges(const char *line, uint64_t *num_seed_ranges)
 
         seed_ranges[index/2] = temp;
     }
+
+    seed_ranges[*num_seed_ranges].size = 0;
+    seed_ranges[*num_seed_ranges].start = 0;
+
     free(numbers);
 
     return seed_ranges;

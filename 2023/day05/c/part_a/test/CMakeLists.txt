@@ -7,6 +7,7 @@ add_executable(
   "${PROJECT_NAME}"
   test_part_a.c
   "${PROJECT_SOURCE_DIR}/../part_a.c"
+  "${PROJECT_SOURCE_DIR}/../part_a_utils.c"
   "${PROJECT_SOURCE_DIR}/../../seed_map/seed_map.c"
   "${PROJECT_SOURCE_DIR}/../../seed_map_layer/seed_map_layer.c"
   "${PROJECT_SOURCE_DIR}/../../utils/utils.c"

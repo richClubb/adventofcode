@@ -8,7 +8,7 @@
 #include "seed_map_layer.h"
 #include "utils.h"
 
-uint64_t part_a(const CONFIG *config)
+uint64_t part_a_openmp(const CONFIG *config)
 {
     uint64_t *seeds;
     uint64_t num_seeds = 0;
@@ -21,6 +21,8 @@ uint64_t part_a(const CONFIG *config)
     uint64_t curr_seed_value = 0;
     
     uint64_t *results = (uint64_t *)calloc(num_seeds, sizeof(uint64_t));
+    
+    #pragma omp parallel for num_threads(28)
     for(uint64_t seed_index = 0; seed_index < num_seeds; seed_index++)
     {
         uint64_t curr_value = seeds[seed_index];

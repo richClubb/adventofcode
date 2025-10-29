@@ -436,7 +436,6 @@ def part_b_forward_ranges(input_file_path):
         curr_map_list = maps[map_index]
         seed_ranges = process_seed_mapping(seed_ranges, curr_map_list)
 
-    print("blah")
     return seed_ranges[0][0]
 
 
