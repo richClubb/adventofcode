@@ -2,8 +2,6 @@
 
 ## To-do
 
-
-
 ## Build / Run
 
 ```
@@ -14,7 +12,13 @@ make
 ./day5 -i [path] -r [run]
 ```
 
-run can be `part_a` or `part_b`
+run can be: 
+* `part_a`
+* `part_a_openmp`
+* `part_a_opencl`
+* `part_b`
+* `part_b_openmp`
+* `part_b_opencl` - This one has some issues
 
 ## Test
 

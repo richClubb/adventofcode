@@ -15,60 +15,65 @@
 #define DEVICE CL_DEVICE_TYPE_DEFAULT
 
 const char *KernelSource_part_b = "\n" \
-"typedef unsigned long uint64_t;                                                        \n" \
-"                                                                                       \n" \
-"__kernel void vadd(                                                                    \n" \
-"    __global uint64_t* seed_ranges,                                                    \n" \
-"    const uint64_t num_seed_ranges,                                                    \n" \
-"    __global uint64_t* seed_map_layer_sizes,                                           \n" \
-"    __global uint64_t* flat_seed_map_layers,                                           \n" \
-"    const uint64_t num_seed_map_layers,                                                \n" \
-"    const uint64_t total_map_count,                                                    \n" \
-"    __global uint64_t* results                                                         \n" \
-")                                                                                      \n" \
-"{                                                                                      \n" \
-"    uint64_t index = 0;                                                                \n" \
-"    uint64_t sml_index = 0;                                                            \n" \
-"    uint64_t m_index = 0;                                                              \n" \
-"    uint64_t seed_val = 0;                                                             \n" \
-"    uint64_t *layer_ptr, *map_ptr;                                                     \n" \
-"    uint64_t num_maps;                                                                 \n" \
-"    uint64_t seed = 0;                                                                 \n" \
-"    uint64_t seed_start = 0;                                                           \n" \
-"    uint64_t seed_end = 0;                                                             \n" \
-"    uint64_t min_value = ULONG_MAX;                                                    \n" \
-"                                                                                       \n" \
-"    index = get_global_id(0);                                                          \n" \
-"                                                                                       \n" \
-"    if(index >= num_seed_ranges) return;                                               \n" \
-"                                                                                       \n" \
-"    seed_start = seed_ranges[(index * 2)];                                             \n" \
-"    seed_end = seed_start + seed_ranges[(index * 2) + 1];                              \n" \
-"    layer_ptr = flat_seed_map_layers;                                                  \n" \
-"    for (seed = seed_start; seed < seed_end; seed++ )                                  \n" \
-"    {                                                                                   \n" \
-"        seed_val = seed;                                                                  \n" \
-"        for (sml_index = 0; sml_index < num_seed_map_layers; sml_index++)                  \n" \
-"        {                                                                                  \n" \
-"            num_maps = seed_map_layer_sizes[sml_index];                                    \n" \
-"            map_ptr = layer_ptr;                                                           \n" \
-"            for (m_index = 0; m_index < num_maps; m_index++)                               \n" \
-"            {                                                                              \n" \
-"                                                                                           \n" \
-"                if ((seed_val >= *(map_ptr)) && (seed_val < *(map_ptr) + *(map_ptr + 2)))  \n" \
-"                {                                                                          \n" \
-"                    seed_val = seed_val - *(map_ptr) + *(map_ptr + 1);                     \n" \
-"                    break;                                                                 \n" \
-"                }                                                                          \n" \
-"                                                                                           \n" \
-"                map_ptr += 3;                                                              \n" \
-"            }                                                                              \n" \
-"            layer_ptr += (num_maps * 3);                                                   \n" \
-"        }                                                                                  \n" \
-"        if (seed_val < min_value) min_value = seed_val;                                    \n" \
-"    }                                                                                      \n" \
-"    results[index] = min_value;                                                            \n" \
-"}                                                                                          \n" \
+"typedef unsigned long uint64_t;                                           \n" \
+"                                                                          \n" \
+"__kernel void kernel_part_b(                                              \n" \
+"__global uint64_t* seed_ranges,                                           \n" \
+"const uint64_t num_seed_ranges,                                           \n" \
+"__global uint64_t* seed_map_layer_sizes,                                  \n" \
+"__global uint64_t* flat_seed_map_layers,                                  \n" \
+"const uint64_t num_seed_map_layers,                                       \n" \
+"__global uint64_t* results                                                \n" \
+")                                                                         \n" \
+"{                                                                         \n" \
+"    uint64_t index = 0;                                                   \n" \
+"                                                                          \n" \
+"    index = get_global_id(0);                                             \n" \
+"                                                                          \n" \
+"    if (index >= num_seed_ranges) return;                                 \n" \
+"                                                                          \n" \
+"    uint64_t count = 0;                                                   \n" \
+"    uint64_t min_value = ULONG_MAX;                                       \n" \
+"    for (                                                                 \n" \
+"        uint64_t seed = seed_ranges[index * 2];                           \n" \
+"        seed < (seed_ranges[index * 2] + seed_ranges[(index * 2) + 1]);   \n" \
+"        seed++                                                            \n" \
+"    )                                                                     \n" \
+"    {                                                                     \n" \
+"        uint64_t seed_val = seed;                                         \n" \
+"        uint64_t *layer_ptr = flat_seed_map_layers;                       \n" \
+"        for (                                                             \n" \
+"            uint64_t sml_index = 0;                                       \n" \
+"            sml_index < num_seed_map_layers;                              \n" \
+"            sml_index++                                                   \n" \
+"        )                                                                 \n" \
+"        {                                                                 \n" \
+"            uint64_t *map_ptr = layer_ptr;                                \n" \
+"            uint64_t num_maps = seed_map_layer_sizes[sml_index];          \n" \
+"            for (                                                         \n" \
+"                uint64_t ml_index = 0;                                    \n" \
+"                ml_index < num_maps;                                      \n" \
+"                ml_index++                                                \n" \
+"            )                                                             \n" \
+"            {                                                             \n" \
+"                uint64_t source = *(map_ptr);                             \n" \
+"                uint64_t target = *(map_ptr + 1);                         \n" \
+"                uint64_t size = *(map_ptr + 2);                           \n" \
+"                if((seed_val >= source) && (seed_val < (source + size)))  \n" \
+"                {                                                         \n" \
+"                    seed_val = seed_val - source + target;                \n" \
+"                    break;                                                \n" \
+"                }                                                         \n" \
+"                map_ptr += 3;                                             \n" \
+"            }                                                             \n" \
+"            layer_ptr += (num_maps * 3);                                  \n" \
+"        }                                                                 \n" \
+"        if (seed_val < min_value) min_value = seed_val;                   \n" \
+"    }                                                                     \n" \
+"                                                                          \n" \
+"    results[index] = min_value;                                           \n" \
+"    return;                                                               \n" \
+"}                                                                         \n" \
 "\n";
 
 //------------------------------------------------------------------------------
@@ -79,7 +84,7 @@ uint64_t part_b_opencl(const CONFIG *config)
     cl_context       context;       // compute context
     cl_command_queue commands;      // compute command queue
     cl_program       program;       // compute program
-    cl_kernel        ko_vadd;       // compute kernel
+    cl_kernel        ko_part_b;       // compute kernel
 
     cl_uint numPlatforms;
 
@@ -176,7 +181,7 @@ uint64_t part_b_opencl(const CONFIG *config)
     // Create the compute kernel from the program
     {
         int error = 0;
-        ko_vadd = clCreateKernel(program, "vadd", &error);
+        ko_part_b = clCreateKernel(program, "kernel_part_b", &error);
         if (error)
         {
             printf("Can't create kernel\n");
@@ -265,6 +270,7 @@ uint64_t part_b_opencl(const CONFIG *config)
             printf("Error copying seeds to device seeds\n");
         }
     }
+    free(new_seed_ranges);
 
     // Write layer sizes to device memory
     {
@@ -275,6 +281,7 @@ uint64_t part_b_opencl(const CONFIG *config)
             printf("Error copying seeds to device_seed_map_layers_sizes\n");
         }
     }
+    free(flat_seed_map_layer_sizes);
 
     // Write flattened layers to device memory
     {
@@ -285,17 +292,17 @@ uint64_t part_b_opencl(const CONFIG *config)
             printf("Error copying seeds to device_flat_seed_map_layers\n");
         }
     }
+    free(flat_seed_map_layers);
 
     // // Set the arguments to our compute kernel
     {
         int error = 0;
-        error  = clSetKernelArg(ko_vadd, 0, sizeof(cl_mem), &device_seed_ranges);
-        error |= clSetKernelArg(ko_vadd, 1, sizeof(cl_ulong), &num_seed_ranges);
-        error |= clSetKernelArg(ko_vadd, 2, sizeof(cl_mem), &device_seed_map_layers_sizes);
-        error |= clSetKernelArg(ko_vadd, 3, sizeof(cl_mem), &device_flat_seed_map_layers);
-        error |= clSetKernelArg(ko_vadd, 4, sizeof(cl_ulong), &num_seed_map_layers);
-        error |= clSetKernelArg(ko_vadd, 5, sizeof(cl_ulong), &total_size);
-        error |= clSetKernelArg(ko_vadd, 6, sizeof(cl_mem), &device_results);
+        error  = clSetKernelArg(ko_part_b, 0, sizeof(cl_mem), &device_seed_ranges);
+        error |= clSetKernelArg(ko_part_b, 1, sizeof(cl_ulong), &num_seed_ranges);
+        error |= clSetKernelArg(ko_part_b, 2, sizeof(cl_mem), &device_seed_map_layers_sizes);
+        error |= clSetKernelArg(ko_part_b, 3, sizeof(cl_mem), &device_flat_seed_map_layers);
+        error |= clSetKernelArg(ko_part_b, 4, sizeof(cl_ulong), &num_seed_map_layers);
+        error |= clSetKernelArg(ko_part_b, 5, sizeof(cl_mem), &device_results);
 
         if (error)
         {
@@ -309,7 +316,7 @@ uint64_t part_b_opencl(const CONFIG *config)
     {
         int error = 0;
         uint64_t global = num_seed_ranges;
-        error = clEnqueueNDRangeKernel(commands, ko_vadd, 1, NULL, &global, NULL, 0, NULL, NULL);
+        error = clEnqueueNDRangeKernel(commands, ko_part_b, 1, NULL, &global, NULL, 0, NULL, NULL);
         if (error)
         {
             printf("Error enquing kernel\n");
@@ -325,6 +332,10 @@ uint64_t part_b_opencl(const CONFIG *config)
         }
     }
 
+    clReleaseMemObject(device_seed_ranges);
+    clReleaseMemObject(device_seed_map_layers_sizes);
+    clReleaseMemObject(device_flat_seed_map_layers);
+
     uint64_t *results = (uint64_t *)calloc(num_seed_ranges, sizeof(uint64_t));
     // Read back the results from the compute device
     {
@@ -334,18 +345,17 @@ uint64_t part_b_opencl(const CONFIG *config)
             printf("Error: Failed to read output array! : %d\n", error);
             exit(1);
         }
-    }   
+    }
+    clReleaseMemObject(device_results);   
 
     uint64_t min_value = UINT64_MAX;
     for(uint64_t results_index = 0; results_index < num_seed_ranges; results_index++)
     {
-        if (results[results_index] < min_value) min_value = results[results_index];
+        uint64_t result = results[results_index];
+        if (result < min_value) min_value = result;
     }
 
     free(results);
-    free(new_seed_ranges);
-    free(flat_seed_map_layer_sizes);
-    free(flat_seed_map_layers);
     
     return min_value;
 }

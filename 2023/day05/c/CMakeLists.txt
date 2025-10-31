@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.25)
 
 project(day5)
 
-set(CMAKE_C_FLAGS "-O3 -fopenmp")
+set(CMAKE_C_FLAGS "-O3 -fopenmp -g")
 
 add_definitions("-DCL_TARGET_OPENCL_VERSION=300")
 

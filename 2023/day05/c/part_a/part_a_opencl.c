@@ -336,6 +336,11 @@ uint64_t part_a_opencl(const CONFIG *config)
         if (results[results_index] < min_value) min_value = results[results_index];
     }
 
+    clReleaseMemObject(device_seeds);
+    clReleaseMemObject(device_seed_map_layers_sizes);
+    clReleaseMemObject(device_flat_seed_map_layers);
+    clReleaseMemObject(device_results);
+
     free(results);
     free(seeds);
     free(flat_seed_map_layer_sizes);
