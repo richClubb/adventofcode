@@ -34,3 +34,7 @@ make
 ```
 
 replace [module] with; part_a, part_b, seed_map, seed_map_layer, seed_range, utils
+
+### Questions asked
+
+https://stackoverflow.com/questions/79806444/opencl-kernel-slow-and-doesnt-utilise-cpu-fully

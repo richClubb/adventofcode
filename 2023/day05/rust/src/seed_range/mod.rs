@@ -69,12 +69,11 @@ pub fn get_seed_ranges_from_file(path: &String, max_range_size: u64) -> Vec<Seed
             {
                 let start = seed_values[seed_index*2];
                 let size = seed_values[seed_index*2+1];
-                let end = start + size;
 
                 let mut remaining = size;
                 let mut curr_start = start;
-                while(remaining > 0){
-                    if (remaining >= max_range_size){
+                while remaining > 0 {
+                    if remaining >= max_range_size {
                         seed_ranges.push(SeedRange::new(curr_start, max_range_size));
                         remaining -= max_range_size;
                         curr_start += max_range_size;

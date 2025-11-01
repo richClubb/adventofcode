@@ -12,6 +12,8 @@
 #include "seed_range.h"
 #include "utils.h"
 
+#define NUM_CORES 28
+
 #define DEVICE CL_DEVICE_TYPE_DEFAULT
 
 const char *KernelSource_part_b = "\n" \
@@ -203,7 +205,7 @@ uint64_t part_b_opencl(const CONFIG *config)
 
     sort_seed_ranges_by_size(seed_ranges, num_seed_ranges);
     
-    SEED_RANGE *new_seed_ranges = split_seed_ranges_by_number(seed_ranges, &num_seed_ranges, 28);
+    SEED_RANGE *new_seed_ranges = split_seed_ranges_by_number(seed_ranges, &num_seed_ranges, NUM_CORES);
     free(seed_ranges);
 
     uint64_t total_size;
