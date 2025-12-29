@@ -1,0 +1,15 @@
+[package]
+name = "day5"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "4.4.18", features = ["derive"] }
+dict = "0.1.5"
+rayon = "1.8.1"
+regex = "1.10.3"
+
+[profile.dev]
+# These make a massive difference 19 minutes to 1.5 minutes difference......

@@ -1,0 +1,16 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Main",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/workspaces/adventofcode/2023/day05/zig/zig-out/bin/day5",
+            "MIMode": "lldb",
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

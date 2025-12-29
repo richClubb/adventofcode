@@ -1,0 +1,7 @@
+*.pyc
+*/.pytest_cache/*
+/.vscode
+*target/
+*temp/
+
+20*/*/problem_solution_input/

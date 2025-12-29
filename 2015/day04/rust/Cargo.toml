@@ -1,0 +1,9 @@
+[package]
+name = "day04"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+base16ct = "0.3.0"
+clap = { version = "4.5.53", features = ["derive"] }
+md-5 = "0.10.6"

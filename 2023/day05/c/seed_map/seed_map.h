@@ -1,0 +1,24 @@
+#ifndef __SEED_MAP_H__
+
+#define __SEED_MAP_H__
+
+#include <stdbool.h>
+#include <stdlib.h>
+#include <stdint.h>
+
+typedef struct seed_map_t
+{
+    uint64_t source;
+    uint64_t target;
+    uint64_t size;
+} SEED_MAP;
+
+SEED_MAP *get_seed_map(char *line);
+
+void seed_map_init(SEED_MAP **seed_map);
+
+void seed_map_term(SEED_MAP *seed_map);
+
+bool seed_map_map_seed(const SEED_MAP *seed_map, uint64_t *seed_value);
+
+#endif
