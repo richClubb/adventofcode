@@ -4,8 +4,8 @@ https://adventofcode.com/2015/day/13
 
 # Status
 
-* Part A - Incomplete
-* Part B - Incomplete
+* Part A - COMPLETE
+* Part B - COMPLETE
 
 # Build / Run
 
@@ -18,19 +18,15 @@ cargo build [--release]
 ## Run
 
 ```
-cargo run [path] [run]
+cargo run [path]
 ```
 
 or
 
 ```
 cd [build dir]
-./day11 [path] [run]
+./day13 [path]
 ```
-
-where `[run]` is:
-* part_a
-* part_b
 
 # Notes
 
@@ -58,5 +54,10 @@ is the same as
 
 How do we find out those permutations? 
 
+I got a set of permutations but didn't manage to reduce at all, I might be able to do so by looking for reversals but it's a bit of a PITA for an algorithm that runs in a few seconds.
+
 # Improvements
 
+* Remove duplicates
+* Improve datastructure
+* Improve mechanism for finding the permutations
