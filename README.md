@@ -4,21 +4,21 @@ My repository for the advent of code solutions
 
 # Total Solved
 
-* 42 / 524 (8%)
+* 46 / 524 (8.7%)
 
 # Breakdown by Year
 
-* [2015](./2015/) - 24 / 50 - Challenge was to just use Rust.
-* 2016 - 
-* 2017 - 
-* 2018 - 
-* 2019 - 
-* 2020 - 
-* [2021](./2021) - 8 / 50 - Not currently documented here
-* [2022](./2022) - 2 / 50 - Not currently documented here
-* [2023](./2023) - 6 / 50 - Initially the challenge was to do it in Rust, Python and Zig. I didn't get far with that challenge.
-* 2024 - 
-* [2025](./2025) - 2 / 50
+* [2015](./2015/) - 28 / 50 - Challenge was to just use Rust.
+* [2016](./2016/) -  0 / 50
+* [2017](./2017/) -  0 / 50
+* [2018](./2018/) -  0 / 50
+* [2019](./2019/) -  0 / 50
+* [2020](./2020/) -  0 / 50
+* [2021](./2021/) -  8 / 50 - Not currently documented here, need to re-create
+* [2022](./2022/) -  2 / 50 - Not currently documented here, need to re-create
+* [2023](./2023/) -  6 / 50 - Initially the challenge was to do it in Rust, Python and Zig. I didn't get far with that challenge.
+* [2024](./2024/) -  0 / 50
+* [2025](./2025/) -  2 / 50
 
 # Notes
 
@@ -41,7 +41,7 @@ This is mostly for me just in case I forget.
 ## Encrypt
 
 ```
-tar -cvzf - problem_solution_input/ | gpg -e -r "Richard Clubb" > problem_solution_input.tar.gz.gpg
+tar -cvzf - problem_solution_input/ | gpg -e -r [id] > problem_solution_input.tar.gz.gpg
 ```
 
 ## Decrypt
@@ -56,4 +56,5 @@ gpg -d problem_solution_input.tar.gz.gpg | tar -xvzf -
 * Do 1 year using the 25 most popular programming languages, one for each day
 * Do a year using just Rust - In progress
 * Do a year using a microcontroller - Limited RAM and processor capacity
+    * This could also be a container with crippled capabilities just to simulate
 
