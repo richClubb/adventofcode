@@ -4,11 +4,11 @@ My repository for the advent of code solutions
 
 # Total Solved
 
-* 46 / 524 (8.7%)
+* 48 / 524 (9.1%)
 
 # Breakdown by Year
 
-* [2015](./2015/) - 28 / 50 - Challenge was to just use Rust.
+* [2015](./2015/) - 30 / 50 - Challenge was to just use Rust.
 * [2016](./2016/) -  0 / 50
 * [2017](./2017/) -  0 / 50
 * [2018](./2018/) -  0 / 50
@@ -54,7 +54,9 @@ gpg -d problem_solution_input.tar.gz.gpg | tar -xvzf -
 
 * Only use functional programming techniques
 * Do 1 year using the 25 most popular programming languages, one for each day
+    * This looks awful. Cobol, SQL and Scratch... Ada?
 * Do a year using just Rust - In progress
 * Do a year using a microcontroller - Limited RAM and processor capacity
     * This could also be a container with crippled capabilities just to simulate
+    * "every problem has a solution that completes in at most 15 seconds on ten-year-old hardware" is taken from the FAQ
 
