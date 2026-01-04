@@ -4,11 +4,11 @@ My repository for the advent of code solutions
 
 # Total Solved
 
-* 50 / 524 (9.5%)
+* 52 / 524 (9.9%)
 
 # Breakdown by Year
 
-* [2015](./2015/) - 30 / 50 - Challenge was to just use Rust.
+* [2015](./2015/) - 34 / 50 - Challenge - just use Rust.
 * [2016](./2016/) -  0 / 50
 * [2017](./2017/) -  0 / 50
 * [2018](./2018/) -  0 / 50
@@ -16,7 +16,7 @@ My repository for the advent of code solutions
 * [2020](./2020/) -  0 / 50
 * [2021](./2021/) -  8 / 50 - Not currently documented here, need to re-create
 * [2022](./2022/) -  2 / 50 - Not currently documented here, need to re-create
-* [2023](./2023/) -  6 / 50 - Initially the challenge was to do it in Rust, Python and Zig. I didn't get far with that challenge.
+* [2023](./2023/) -  6 / 50 - Challenge - Every problem in Rust, Python and Zig. I didn't get far with that challenge.
 * [2024](./2024/) -  0 / 50
 * [2025](./2025/) -  2 / 50
 
