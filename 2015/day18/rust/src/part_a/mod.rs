@@ -3,71 +3,67 @@ use std::io::{BufRead, BufReader};
 
 // find some way to get the pointers to the other objects
 
-#[derive(Clone, Debug)]
-struct Pixel<'a>{
-    curr_value: bool,
-    buffer: bool,
-    neighbors: Vec<&'a Pixel<'a>>
+struct PixelMap {
+    pixels: Vec<Vec<bool>>,
 }
 
-impl Pixel<'_>{
+impl PixelMap {
+    pub fn new(input: Vec<Vec<char>>) -> Self {
 
-    pub fn new(value: bool) -> Self {
-        Pixel { curr_value: value, buffer: value, neighbors: Vec::new()}
-    }
-
-    pub fn add_neighbour<'a>(&mut self, neighbour: &Pixel<'_> ){
-        
-        // this needs to be an actual reference
-        //self.neighbors.push(neighbour);
-    }
-
-    pub fn calc_next_value(&self) -> bool {
-
-        if self.buffer != self.curr_value {
-            return true;
-        }
-
-        return false
-    }
-
-    pub fn update(&self) {
-
-    }
-
-}
-
-
-struct PixelMap<'a> {
-    pixels: Vec<Vec<Pixel<'a>>>,
-    x_size: usize,
-    y_size: usize,
-}
-
-impl PixelMap<'_> {
-    pub fn new<'a>(x_size: usize, y_size: usize) -> Self {
-        
-        return PixelMap{ pixels: Vec::new(), x_size: x_size, y_size: y_size };
-    }
-
-    pub fn add_pixels<'a>(&mut self, input: Vec<Vec<char>>) {
-
+        let mut pixels = Vec::new();
 
         // load in pixels
         for line in input {
-            let mut pixel_line: Vec<Pixel> = Vec::new();
+            let mut pixel_line: Vec<bool> = Vec::new();
             for entry in line {
                 let val = if entry == '#' { true } else { false };
-                pixel_line.push(Pixel::new(val));
+                pixel_line.push(val);
             }
-            self.pixels.push(pixel_line);
+            pixels.push(pixel_line);
         }
 
-        // set up neighbours
-        for y_index in 0..self.y_size{
-            for x_index in 0..self.x_size{
-                
-                // println!("For pixel '{y_index},{x_index}'");
+        return PixelMap{ pixels: pixels };
+    }
+
+    pub fn print(&self) -> usize {
+
+        let mut light_count: usize = 0;
+        let y_size = self.pixels.len();
+
+        for y_index in 0..y_size {
+            self.pixels[y_index].iter().for_each(|item| {
+                    let val = if item == &true { 
+                        light_count += 1;
+                        "#" 
+                    } 
+                    else { 
+                        "." 
+                    }; 
+                    print!("{val} ");
+                }
+            );
+            println!("");
+        }
+
+        return light_count;
+    }
+
+    pub fn step(&self) -> PixelMap {
+
+        let mut pixels: Vec<Vec<bool>> = Vec::new();
+
+        let y_size = self.pixels.len();
+        let x_size = self.pixels[0].len();
+
+        for y_index in 0..y_size {
+
+            let mut pixel_line: Vec<bool> = Vec::new();
+
+            for x_index in 0..x_size {
+
+                let mut neighbour_value: usize = 0;
+
+                // println!("Pixel {y_index},{x_index} is {}", self.pixels[y_index][x_index]);
                 for y_pixel in -1..=1 as isize {
                     for x_pixel in -1..=1 as isize {
                         let y_offset = y_index as isize - y_pixel;
@@ -80,42 +76,53 @@ impl PixelMap<'_> {
                         }
 
                         if (y_offset < 0) || 
-                           (y_offset >= self.y_size as isize) ||
+                           (y_offset >= y_size as isize) ||
                            (x_offset < 0) || 
-                           (x_offset >= self.x_size as isize) 
+                           (x_offset >= x_size as isize) 
                         {
                             continue;
                         }
 
-                        // println!("  offset '{y_offset},{x_offset}'");
+                        let neighbour_pixel = self.pixels[y_offset as usize][x_offset as usize];
 
-                        let base_pixel = &self.pixels[x_index as usize][y_index as usize];
-                        let neighbour_pixel = &self.pixels[y_offset as usize][x_offset as usize];
+                        if neighbour_pixel {
+                            // println!("  {y_index},{x_index} pixel {y_offset},{x_offset} is on");
+                            neighbour_value += 1;
+                        }
+                        else {
+                            // println!("  {y_index},{x_index} pixel {y_offset},{x_offset} is off");
+                        }
+                    }  
+                }
 
-                        base_pixel.add_neighbour(&neighbour_pixel);
-                        // self.pixels.[x_index][y_index]
-                        //     .neighbors
-                        //     .push(&self.pixels.[y_offset as usize][x_offset as usize]);
+                // println!("Pixel {y_index},{x_index}: {neighbour_value}");
 
+                if self.pixels[y_index][x_index] {
+                    let val = if (neighbour_value >= 2) && (neighbour_value <= 3) {
+                        true
                     }
+                    else {
+                        false
+                    };
+                    // println!("  pixel on {y_index},{x_index} pushing {val}");
+                    pixel_line.push(val);
                 }
+                else {
+                    let val = if neighbour_value == 3 {
+                        true
+                    }
+                    else {
+                        false
+                    };
+                    // println!("  pixel off {y_index},{x_index} pushing {val}");
+                    pixel_line.push(val);
+                }   
             }
+
+            pixels.push(pixel_line);
         }
-    }
 
-    pub fn print(&self) {
-        for y_index in 0..self.y_size {
-            self.pixels[y_index].iter().for_each(|item| {
-                    let val = if item.curr_value { "#" } else { "." }; 
-                    print!("{val} ");
-                }
-            );
-            println!("");
-        }
-    }
-
-    pub fn step(&self) {
-
+        return PixelMap{ pixels: pixels };
     }
 
 }
@@ -135,12 +142,18 @@ pub fn part_a(path: &String, steps: &usize)
             pixel_chars.push(line.chars().collect())
         }
     );
-    
-    let y_size = pixel_chars.len();
-    let x_size = pixel_chars[0].len();
 
-    let mut pixel_map  = PixelMap::new(x_size, y_size);
-    pixel_map.add_pixels(pixel_chars);
+    let mut pixel_map  = PixelMap::new(pixel_chars);
 
+
+    println!("Initial ");
     pixel_map.print();
+    
+
+    for step in 0..steps.clone() {
+        println!("\nStep {}", step + 1);
+        pixel_map = pixel_map.step();
+        let val = pixel_map.print();
+        println!("{val} lights are on");         
+    }
 }
