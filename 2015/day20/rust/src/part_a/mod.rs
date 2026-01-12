@@ -1,4 +1,4 @@
-
+use std::collections::HashMap;
 
 fn find_multiples_calc_result(input: &usize) -> usize {
 
@@ -15,22 +15,160 @@ fn find_multiples_calc_result(input: &usize) -> usize {
     return result;
 }
 
-pub fn part_a(input: &usize)
-{
-    println!("Part A");
+fn is_prime(value: &usize) -> bool {
 
-    let mut index = 1;
-    loop {
-        let result = find_multiples_calc_result(&index);
-
-        if &result >= input {
-            break;
-        }
-
-        index += 1;
+    if value == &1 {
+        return false;
     }
 
-    println!("Result: {index}");
+    if value == &2 {
+        return true;
+    }
+
+    let mut index = value.clone() - 1;
+    while index >= 2 {
+        if value % index == 0 {
+            return false;
+        }
+
+        index -= 1;
+    }
+
+    return true;
+}
+
+fn find_primes(target: &usize) -> Vec<usize> {
+
+    let mut primes = Vec::<usize>::new();
+
+    if target <= &1 {
+        return primes;
+    }
+
+    for index in 2..=target.clone() {
+        if is_prime(&index) {
+            primes.push(index);
+        }
+    }
+
+    return primes;
+}
+
+fn find_prime_factors(target: &usize, primes: &Vec<usize>) -> Option<HashMap<usize, usize>> {
+
+    println!("\nInitial {target}");
+
+    let mut prime_factors: HashMap<usize, usize> = HashMap::new();
+
+    println!("{primes:?}");
+
+    if target == &1 {
+        return None;
+    }
+
+    if target == &2 {
+        prime_factors.insert(2, 1);
+        return Some(prime_factors);
+    }
+
+    let mut remainder = target.clone();
+
+    while remainder != 1 {  
+        for prime in primes {
+            let val = remainder / prime;
+            let val_rem = remainder % prime;
+
+            if val_rem == 0 {
+                prime_factors.entry(*prime).and_modify(|val| *val += 1).or_insert(1);
+                remainder = val;
+                break;
+            }
+        }
+    }
+
+    return Some(prime_factors);
+}
+
+fn sum_of_integers(target: &usize, primes: &Vec<usize>) -> usize {
+
+    if target == &1 {
+        return 1;
+    }
+
+    let mut overall_total = 1;
+
+    let prime_factors = find_prime_factors(target, primes);
+    println!("  prime factors {prime_factors:?}");
+
+    for (prime, count) in prime_factors.unwrap() {
+        let mut total = 0 as usize;
+
+        for index in 0..=count {
+            total += prime.pow(index as u32);
+        }
+        
+        overall_total *= total;
+    }
+
+    return overall_total;
+}
+
+pub fn part_a(input: &usize)
+{
+    // println!("Part A");
+
+    // let mut index = 1;
+    // loop {
+    //     let result = find_multiples_calc_result(&index);
+
+    //     if &result >= input {
+    //         break;
+    //     }
+
+    //     index += 1;
+    // }
+
+    // println!("Result: {index}");
+
+    let primes = find_primes(&10);
+
+    let result = find_prime_factors(&1, &primes);
+    println!("Result {result:?}");
+
+    let input = 2;
+    let result_1 = find_prime_factors(&input, &primes).unwrap();
+    let result_2 = sum_of_integers(&input, &primes);
+    println!("Result {result_1:?} {result_2}");
+
+    let input = 3;
+    let result_1 = find_prime_factors(&input, &primes).unwrap();
+    let result_2 = sum_of_integers(&input, &primes);
+    println!("Result {result_1:?} {result_2}");
+
+    let input = 4;
+    let result_1 = find_prime_factors(&input, &primes).unwrap();
+    let result_2 = sum_of_integers(&input, &primes);
+    println!("Result {result_1:?} {result_2}");
+
+    let input = 5;
+    let result_1 = find_prime_factors(&input, &primes).unwrap();
+    let result_2 = sum_of_integers(&input, &primes);
+    println!("Result {result_1:?} {result_2}");
+
+    let input = 6;
+    let result_1 = find_prime_factors(&input, &primes).unwrap();
+    let result_2 = sum_of_integers(&input, &primes);
+    println!("Result {result_1:?} {result_2}");
+
+    let input = 7;
+    let result_1 = find_prime_factors(&input, &primes).unwrap();
+    let result_2 = sum_of_integers(&input, &primes);
+    println!("Result {result_1:?} {result_2}");
+
+    let input = 24;
+    let result_1 = find_prime_factors(&input, &primes).unwrap();
+    let result_2 = sum_of_integers(&input, &primes);
+    println!("Result {result_1:?} {result_2}");
 }
 
 
@@ -51,5 +189,44 @@ mod tests {
         assert_eq!(find_multiples_calc_result(&9), 130);
         assert_eq!(find_multiples_calc_result(&11), 120);
         assert_eq!(find_multiples_calc_result(&12), 280);
+    }
+
+    #[test]
+    fn test_is_prime() {
+        assert_eq!(is_prime(&1), false);
+        assert_eq!(is_prime(&2), true);
+        assert_eq!(is_prime(&3), true);
+        assert_eq!(is_prime(&4), false);
+        assert_eq!(is_prime(&5), true);
+        assert_eq!(is_prime(&6), false);
+        assert_eq!(is_prime(&7), true);
+        assert_eq!(is_prime(&8), false);
+        assert_eq!(is_prime(&9), false);
+        assert_eq!(is_prime(&10), false);
+        assert_eq!(is_prime(&11), true);
+    }
+
+    #[test]
+    fn test_find_primes() {
+        assert_eq!(find_primes(&1), Vec::<usize>::new());
+        assert_eq!(find_primes(&2), Vec::<usize>::from([2]));
+        assert_eq!(find_primes(&3), Vec::<usize>::from([2, 3]));
+        assert_eq!(find_primes(&4), Vec::<usize>::from([2, 3]));
+        assert_eq!(find_primes(&5), Vec::<usize>::from([2, 3, 5]));
+        assert_eq!(find_primes(&6), Vec::<usize>::from([2, 3, 5]));
+        assert_eq!(find_primes(&7), Vec::<usize>::from([2, 3, 5, 7]));
+        assert_eq!(find_primes(&8), Vec::<usize>::from([2, 3, 5, 7]));
+        assert_eq!(find_primes(&9), Vec::<usize>::from([2, 3, 5, 7]));
+        assert_eq!(find_primes(&10), Vec::<usize>::from([2, 3, 5, 7]));
+        assert_eq!(find_primes(&11), Vec::<usize>::from([2, 3, 5, 7, 11]));
+        assert_eq!(find_primes(&12), Vec::<usize>::from([2, 3, 5, 7, 11]));
+    }
+
+    #[test]
+    fn test_find_prime_factors() {
+        // assert_eq!(find_prime_factors(&1), None);
+        // assert_eq!(find_prime_factors(&2), Some(HashMap::<usize, usize>::from([(2,1)])));
+        // assert_eq!(find_prime_factors(&3), Some(HashMap::<usize, usize>::from([(3, 1)])));
+        // assert_eq!(find_prime_factors(&3), None);
     }
 }

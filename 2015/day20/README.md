@@ -4,8 +4,8 @@ https://adventofcode.com/2015/day/20
 
 # Status
 
-* Part A - Incomplete
-* Part B - Incomplete
+* Part A - COMPLETE - but bad
+* Part B - COMPLETE - but bad
 
 # Build / Run
 
