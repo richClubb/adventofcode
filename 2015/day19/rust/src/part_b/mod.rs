@@ -16,8 +16,6 @@ pub fn part_b(path: &String)
     let replacement_re = Regex::new(r"(?<origin>[A-Za-z]{1,})\s=>\s(?<replacement>[A-Za-z]{1,})").unwrap();
     let mut base_string = String::new();
 
-    let mut new_mixes = HashSet::<String>::new();    
-
     for line in buf_reader.lines() {
         let line = line.unwrap();
         let result = replacement_re.captures(&line).map(|caps| {
@@ -43,8 +41,7 @@ pub fn part_b(path: &String)
 
     replacements.sort_by(|a, b| b.1.len().cmp(&a.1.len()));
 
-
-    let mut count: usize = 1;
+    let mut count: usize = 0;
     let mut new_base_string = base_string.clone();
     println!("Start: {new_base_string}");
     loop {
@@ -52,7 +49,7 @@ pub fn part_b(path: &String)
         for (origin, replacement) in replacements.clone() {
             if new_base_string.contains(&replacement) {
                 count += 1;
-                new_base_string = new_base_string.replace(&replacement, &origin);
+                new_base_string = new_base_string.replacen(&replacement, &origin, 1);
                 println!("new_base: {new_base_string}");
                 match_performed = true;
             }
