@@ -1,0 +1,24 @@
+use clap::Parser;
+
+use day20::part_a::part_a;
+use day20::part_b::part_b;
+
+#[derive(Parser)]
+struct Cli {
+    input: usize,
+    run: String,
+}
+
+fn main() {
+    println!("Advent of Code 2015 - Day 20");
+    let args:Cli = Cli::parse();
+
+    println!("input: {:?}, run: {:?}", args.input, args.run);
+
+    match args.run.as_str() {
+        "part_a" => part_a(&args.input),
+        "part_b" => part_b(&args.input),
+        &_ => println!("Invalid run")
+    }
+}
+
