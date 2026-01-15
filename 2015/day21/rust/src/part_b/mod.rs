@@ -1,19 +1,5 @@
-use std::fs::File;
-use std::io::{BufRead, BufReader};
-
-use regex::Regex;
-
-#[derive(Clone, Debug)]
-enum EquipmentType {
-    Weapon,
-    Armour,
-    Ring,
-    Unknown
-}
-
 #[derive(Clone, Debug)]
 struct Equipment {
-    equip_type: EquipmentType,
     name: String,
     cost: usize,
     attack: usize,
@@ -91,32 +77,32 @@ pub fn part_b()
 
     let weapons = Vec::from(
         [
-            Equipment{equip_type: EquipmentType::Weapon, name: String::from("Dagger"),     cost:   8, attack: 4, defence: 0},
-            Equipment{equip_type: EquipmentType::Weapon, name: String::from("Shortsword"), cost:  10, attack: 5, defence: 0},
-            Equipment{equip_type: EquipmentType::Weapon, name: String::from("Warhammer"),  cost:  25, attack: 6, defence: 0},
-            Equipment{equip_type: EquipmentType::Weapon, name: String::from("Longsword"),  cost:  40, attack: 7, defence: 0},
-            Equipment{equip_type: EquipmentType::Weapon, name: String::from("Greataxe"),   cost:  74, attack: 8, defence: 0},
+            Equipment{name: String::from("Dagger"),     cost:   8, attack: 4, defence: 0},
+            Equipment{name: String::from("Shortsword"), cost:  10, attack: 5, defence: 0},
+            Equipment{name: String::from("Warhammer"),  cost:  25, attack: 6, defence: 0},
+            Equipment{name: String::from("Longsword"),  cost:  40, attack: 7, defence: 0},
+            Equipment{name: String::from("Greataxe"),   cost:  74, attack: 8, defence: 0},
         ]
     );
 
     let armour = Vec::from(
         [
-            Equipment{equip_type: EquipmentType::Armour, name: String::from("Leather"),    cost:  13, attack: 0, defence: 1},
-            Equipment{equip_type: EquipmentType::Armour, name: String::from("Chainmail"),  cost:  31, attack: 0, defence: 2},
-            Equipment{equip_type: EquipmentType::Armour, name: String::from("Splintmail"), cost:  53, attack: 0, defence: 3},
-            Equipment{equip_type: EquipmentType::Armour, name: String::from("Bandedmail"), cost:  75, attack: 0, defence: 4},
-            Equipment{equip_type: EquipmentType::Armour, name: String::from("Platemail"),  cost: 102, attack: 0, defence: 5},
+            Equipment{name: String::from("Leather"),    cost:  13, attack: 0, defence: 1},
+            Equipment{name: String::from("Chainmail"),  cost:  31, attack: 0, defence: 2},
+            Equipment{name: String::from("Splintmail"), cost:  53, attack: 0, defence: 3},
+            Equipment{name: String::from("Bandedmail"), cost:  75, attack: 0, defence: 4},
+            Equipment{name: String::from("Platemail"),  cost: 102, attack: 0, defence: 5},
         ]
     );
 
     let rings = Vec::from(
         [
-            Equipment{equip_type: EquipmentType::Ring,   name: String::from("Damage +1"),  cost:  25, attack: 1, defence: 0},
-            Equipment{equip_type: EquipmentType::Ring,   name: String::from("Damage +2"),  cost:  50, attack: 2, defence: 0},
-            Equipment{equip_type: EquipmentType::Ring,   name: String::from("Damage +3"),  cost: 100, attack: 3, defence: 0},
-            Equipment{equip_type: EquipmentType::Ring,   name: String::from("Defence +1"), cost:  20, attack: 0, defence: 1},
-            Equipment{equip_type: EquipmentType::Ring,   name: String::from("Defence +2"), cost:  40, attack: 0, defence: 2},
-            Equipment{equip_type: EquipmentType::Ring,   name: String::from("Defence +3"), cost:  60, attack: 0, defence: 3},
+            Equipment{name: String::from("Damage +1"),  cost:  25, attack: 1, defence: 0},
+            Equipment{name: String::from("Damage +2"),  cost:  50, attack: 2, defence: 0},
+            Equipment{name: String::from("Damage +3"),  cost: 100, attack: 3, defence: 0},
+            Equipment{name: String::from("Defence +1"), cost:  20, attack: 0, defence: 1},
+            Equipment{name: String::from("Defence +2"), cost:  40, attack: 0, defence: 2},
+            Equipment{name: String::from("Defence +3"), cost:  60, attack: 0, defence: 3},
         ]
     );
 
