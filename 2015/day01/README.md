@@ -36,6 +36,8 @@ where `[run]` is:
 
 Took about 20 minutes to do a very basic version. It doesn't have any test cases or error checking and is a pretty nested for loop
 
+There isn't much too this problem, you essentially have to keep track of the number of `(` and `)` you've encountered and increment / decrement a value. I don't / can't think of a more intelligent way to do this that isn't some kind of iterator, whether it's a loop or a `fold` or something similar.
+
 # Improvements
 
 * Could this be done without having a mutable variable?

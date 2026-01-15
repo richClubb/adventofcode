@@ -56,11 +56,7 @@ fn find_primes(target: &usize) -> Vec<usize> {
 
 fn find_prime_factors(target: &usize, primes: &Vec<usize>) -> Option<HashMap<usize, usize>> {
 
-    println!("\nInitial {target}");
-
     let mut prime_factors: HashMap<usize, usize> = HashMap::new();
-
-    println!("{primes:?}");
 
     if target == &1 {
         return None;
@@ -98,7 +94,6 @@ fn sum_of_integers(target: &usize, primes: &Vec<usize>) -> usize {
     let mut overall_total = 1;
 
     let prime_factors = find_prime_factors(target, primes);
-    println!("  prime factors {prime_factors:?}");
 
     for (prime, count) in prime_factors.unwrap() {
         let mut total = 0 as usize;
@@ -115,60 +110,27 @@ fn sum_of_integers(target: &usize, primes: &Vec<usize>) -> usize {
 
 pub fn part_a(input: &usize)
 {
-    // println!("Part A");
+    println!("Part A");
 
-    // let mut index = 1;
-    // loop {
-    //     let result = find_multiples_calc_result(&index);
+    let primes_target = (*input as f32).sqrt() as usize;
 
-    //     if &result >= input {
-    //         break;
-    //     }
+    let primes = find_primes(&primes_target);
 
-    //     index += 1;
-    // }
+    println!("found primes {primes:?}");
 
-    // println!("Result: {index}");
+    let mut index = 1;
+    loop {
+        let result = sum_of_integers(&index, &primes);
 
-    let primes = find_primes(&10);
+        if &result >= input {
+            break;
+        }
+        
+        index += 1;
+        println!("index {index}");
+    }
 
-    let result = find_prime_factors(&1, &primes);
-    println!("Result {result:?}");
-
-    let input = 2;
-    let result_1 = find_prime_factors(&input, &primes).unwrap();
-    let result_2 = sum_of_integers(&input, &primes);
-    println!("Result {result_1:?} {result_2}");
-
-    let input = 3;
-    let result_1 = find_prime_factors(&input, &primes).unwrap();
-    let result_2 = sum_of_integers(&input, &primes);
-    println!("Result {result_1:?} {result_2}");
-
-    let input = 4;
-    let result_1 = find_prime_factors(&input, &primes).unwrap();
-    let result_2 = sum_of_integers(&input, &primes);
-    println!("Result {result_1:?} {result_2}");
-
-    let input = 5;
-    let result_1 = find_prime_factors(&input, &primes).unwrap();
-    let result_2 = sum_of_integers(&input, &primes);
-    println!("Result {result_1:?} {result_2}");
-
-    let input = 6;
-    let result_1 = find_prime_factors(&input, &primes).unwrap();
-    let result_2 = sum_of_integers(&input, &primes);
-    println!("Result {result_1:?} {result_2}");
-
-    let input = 7;
-    let result_1 = find_prime_factors(&input, &primes).unwrap();
-    let result_2 = sum_of_integers(&input, &primes);
-    println!("Result {result_1:?} {result_2}");
-
-    let input = 24;
-    let result_1 = find_prime_factors(&input, &primes).unwrap();
-    let result_2 = sum_of_integers(&input, &primes);
-    println!("Result {result_1:?} {result_2}");
+    println!("Result: {index}");
 }
 
 

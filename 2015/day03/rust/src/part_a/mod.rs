@@ -10,37 +10,34 @@ pub fn part_a(path: &String)
     let file: File = File::open(path).expect("Could not open file");
     let buf_reader:BufReader<File> = BufReader::new(file);
 
-    let mut x: i64 = 0;
-    let mut y: i64 = 0;
+    let houses = buf_reader.lines().fold(
+        ((0, 0), HashMap::from([((0, 0), 1)])), 
+        |mut acc, line| {
+            match line {
+                Ok(a_line) => {
+                    for character in a_line.chars() {
 
-    let mut houses: HashMap<(i64, i64), u64> = HashMap::new();
+                        let curr_pos = acc.0;
+                        let curr_pos = match character {
+                            '^' => (curr_pos.0, curr_pos.1 + 1),
+                            'v' => (curr_pos.0, curr_pos.1 - 1),
+                            '>' => (curr_pos.0 + 1, curr_pos.1),
+                            '<' => (curr_pos.0 - 1, curr_pos.1),
+                            _ => (curr_pos.0, curr_pos.1),
+                        };
 
-    houses.insert((0, 0), 1);
-
-    for line in buf_reader.lines()
-    {
-        match line {
-            Ok(a) => {
-                for character in a.chars() {
-                    match character {
-                        '^' => y += 1,
-                        'v' => y -= 1,
-                        '>' => x += 1,
-                        '<' => x -= 1,
-                        _ => x += 0,
-                    };
-
-                    let curr_pos = (x, y);
-
-                    if !houses.contains_key(&curr_pos) {
-                        houses.insert(curr_pos, 1);
+                        if !acc.1.contains_key(&curr_pos) {
+                            acc.1.insert(curr_pos, 1);
+                        }
+                        acc.0 = curr_pos
                     }
-                }
-            },
-            Err(_) => println!("Error in line"),
-        };
+                    acc
+                },
+                Err(_) => acc,
+            }
+        }
+    );
 
-        println!("Total: {}", houses.len())
-    }
+    println!("Total: {}", houses.1.len())
 }
 

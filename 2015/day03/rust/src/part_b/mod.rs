@@ -18,6 +18,44 @@ pub fn part_b(path: &String)
 
     let mut houses: HashMap<(i64, i64), u64> = HashMap::new();
 
+    // let lines = buf_reader.lines();
+
+    // let houses: Vec<HashMap<(i64, i64), u64>> = lines.map(|line| {
+    //         let line = line.unwrap();
+
+    //         line.chars().enumerate().fold(
+    //             ((0 as usize, 0 as usize),(0 as usize, 0 as usize), HashMap::new()),
+    //             |mut acc, (index, character)| {
+    //                 let person_index = index % 2 == 0;
+    //                 let person = match person_index {
+    //                     false => acc.1,
+    //                     true => acc.0,
+    //                 };
+
+    //                 let curr_pos = acc.0;
+    //                 let curr_pos = match character {
+    //                     '^' => (curr_pos.0, curr_pos.1 + 1),
+    //                     'v' => (curr_pos.0, curr_pos.1 - 1),
+    //                     '>' => (curr_pos.0 + 1, curr_pos.1),
+    //                     '<' => (curr_pos.0 - 1, curr_pos.1),
+    //                     _ => (curr_pos.0, curr_pos.1),
+    //                 };
+
+    //                 if !acc.2.contains_key(&curr_pos) {
+    //                     acc.2.insert(curr_pos, 1 as usize);
+    //                 }
+
+    //                 match person_index {
+    //                     false => (acc.0, person, acc.2),
+    //                     true => (person, acc.0, acc.2),
+    //                 }
+    //             }
+    //         ).2
+    //     }
+    // ).collect();
+
+    // println!("Total: {}", houses.len())
+
     for line in buf_reader.lines()
     {
         match line {

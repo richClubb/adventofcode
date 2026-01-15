@@ -26,11 +26,10 @@ pub fn part_a(path: &String)
     let file: File = File::open(path).expect("Could not open file");
     let buf_reader:BufReader<File> = BufReader::new(file);
 
-    let mut total = 0;
-    for line in buf_reader.lines()
-    {
-        total = total + get_area(&line.unwrap());
-    }
+    let total = buf_reader.lines().fold(0, |acc, line| {
+            acc + get_area(&line.unwrap())
+        }
+    );
 
     println!("Total {}", total);
 }
