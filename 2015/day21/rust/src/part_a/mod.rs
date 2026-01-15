@@ -60,7 +60,6 @@ struct Character {
     hit_points: isize,
     armour_val: usize,
     attack_val: usize,
-    equipment: Vec<Equipment>
 }
 
 impl Character {
@@ -166,14 +165,15 @@ pub fn part_a()
     );
 
     let combinations = get_all_equip_combinations(weapons, armour, rings);
-    // println!("{combinations:?}");
+    //println!("{combinations:?}");
 
     let mut successes = Vec::<usize>::new();
 
     for (weapon, armour, rings, cost) in combinations {
 
-        let mut hero = Character{hit_points: 100, armour_val: 0, attack_val: 0, equipment: Vec::new()};
-        let mut boss = Character{hit_points: 108, armour_val: 1, attack_val: 8, equipment: Vec::new()};
+        //println!("\n{:?}, {:?}, {:?}, {}", weapon, armour, rings, cost);
+        let mut hero = Character{hit_points: 100, armour_val: 0, attack_val: 0};
+        let mut boss = Character{hit_points: 104, armour_val: 1, attack_val: 8};
 
         let base_weapon_val = weapon.attack;
         let base_armour_val = match &armour {
@@ -194,17 +194,17 @@ pub fn part_a()
         };
         let weapon_val = base_weapon_val + ring_attack;
         let armour_val = base_armour_val + ring_def;
+        //println!("  Weapon val: {weapon_val}, armour val {armour_val}");
     
         loop {
 
-            let hero_hit= weapon_val + ring_attack;
-            let hero_def = armour_val + ring_def;
+            let hero_hit= weapon_val;
+            let hero_def = armour_val;
 
             boss.hit_points -= (hero_hit as isize - boss.armour_val as isize).max(1) as isize;
 
-            if boss.hit_points < 0 {
-                println!("boss defeated");
-                println!("{:?}, {:?}, {:?}, {}", weapon, armour, rings, cost);
+            if boss.hit_points <= 0 {
+                // println!("    boss defeated");
                 successes.push(cost);
 
                 break;
@@ -212,16 +212,18 @@ pub fn part_a()
 
             hero.hit_points -= (boss.attack_val as isize - hero_def as isize).max(1) as isize;
 
-            if hero.hit_points < 0 {
-                //println!("Hero defeated failed");
+            if hero.hit_points <= 0 {
+                // println!("    Hero defeated failed");
                 break;
             }
 
-            //println!("boss: {} hero: {}", boss.hit_points, hero.hit_points);
+            // println!("    boss: {} hero: {}", boss.hit_points, hero.hit_points);
         }
     }
     
     let min = successes.iter().min();
-    println!("Lowest cost {min:?}");
+    if min.is_some() {
+        println!("Lowest cost {}", min.unwrap());
+    }
 
 }
