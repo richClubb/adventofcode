@@ -3,7 +3,11 @@
 https://adventofcode.com/2015
 
 I started this in 2025
-  
+
+# Challenge
+
+Do this year in Rust
+
 # Overview
 
 * [Day 01](./day01/) - Completed
