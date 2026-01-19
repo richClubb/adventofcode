@@ -1,4 +1,4 @@
-use std::{collections::HashMap};
+use std::{collections::HashMap, mem::take};
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 enum Spell {
@@ -6,171 +6,216 @@ enum Spell {
     Drain,
     Shield,
     Poison,
-    Recharge
+    Recharge,
 }
 
-fn available_spells(characters: Vec<&Character>) -> Vec<Spell> {
+impl Spell {
+    pub fn cast(&self, caster: &mut Character, target: &mut Character) {
+        
+        caster.mana -= self.cost();
 
-    let mut spells_active = Vec::<Spell>::new();
-
-    for character in characters {
-        for spell in &character.spells_active {
-            spells_active.push(spell.0.clone());
+        match self {
+            Spell::MagicMissile => {
+                target.hit_points -= 4;
+            },
+            Spell::Drain => {
+                caster.hit_points += 2;
+                target.hit_points -= 2;
+            },
+            Spell::Shield => {
+                caster.armour = 7;
+                caster.spells_active.insert(Spell::Shield, 6);
+            },
+            Spell::Poison => {
+                target.spells_active.insert(Spell::Poison, 6);
+            },
+            Spell::Recharge => {
+                caster.spells_active.insert(Spell::Recharge, 5);
+            },
         }
     }
 
-    let mut spells_available = Vec::<Spell>::from([Spell::MagicMissile, Spell::Drain]);
-
-    if !spells_active.contains(&Spell::Shield){
-        spells_available.push(Spell::Shield);
+    pub fn cost(&self) -> isize {
+        match self {
+            Spell::MagicMissile => 53,
+            Spell::Drain => 73,
+            Spell::Shield => 113,
+            Spell::Poison => 173,
+            Spell::Recharge => 229,
+        }
     }
 
-    if !spells_active.contains(&Spell::Recharge){
-        spells_available.push(Spell::Recharge);
-    }
+    pub fn available_spells(mana_available: &isize, characters: Vec<&Character>) -> Option<Vec<Spell>> {
 
-    if !spells_active.contains(&Spell::Poison){
-        spells_available.push(Spell::Poison);
-    }
+        if mana_available < &53 {
+            return None
+        }
 
-    return spells_available;
+        let mut spells_active = Vec::<Spell>::new();
+
+        for character in characters {
+            for (spell, _) in &character.spells_active {
+                spells_active.push(spell.clone());
+            }
+        }
+
+        let mut spells_available = Vec::<Spell>::new();
+
+        if mana_available >= &Spell::MagicMissile.cost() {
+            spells_available.push(Spell::MagicMissile);
+        }
+
+        if mana_available >= &Spell::Drain.cost() {
+            spells_available.push(Spell::Drain);
+        }
+
+        if (mana_available >= &Spell::Shield.cost()) && !spells_active.contains(&Spell::Shield) {
+            spells_available.push(Spell::Shield)
+        }
+
+        if (mana_available >= &Spell::Poison.cost()) && !spells_active.contains(&Spell::Poison) {
+            spells_available.push(Spell::Poison)
+        }
+
+        if (mana_available >= &Spell::Recharge.cost()) && !spells_active.contains(&Spell::Recharge) {
+            spells_available.push(Spell::Recharge)
+        }
+
+        return Some(spells_available);
+    }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 struct Character {
     hit_points: isize,
     mana: isize,
-    damage: usize,
-    armour: usize,
-    spells_active: HashMap<Spell, usize>,
+    damage: isize,
+    armour: isize,
+    spells_active: HashMap<Spell, usize>
 }
 
 impl Character {
+    pub fn check_effects(&mut self) {
+        for (spell, duration) in self.spells_active.clone() {
 
-    pub fn cast_spell(&mut self, target: &mut Character, spell: Spell) -> usize {
-        // println!("Casting spell: '{spell:?}'");
-
-        if spell == Spell::MagicMissile {
-            target.hit_points -= 4;
-            return 53;
-        }
-
-        if spell == Spell::Drain {
-            self.hit_points += 2;
-            target.hit_points -= 2;
-            return 73;
-        }
-
-        if spell == Spell::Shield {
-            self.spells_active.insert(Spell::Shield, 6);
-            return 113;
-        }
-
-        if spell == Spell::Poison {
-            target.spells_active.insert(Spell::Poison, 6);
-            return 173;
-        }
-
-        if spell == Spell::Recharge {
-            self.spells_active.insert(Spell::Recharge, 5);
-            return 229;
-        }
-
-        return 0;
-    }
-
-    pub fn attack(&self, target: &mut Character) {
-        target.hit_points -= self.damage as isize - target.armour as isize;
-    }
-
-    pub fn is_alive(&self) -> bool {
-        if self.hit_points <= 0 {
-            return false;
-        }
-        return true;
-    }
-
-    pub fn update_effects(&mut self) {
-
-        for (spell, count ) in self.spells_active.clone() {
-            if spell == Spell::Recharge {
-                self.mana += 101;
+            match spell {
+                Spell::Shield => {
+                    if duration == 1 {
+                        self.armour = 0;
+                    }
+                    else {
+                        self.armour = 7;
+                    }
+                },
+                Spell::Poison => {
+                    self.hit_points -= 3;
+                },
+                Spell::Recharge => {
+                    self.mana += 101;
+                },
+                _ => ()
             }
 
-            if spell == Spell::Shield {
-                self.armour = 7;
-                if count == 1 {
-                    self.armour = 0;
-                }
-            }
-
-            if spell == Spell::Poison {
-                self.hit_points -= 3;
-            }
-
-            if count == 1 {
+            if duration <= 1 {
+                println!("  {spell:?} expired");
                 self.spells_active.remove(&spell);
             }
             else {
-                self.spells_active.entry(spell).and_modify(|entry | {*entry -= 1});
+                println!("  {spell:?} now {}", duration - 1);
+                self.spells_active.entry(spell).and_modify(|entry| *entry -= 1);
             }
+
         }
+    }
+
+    pub fn attack(&self, target: &mut Character) {
+        target.hit_points -= (self.damage - target.armour).max(1);
+    }
+
+    pub fn is_dead(&self) -> bool {
+        if self.hit_points <= 0 {
+            return true;
+        }
+        return false;
     }
 }
 
+fn take_turn(hero: &mut Character, boss: &mut Character, spell_list: &mut Vec<Spell>) -> Option<isize> {
 
+    // println!("Taking turn Hero {:?}, boss: {:?}", hero, boss);
+    hero.check_effects();
+    boss.check_effects();
+    // println!("  Boss effect round: Hero {:?}, boss: {:?}", hero, boss);
 
-fn take_turn(hero: &mut Character, boss: &mut Character, mana_spent: usize) -> Option<usize> {
-
-    //println!("Turn Hero: {} Boss: {}", hero.hit_points, boss.hit_points);
-    hero.update_effects();
-    boss.update_effects();
-
-    if !boss.is_alive() {
-        //println!("Boss dies, mana spent {mana_spent}");
+    if boss.is_dead() {
+        let mana_spent = spell_list.iter().fold(0, |acc, spell| acc + spell.cost());
+        println!("  Boss is dead, {spell_list:?}, {mana_spent}, {hero:?} {boss:?}");
         return Some(mana_spent);
     }
 
     boss.attack(hero);
+    // println!("  Boss action round: Hero {:?}, boss: {:?}", hero, boss);
 
-    if !hero.is_alive(){
-        //println!("Hero dead");
+    if hero.is_dead() {
+        // println!("  Hero dead");
         return None;
     }
 
-    hero.update_effects();
-    boss.update_effects();
+    hero.check_effects();
+    boss.check_effects();
+    // println!("  Player effect round: Hero {:?}, boss: {:?}", hero, boss);
 
-    if !boss.is_alive() {
-        //println!("Boss dies");
+    if boss.is_dead() {
+        let mana_spent = spell_list.iter().fold(0, |acc, spell| acc + spell.cost());
+        println!("  Boss is dead, {spell_list:?}, {mana_spent}, {hero:?} {boss:?}");
         return Some(mana_spent);
     }
 
-    let spells_available = available_spells(Vec::from([&hero.clone(), &boss.clone()]));
-    //println!("spells available: {spells_available:?}");
+    let spells_available = Spell::available_spells(&hero.mana, Vec::from([&hero.clone(), &boss.clone()]));
+    println!("  Spells avilable: {:?}", spells_available);
 
-    let mut min_mana = std::usize::MAX;
-    for spell in spells_available {
-        
-        let mut hero = hero.clone();
-        let mut boss = boss.clone();
-        let mana = hero.cast_spell(&mut boss, spell);
+    let mut min_mana = std::isize::MAX;
+    let _ = match spells_available {
+        Some(spells) => {
+            for spell in spells {
+                println!("  \nCasting {:?}", spell);
+                let mut spells_cast = spell_list.clone();
+                spells_cast.push(spell.clone());
+                let mut hero = hero.clone();
+                let mut boss = boss.clone();
 
-        let result = take_turn(&mut hero, &mut boss, mana_spent + mana);
-        if !boss.is_alive() {
-            //println!("Boss dies");
-            return Some(mana_spent);
-        }
+                // println!("Spells cast: {spells_cast:?}");
+                spell.cast(&mut hero, &mut boss);
 
-        match result {
-            Some(result) => {
-                if result < min_mana {
-                    min_mana = result;
+                if boss.is_dead() {
+                    let mana_spent = spell_list.iter().fold(0, |acc, spell| acc + spell.cost());
+                    println!("  Boss is dead, {spell_list:?}, {mana_spent}, {hero:?} {boss:?}");
+                    if mana_spent < min_mana {
+                        min_mana = mana_spent;
+                        continue;
+                    }
+                }
+
+                // println!("{hero:?} {boss:?}");
+                let result = take_turn(&mut hero, &mut boss, &mut spells_cast);
+                if result.is_some() {
+                    if result.unwrap() < min_mana {
+                        min_mana = result.unwrap();
+                    }
                 }
             }
-            None => ()
         }
-    }
+        None => {
+            // ()
+            // println!("  Can't cast :( {hero:?} , {boss:?}");
+            let result = take_turn(hero, boss, &mut spell_list.clone());
+            if result.is_some() {
+                if result.unwrap() < min_mana {
+                    min_mana = result.unwrap();
+                }
+            }
+        },
+    };
 
     return Some(min_mana);
 }
@@ -179,31 +224,33 @@ pub fn part_a()
 {
     println!("Part A");
 
-    let mut hero = Character{hit_points: 50, mana: 500, damage: 0, armour: 0, spells_active: HashMap::new()};
-    let mut boss = Character{hit_points: 71, mana: 0, damage: 10, armour: 0, spells_active: HashMap::new()};
+    // let mut hero = Character{ hit_points: 50, mana: 500, damage: 0, armour: 0, spells_active: HashMap::new()};
+    // let mut boss = Character{ hit_points: 71, mana: 0, damage: 10, armour: 0, spells_active: HashMap::new()};
 
-    let spells_available = available_spells(Vec::from([&hero, &boss]));
-    //println!("spells available: {spells_available:?}");
+    let mut hero = Character{ hit_points: 10, mana: 250, damage: 0, armour: 0, spells_active: HashMap::new()};
+    let mut boss = Character{ hit_points: 14, mana: 0, damage: 8, armour: 0, spells_active: HashMap::new()};
+    let spell_available = Spell::available_spells(&hero.mana, Vec::from([&hero, &boss]));
 
-    let mut min_mana = std::usize::MAX;
-    for spell in spells_available {
+    let mut spells_cast = Vec::<Spell>::new();
 
-        //println!("Initial Hero: {} Boss: {}", hero.hit_points, boss.hit_points);
-
+    let mut min_mana = std::isize::MAX;
+    for spell in spell_available.unwrap() {
+        // println!("{hero:?} {boss:?}");
+        let mut spells_cast = spells_cast.clone();
+        spells_cast.push(spell.clone());
         let mut hero = hero.clone();
         let mut boss = boss.clone();
-        let mana = hero.cast_spell(&mut boss, spell);
 
-        let result = take_turn(&mut hero.clone(), &mut boss.clone(), mana);
+        println!("Spells cast: {spells_cast:?}");
+        spell.cast(&mut hero, &mut boss);
 
-        match result {
-            Some(result) => {
-                if result < min_mana {
-                    min_mana = result;
-                }
+        let result = take_turn(&mut hero, &mut boss, &mut spells_cast);
+        if result.is_some() {
+            if result.unwrap() < min_mana {
+                min_mana = result.unwrap();
             }
-            None => ()
         }
     }
-}
 
+    println!("Min mana: {min_mana}");
+}
