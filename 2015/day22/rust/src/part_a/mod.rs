@@ -224,11 +224,11 @@ pub fn part_a()
 {
     println!("Part A");
 
-    // let mut hero = Character{ hit_points: 50, mana: 500, damage: 0, armour: 0, spells_active: HashMap::new()};
-    // let mut boss = Character{ hit_points: 71, mana: 0, damage: 10, armour: 0, spells_active: HashMap::new()};
+    let mut hero = Character{ hit_points: 50, mana: 500, damage: 0, armour: 0, spells_active: HashMap::new()};
+    let mut boss = Character{ hit_points: 71, mana: 0, damage: 10, armour: 0, spells_active: HashMap::new()};
 
-    let mut hero = Character{ hit_points: 10, mana: 250, damage: 0, armour: 0, spells_active: HashMap::new()};
-    let mut boss = Character{ hit_points: 14, mana: 0, damage: 8, armour: 0, spells_active: HashMap::new()};
+    // let mut hero = Character{ hit_points: 10, mana: 250, damage: 0, armour: 0, spells_active: HashMap::new()};
+    // let mut boss = Character{ hit_points: 13, mana: 0, damage: 8, armour: 0, spells_active: HashMap::new()};
     let spell_available = Spell::available_spells(&hero.mana, Vec::from([&hero, &boss]));
 
     let mut spells_cast = Vec::<Spell>::new();
