@@ -10,27 +10,32 @@ enum Spell {
 }
 
 impl Spell {
-    pub fn cast(&self, caster: &mut Character, target: &mut Character) {
+    pub fn cast(&self, caster: &mut Character, target: &mut Character, log: &mut Vec<String>) {
         
         caster.mana -= self.cost();
 
         match self {
             Spell::MagicMissile => {
                 target.hit_points -= 4;
+                log.push(format!("Magic missile cast: {caster:?} {target:?}"));
             },
             Spell::Drain => {
                 caster.hit_points += 2;
                 target.hit_points -= 2;
+                log.push(format!("Drain cast: {caster:?} {target:?}"));
             },
             Spell::Shield => {
                 caster.armour = 7;
                 caster.spells_active.insert(Spell::Shield, 6);
+                log.push(format!("Shield cast: {caster:?} {target:?}"));
             },
             Spell::Poison => {
                 target.spells_active.insert(Spell::Poison, 6);
+                log.push(format!("Poison cast: {caster:?} {target:?}"));
             },
             Spell::Recharge => {
                 caster.spells_active.insert(Spell::Recharge, 5);
+                log.push(format!("Recharge cast: {caster:?} {target:?}"));
             },
         }
     }
@@ -95,16 +100,18 @@ struct Character {
 }
 
 impl Character {
-    pub fn check_effects(&mut self) {
+    pub fn check_effects(&mut self, log: &mut Vec<String>) {
         for (spell, duration) in self.spells_active.clone() {
 
             match spell {
                 Spell::Shield => {
-                    if duration == 1 {
+                    if duration <= 1 {
                         self.armour = 0;
+                        log.push("Shield depleted".to_string());
                     }
                     else {
                         self.armour = 7;
+                        log.push("Shield active".to_string());
                     }
                 },
                 Spell::Poison => {
@@ -117,19 +124,22 @@ impl Character {
             }
 
             if duration <= 1 {
-                println!("  {spell:?} expired");
+                // println!("  {spell:?} expired");
+                log.push(format!("{spell:?} expired"));
                 self.spells_active.remove(&spell);
             }
             else {
-                println!("  {spell:?} now {}", duration - 1);
+                // println!("  {spell:?} now {}", duration - 1);
+                log.push(format!("{spell:?} duration {}", duration - 1));
                 self.spells_active.entry(spell).and_modify(|entry| *entry -= 1);
             }
 
         }
     }
 
-    pub fn attack(&self, target: &mut Character) {
+    pub fn attack(&self, target: &mut Character, log: &mut Vec<String>) {
         target.hit_points -= (self.damage - target.armour).max(1);
+        log.push(format!("damaged {} {target:?}", self.damage - target.armour).to_string());
     }
 
     pub fn is_dead(&self) -> bool {
@@ -140,20 +150,23 @@ impl Character {
     }
 }
 
-fn take_turn(hero: &mut Character, boss: &mut Character, spell_list: &mut Vec<Spell>) -> Option<isize> {
+fn take_turn(hero: &mut Character, boss: &mut Character, spell_list: &mut Vec<Spell>, log: &mut Vec<String>) -> Option<isize> {
 
+    log.push("Boss turn".to_string());
     // println!("Taking turn Hero {:?}, boss: {:?}", hero, boss);
-    hero.check_effects();
-    boss.check_effects();
+    hero.check_effects(log);
+    boss.check_effects(log);
     // println!("  Boss effect round: Hero {:?}, boss: {:?}", hero, boss);
 
     if boss.is_dead() {
         let mana_spent = spell_list.iter().fold(0, |acc, spell| acc + spell.cost());
-        println!("  Boss is dead, {spell_list:?}, {mana_spent}, {hero:?} {boss:?}");
+        // println!("  Boss is dead, {spell_list:?}, {mana_spent}, {hero:?} {boss:?}");
+        log.push(format!("  Boss is dead, {spell_list:?}, {mana_spent}, {hero:?} {boss:?}").to_string());
+        // println!("{log:?}");
         return Some(mana_spent);
     }
 
-    boss.attack(hero);
+    boss.attack(hero, log);
     // println!("  Boss action round: Hero {:?}, boss: {:?}", hero, boss);
 
     if hero.is_dead() {
@@ -161,35 +174,41 @@ fn take_turn(hero: &mut Character, boss: &mut Character, spell_list: &mut Vec<Sp
         return None;
     }
 
-    hero.check_effects();
-    boss.check_effects();
+    log.push("Player turn".to_string());
+    hero.check_effects(log);
+    boss.check_effects(log);
     // println!("  Player effect round: Hero {:?}, boss: {:?}", hero, boss);
 
     if boss.is_dead() {
         let mana_spent = spell_list.iter().fold(0, |acc, spell| acc + spell.cost());
-        println!("  Boss is dead, {spell_list:?}, {mana_spent}, {hero:?} {boss:?}");
+        // println!("  Boss is dead, {spell_list:?}, {mana_spent}, {hero:?} {boss:?}");
+        log.push(format!("  Boss is dead, {spell_list:?}, {mana_spent}, {hero:?} {boss:?}").to_string());
+        // println!("{log:?}");
         return Some(mana_spent);
     }
 
     let spells_available = Spell::available_spells(&hero.mana, Vec::from([&hero.clone(), &boss.clone()]));
-    println!("  Spells avilable: {:?}", spells_available);
+    // println!("  Spells avilable: {:?}", spells_available);
 
     let mut min_mana = std::isize::MAX;
     let _ = match spells_available {
         Some(spells) => {
             for spell in spells {
-                println!("  \nCasting {:?}", spell);
+                // println!("  \nCasting {:?}", spell);
                 let mut spells_cast = spell_list.clone();
                 spells_cast.push(spell.clone());
                 let mut hero = hero.clone();
                 let mut boss = boss.clone();
+                let mut log = log.clone();
 
                 // println!("Spells cast: {spells_cast:?}");
-                spell.cast(&mut hero, &mut boss);
+                spell.cast(&mut hero, &mut boss, &mut log);
 
                 if boss.is_dead() {
-                    let mana_spent = spell_list.iter().fold(0, |acc, spell| acc + spell.cost());
-                    println!("  Boss is dead, {spell_list:?}, {mana_spent}, {hero:?} {boss:?}");
+                    let mana_spent = spells_cast.iter().fold(0, |acc, spell| acc + spell.cost());
+                    //println!("  Boss is dead, {spells_cast:?}, {mana_spent}, {hero:?} {boss:?}");
+                    log.push(format!("  Boss is dead, {spells_cast:?}, {mana_spent}, {hero:?} {boss:?}").to_string());
+                    //println!("{log:?}");
                     if mana_spent < min_mana {
                         min_mana = mana_spent;
                         continue;
@@ -197,7 +216,7 @@ fn take_turn(hero: &mut Character, boss: &mut Character, spell_list: &mut Vec<Sp
                 }
 
                 // println!("{hero:?} {boss:?}");
-                let result = take_turn(&mut hero, &mut boss, &mut spells_cast);
+                let result = take_turn(&mut hero, &mut boss, &mut spells_cast, &mut log);
                 if result.is_some() {
                     if result.unwrap() < min_mana {
                         min_mana = result.unwrap();
@@ -208,7 +227,7 @@ fn take_turn(hero: &mut Character, boss: &mut Character, spell_list: &mut Vec<Sp
         None => {
             // ()
             // println!("  Can't cast :( {hero:?} , {boss:?}");
-            let result = take_turn(hero, boss, &mut spell_list.clone());
+            let result = take_turn(hero, boss, &mut spell_list.clone(), &mut log.clone());
             if result.is_some() {
                 if result.unwrap() < min_mana {
                     min_mana = result.unwrap();
@@ -232,6 +251,7 @@ pub fn part_a()
     let spell_available = Spell::available_spells(&hero.mana, Vec::from([&hero, &boss]));
 
     let mut spells_cast = Vec::<Spell>::new();
+    let mut log = Vec::<String>::new();
 
     let mut min_mana = std::isize::MAX;
     for spell in spell_available.unwrap() {
@@ -240,11 +260,13 @@ pub fn part_a()
         spells_cast.push(spell.clone());
         let mut hero = hero.clone();
         let mut boss = boss.clone();
+        let mut log = log.clone();
 
-        println!("Spells cast: {spells_cast:?}");
-        spell.cast(&mut hero, &mut boss);
+        log.push("Player turn".to_string());
+        // println!("Spells cast: {spells_cast:?}");
+        spell.cast(&mut hero, &mut boss, &mut log);
 
-        let result = take_turn(&mut hero, &mut boss, &mut spells_cast);
+        let result = take_turn(&mut hero, &mut boss, &mut spells_cast, &mut log.clone());
         if result.is_some() {
             if result.unwrap() < min_mana {
                 min_mana = result.unwrap();
