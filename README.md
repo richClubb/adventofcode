@@ -4,11 +4,11 @@ My repository for the advent of code solutions
 
 # Total Solved
 
-* 60 / 524 (11.5%)
+* 64 / 524 (12.2%)
 
 # Breakdown by Year
 
-* [2015](./2015/) - 42 / 50 - Challenge - just use Rust.
+* [2015](./2015/) - 46 / 50 - Challenge - just use Rust.
 * [2016](./2016/) -  0 / 50
 * [2017](./2017/) -  0 / 50
 * [2018](./2018/) -  0 / 50
@@ -16,7 +16,7 @@ My repository for the advent of code solutions
 * [2020](./2020/) -  0 / 50
 * [2021](./2021/) -  8 / 50 - Not currently documented here, need to re-create
 * [2022](./2022/) -  2 / 50 - Not currently documented here, need to re-create
-* [2023](./2023/) -  6 / 50 - Challenge - Every problem in Rust, Python and Zig. I didn't get far with that challenge. Maybe, every problem in Rust, Python or Zig and you have to do all three before you can re-use one and you can't use the same one twice in a row. E.g. Rust, Zig, Python, Zig, Python, Rust.
+* [2023](./2023/) -  6 / 50 - Challenge - Every problem in Rust, Python and Zig. I didn't get far with that challenge as it's just a lot of work. Instead, try every problem in Rust, Python or Zig and you have to do all three before you can re-use one and you can't use the same one twice in a row. E.g. Rust, Zig, Python, Zig, Python, Rust.
 * [2024](./2024/) -  0 / 50
 * [2025](./2025/) -  2 / 50
 
@@ -57,7 +57,7 @@ gpg -d problem_solution_input.tar.gz.gpg | tar -xvzf -
     * This looks awful. Cobol, SQL and Scratch... Ada?
     * Can I get toolchains for each of these.
     * Will have to re-do the devcontainer framework.
-* Do a year using just Rust - In progress
+* Do a year using just Rust - In progress (2015)
 * Do a year using a microcontroller - Limited RAM and processor capacity
     * This could also be a container with crippled capabilities just to simulate
     * "every problem has a solution that completes in at most 15 seconds on ten-year-old hardware" is taken from the FAQ

@@ -34,11 +34,11 @@ where `[run]` is:
 
 # Notes
 
-This is different from the last problem as we have incomplete information. The decision space is larger.
+This is different from the last problem as we have incomplete information.
 
 Can this be done as a decision tree?
 
-Bredth first search?
+Depth first search?
 
 The problem says that a spell with an effect doesn't stack E.g. only one poison, shield, recharge can be active at a time.
 
@@ -56,3 +56,4 @@ E.g.
 
 # Improvements
 
+I'm not really happy with the solution, I want to try a different approach at some point

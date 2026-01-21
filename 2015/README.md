@@ -30,8 +30,8 @@ Do this year in Rust
 * [Day 18](./day18/) - Completed - cullular automata, could be improved / investigated
 * [Day 19](./day19/) - Completed
 * [Day 20](./day20/) - Completed - could be improved, very slow and brute force
-* [Day 21](./day21/) 
-* [Day 22](./day22/) 
-* [Day 23](./day23/) 
+* [Day 21](./day21/) - Completed
+* [Day 22](./day22/) - Completed - Very unhappy with this one, would like to try re-working it at some point.
+* [Day 23](./day23/) - Completed 
 * [Day 24](./day24/) 
 * [Day 25](./day25/) 

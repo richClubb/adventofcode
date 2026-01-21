@@ -6,8 +6,6 @@ https://adventofcode.com/[year]
 
 Do this year in either Rust, Zig, Python, C or Go.
 
-
-
 # Overview
 
 * [Day 01](./day01/) - C
