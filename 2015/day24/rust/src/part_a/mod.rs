@@ -70,10 +70,6 @@ fn get_bag_combinations(packages: &Vec<usize>, bag: &Bag, smallest_bal_bag: &mut
         bag_1.add_package(&next_package);
         let bag_2 = Bag {packages: packages_int.clone()};
 
-        // *counter += 1;
-        // if counter.clone() % 100000 == 0 {
-        //     println!("  couter {counter}, {bag_1:?}, {bag_2:?}");
-        // }
 
         if bag_1.weight() * 2 > bag_2.weight() {
             return;
@@ -81,11 +77,13 @@ fn get_bag_combinations(packages: &Vec<usize>, bag: &Bag, smallest_bal_bag: &mut
 
         if (bag_1.weight() * 2) == bag_2.weight() {
 
+            println!("Equals {bag_1:?} {bag_2:?}");
+
             let mut combos = Vec::<(Bag, Bag)>::new();
-            get_equal_bag_combinations(&packages_int, &bag_2, &mut combos);
+            println!("Getting combinations ");
+            get_equal_bag_combinations(&bag_2.packages, &Bag{packages: Vec::<usize>::new()}, &mut combos);
             
             if combos.len() > 1 {
-                println!("combos combos {combos:?}");
 
                 if &bag_1.packages.len() < smallest_bal_bag {
                     println!("Smallest ");
@@ -94,7 +92,7 @@ fn get_bag_combinations(packages: &Vec<usize>, bag: &Bag, smallest_bal_bag: &mut
                     println!("Smallest {smallest_bal_bag} {smallest_bal_bag_qe} {bag_1:?} {bag_2:?}")
                 }
             }
-            
+
             return;
         }
 
