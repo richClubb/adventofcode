@@ -30,78 +30,28 @@ impl Bag {
     }
 }
 
-fn get_equal_bag_combinations(packages: &Vec<usize>, bag:&Bag, bag_list: &mut Vec<(Bag, Bag)>) {
+fn get_bag_combinations(packages: &Vec<usize>, target_weight: &usize, bags: &mut (Option<Bag>, Option<Bag>, Option<Bag>),  bag_list: &mut Vec<(Bag, Bag, Bag)>) {
     
-    for index in 0..packages.len() {
-
+    for package_index in 0..packages.len() {
         let mut packages_int = packages.clone();
-        let next_package = packages_int.remove(index);
 
-        let mut bag_1 = bag.clone();
-        let bag_2 = Bag {packages: packages_int.clone()};
+        let curr_package = packages_int.remove(package_index);
 
-        bag_1.add_package(&next_package);
-
-        let bag_1_weight = bag_1.clone().weight();
-        let bag_2_weight = bag_2.weight();
-
-        if bag_1_weight > bag_2_weight {
-            return;
+        if bags.0.is_none() {
+            bags.0 = Some(Bag{packages: Vec::from([curr_package.clone()])});
         }
 
-        if bag_1_weight == bag_2_weight {
-            bag_list.push((bag_1.clone(), bag_2.clone()));
+        if bags.0.is_some() && bags.1.is_none() {
+
         }
-
-        get_equal_bag_combinations(&packages_int, &bag_1, bag_list);
-
-    }
-}
-
-fn get_bag_combinations(packages: &Vec<usize>, bag: &Bag, smallest_bal_bag: &mut usize, smallest_bal_bag_qe: &mut usize, counter: &mut usize){
-
-    for index in 0..packages.len() {
         
-        let mut packages_int = packages.clone();
-        let next_package = packages_int.remove(index);
-
-        let mut bag_1 = bag.clone();
-
-        bag_1.add_package(&next_package);
-        let bag_2 = Bag {packages: packages_int.clone()};
-
-
-        if bag_1.weight() * 2 > bag_2.weight() {
+        let bag_0_weight = bags.0.as_ref().unwrap().weight();
+        if &bag_0_weight > target_weight {
             return;
         }
 
-        if (bag_1.weight() * 2) == bag_2.weight() {
 
-            println!("Equals {bag_1:?} {bag_2:?}");
 
-            let mut combos = Vec::<(Bag, Bag)>::new();
-            println!("Getting combinations ");
-            get_equal_bag_combinations(&bag_2.packages, &Bag{packages: Vec::<usize>::new()}, &mut combos);
-            
-            if combos.len() > 1 {
-
-                if &bag_1.packages.len() < smallest_bal_bag {
-                    println!("Smallest ");
-                    *smallest_bal_bag = bag_1.packages.len();
-                    *smallest_bal_bag_qe = bag_1.calc_qe();
-                    println!("Smallest {smallest_bal_bag} {smallest_bal_bag_qe} {bag_1:?} {bag_2:?}")
-                }
-            }
-
-            return;
-        }
-
-        if &bag_1.packages.len() <= smallest_bal_bag {
-        // yoda typing
-            if 2 < packages_int.len() {
-                get_bag_combinations(&packages_int, &bag_1, smallest_bal_bag, smallest_bal_bag_qe, counter);
-            }
-        }
     }
 
 }
@@ -120,16 +70,10 @@ pub fn part_a(path: &String)
     ).collect();
 
     let mut packages = packages.clone();
+
+    // whatever you do, do it greedily
     packages.reverse();
 
-    println!("{packages:?}");
-
-    let mut smallest_bag = std::usize::MAX;
-    let mut qe_smallest_bag = std::usize::MAX;
-    let mut counter = 0;
-    
-    get_bag_combinations(&packages, &Bag {packages: Vec::<usize>::new()}, &mut smallest_bag, &mut qe_smallest_bag, &mut counter);
-
-    println!("{smallest_bag} {qe_smallest_bag}");
+    let total: usize = packages.iter().sum();
 
 }
