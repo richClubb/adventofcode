@@ -1,7 +1,6 @@
 use clap::Parser;
 
 use day24::part_a::part_a;
-use day24::part_b::part_b;
 
 #[derive(Parser)]
 struct Cli {
@@ -17,7 +16,6 @@ fn main() {
 
     match args.run.as_str() {
         "part_a" => part_a(&args.path),
-        "part_b" => part_b(&args.path),
         &_ => println!("Invalid run")
     }
 }
