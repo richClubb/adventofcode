@@ -8,18 +8,24 @@ struct Bag {
     packages: Vec<usize>
 }
 
-impl Bag {
-    pub fn weight(&self) -> usize {
-        return self.packages.iter().sum();
-    }
+pub trait Weight {
+    fn weight(&self) -> usize;
+}
 
-    pub fn add_package(&mut self, package: &usize) {
-        self.packages.push(*package);
-        self.packages.sort();
+impl Weight for &Vec<usize> {
+    fn weight(&self) -> usize {
+        return self.iter().sum();
     }
+}
 
-    pub fn calc_qe(&self) -> usize {
-        return self.packages.iter().fold(1 as usize, |acc, entry| {
+pub trait QeCalc {
+    fn calc_qe(&self) -> usize;
+}
+
+impl QeCalc for &Vec<usize> {
+
+    fn calc_qe(&self) -> usize {
+        return self.iter().fold(1 as usize, |acc, entry| {
                 let (result, of_flag) = acc.overflowing_mul(*entry);
                 if of_flag {
                     std::usize::MAX
@@ -30,122 +36,153 @@ impl Bag {
             }
         );
     }
-
-    pub fn size(&self) -> usize {
-        return self.packages.len();
-    }
 }
 
-fn get_all_splits(packages: &Vec<usize>, target: &usize, bag: &Bag, fails: &mut HashSet<(Bag, Vec<usize>)>, pairs: &mut HashSet<Vec<Bag>>) {
+fn ways_to_get_target(
+    packages: &Vec<usize>, 
+    target: &usize, 
+    curr_bag: &Vec<usize>, 
+    skips: &mut HashSet<(Vec<usize>, Vec<usize>)>, 
+    successes: &mut HashMap<Vec<usize>, HashSet<Vec<usize>>>) -> Option<(usize, usize)>{
 
-    // println!("Get all splits {bag:?} {packages:?}");
+    let mut smallest_bag = std::usize::MAX;
+    let mut smallest_bag_qe = std::usize::MAX;
 
-    if fails.contains(&(bag.clone(), packages.clone())) {
-        // println!("  Caught fail in get all splits {bag:?} {packages:?}");
-        return;
+    let mut success = false;
+    // println!("Ways to get target {packages:?}, {curr_bag:?}");
+    if skips.contains(&(packages.clone(), curr_bag.clone())) {
+        // println!("caught skip");
+        return None;
     }
 
-    for package_index in 0..packages.len() {
+    for package_index in (0..packages.len()).rev() {
+        let mut remaining_packages = packages.clone();
+        let curr_package = remaining_packages.remove(package_index);
 
-        
-        let mut packages = packages.clone();
-        let curr_package = packages.remove(package_index);
-        
-        // println!("  curr package: {curr_package}");
-
-        let remaining_weight = target - bag.weight();
-        if curr_package > remaining_weight {
-            // println!("    already too heavy");
+        if (target - curr_bag.weight()) > *target {
             continue;
         }
 
-        // println!("  {curr_package} {packages:?}");
+        if (curr_bag.weight() + curr_package) < *target {
+            let mut new_bag = curr_bag.clone();
+            new_bag.push(curr_package);
+            new_bag.sort();
 
-        if &(bag.weight() + curr_package) < target {
-            let mut new_bag = bag.clone();
-            new_bag.add_package(&curr_package);
-            // println!("  under weight");
-
-            if fails.contains(&(bag.clone(), packages.clone())) {
-                return;
+            if skips.contains(&(packages.clone(), curr_bag.clone())) {
+                // println!("caught skip");
+                return None;
             }
 
-            get_all_splits(&packages, target, &new_bag, fails, pairs);
-        }
-
-        if &(bag.weight() + curr_package) == target {
-            // println!("  right weight");
-            let mut new_bag_1 = bag.clone();
-            new_bag_1.add_package(&curr_package);
-            let mut packages = packages.clone();
-            packages.sort();
-            let new_bag_2 = Bag {packages: packages.clone()};
-            let mut bags = Vec::from([new_bag_1, new_bag_2]);
-            bags.sort_by(|a, b| b.size().cmp(&a.size()));
-
-            pairs.insert(bags);
-
-            return;
-        }
-
-        if &(bag.weight() + curr_package) > target {
-            // println!("  over weight");
-            continue;
-        }
-    }
-
-    // println!("Unsuccessful get all packages {bag:?} {packages:?}");
-    fails.insert((bag.clone(), packages.clone()));
-}
-
-fn get_bag_combinations(packages: &Vec<usize>, target: &usize, curr_bag: &Bag, fails: &mut HashSet<(Bag, Vec<usize>)>, successes: &mut HashMap<Bag, HashSet<Vec<Bag>>>) {
-
-    if successes.contains_key(curr_bag) {
-        // println!("  Caught success in get_bag_combinations {curr_bag:?} {packages:?}");
-        return;
-    }
-
-    if fails.contains(&(curr_bag.clone(), packages.clone())) {
-        // println!("  Caught fail in get_bag_combinations {curr_bag:?} {packages:?}");
-        return;
-    }
-
-    for package_index in 0..packages.len() {
-
-        let mut packages = packages.clone();
-        let curr_package = packages.remove(package_index);
-
-        if &(curr_bag.weight() + curr_package) < target {
-            let mut new_bag = curr_bag.clone();
-            new_bag.add_package(&curr_package);
-
-            get_bag_combinations(&packages, target, &new_bag, fails, successes);
-        }
-
-        if &(curr_bag.weight() + curr_package) == target {
-            let mut new_bag = curr_bag.clone();
-            new_bag.add_package(&curr_package);
-
-            if successes.contains_key(&new_bag) {
-                return;
+            let result = ways_to_get_target(&remaining_packages, target, &new_bag, skips, successes);
+            //println!("  result: {result:?}");
+            match result {
+                Some((size, qe)) => {
+                    if size < smallest_bag {
+                        smallest_bag = size;
+                        smallest_bag_qe = qe;
+                    }
+                    if size == smallest_bag {
+                        if qe < smallest_bag_qe {
+                            smallest_bag = size;
+                            smallest_bag_qe = qe;
+                        }
+                    }
+                    success = true;
+                },
+                None => (),
             }
+        }
+        else if (curr_bag.weight() + curr_package) == *target {
+            let mut new_bag = curr_bag.clone();
+            new_bag.push(curr_package);
+            new_bag.sort();
+            let size = new_bag.len();
+            // println!("  Found {:?} {packages:?}", curr_bag);
+            successes.entry(new_bag.clone()).
+                and_modify(|entry| {
+                        entry.insert(remaining_packages.clone());
+                    }
+                ).
+                or_insert(HashSet::from([remaining_packages.clone()]));
+            // println!("  adding to skips {packages:?}, {curr_bag:?}");
+            skips.insert((packages.clone(), curr_bag.clone()));
 
-            let mut pairs = HashSet::<Vec<Bag>>::new();
+            let qe = (&new_bag).calc_qe();
             
-            println!("Getting splits for bag: {new_bag:?}");
-            get_all_splits(&packages, target, &Bag{ packages: Vec::<usize>::new()}, fails, &mut pairs);
-            println!("Got splits for {new_bag:?} {pairs:?}");
-            successes.insert(new_bag, pairs);
-            return;
-        }
+            if size < smallest_bag {
+                smallest_bag = size;
+                smallest_bag_qe = qe;
+            }
+            if size == smallest_bag {
+                if qe < smallest_bag_qe {
+                    smallest_bag = size;
+                    smallest_bag_qe = qe;
+                }
+            }
 
-        if &(curr_bag.weight() + curr_package) > target {
-            return;
+            // println!("  successes: {smallest_bag:?} {smallest_bag_qe:?}");
+            return Some((smallest_bag, smallest_bag_qe));
+            
         }
     }
 
-    // println!("unsuccessful get bag combinations {curr_bag:?} {packages:?}");
-    fails.insert((curr_bag.clone(), packages.clone()));
+    // println!("Failed {packages:?} {curr_bag:?}");
+    skips.insert((packages.clone(), curr_bag.clone()));
+
+    if success {
+        return Some((smallest_bag, smallest_bag_qe));
+    }
+
+    return None;
+}
+
+fn get_bag_combinations(
+    packages: &Vec<usize>, 
+    target: &usize,
+){
+    let mut successes = HashMap::<Vec<usize>, HashSet::<Vec<usize>>>::new();
+    let mut failures = HashSet::<(Vec<usize>, Vec<usize>)>::new();
+    let result = ways_to_get_target(packages, target, &Vec::new(), &mut failures, &mut successes);
+
+    let result = match result {
+        Some((size, qe)) => (size, qe),
+        None => (std::usize::MAX, std::usize::MAX),
+    };
+
+    let mut smallest_bag = result.0;
+    let mut smallest_bag_qe = result.1;
+
+    println!("  {smallest_bag:?} {smallest_bag_qe:?}");
+
+    let mut success_successes = HashMap::<Vec<usize>, HashSet::<Vec<usize>>>::new();
+    let mut success_failures = HashSet::<(Vec<usize>, Vec<usize>)>::new();
+    
+    for success in successes {
+        println!("{success:?}");
+    
+        let success_packages = success.1.iter().nth(0).unwrap();
+        let result = ways_to_get_target(&success_packages, target, &Vec::new(), &mut success_failures, &mut success_successes);
+
+        match result {
+                Some((size, qe)) => {
+                    if size < smallest_bag {
+                        smallest_bag = size;
+                        smallest_bag_qe = qe;
+                    }
+                    if size == smallest_bag {
+                        if qe < smallest_bag_qe {
+                            smallest_bag = size;
+                            smallest_bag_qe = qe;
+                        }
+                    }
+                },
+                None => (),
+            }
+
+        println!("result {result:?}");
+    }
+
+    println!("  {smallest_bag:?} {smallest_bag_qe:?}");
 }
 
 pub fn part_a(path: &String)
@@ -163,11 +200,9 @@ pub fn part_a(path: &String)
 
     let mut packages = packages.clone();
 
-    // whatever you do, do it greedily
-    packages.reverse();
-
     let total: usize = packages.iter().sum();
-    let target = total / 3;
+    // let target = total / 2;
+    let target = total / 4;
 
     println!("{packages:?}");
 
@@ -176,27 +211,10 @@ pub fn part_a(path: &String)
 
     println!("Target: {target}");
 
-    get_bag_combinations(&packages, &target, &mut Bag{ packages: Vec::<usize>::new() }, &mut fails, &mut successes);
+    get_bag_combinations(&packages, &target);
 
     let mut smallest_bag = std::usize::MAX;
     let mut smallest_bag_qe = std::usize::MAX;
-    for (bag, others) in successes {
-
-        if (bag.size() <= smallest_bag) && (bag.calc_qe() < smallest_bag_qe) {
-            smallest_bag = bag.size();
-            smallest_bag_qe = bag.calc_qe();
-        }
-
-        for other in others {
-
-            for bag in other {
-                if (bag.size() <= smallest_bag) && (bag.calc_qe() < smallest_bag_qe) {
-                    smallest_bag = bag.size();
-                    smallest_bag_qe = bag.calc_qe();
-                }
-            }
-        }
-    }
 
     println!("Result: {smallest_bag} {smallest_bag_qe}");
 }

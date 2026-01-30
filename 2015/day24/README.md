@@ -4,8 +4,8 @@ https://adventofcode.com/2015/day/24
 
 # Status
 
-* Part A - Incomplete
-* Part B - Incomplete
+* Part A - COMPLETE (ish)
+* Part B - COMPLETE (ish)
 
 # Build / Run
 
@@ -13,8 +13,13 @@ https://adventofcode.com/2015/day/24
 
 [build / run instructions]
 
+Will fill in once I've properly completed it.
+
 # Notes
 
+My current method sucks
 
 # Improvements
 
+* This takes too long and there must be a better way to do this.
+* 

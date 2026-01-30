@@ -4,11 +4,11 @@ My repository for the advent of code solutions
 
 # Total Solved
 
-* 64 / 524 (12.2%)
+* 66 / 524 (12.2%)
 
 # Breakdown by Year
 
-* [2015](./2015/) - 46 / 50 - Challenge - just use Rust.
+* [2015](./2015/) - 48 / 50 - Challenge - just use Rust.
 * [2016](./2016/) -  0 / 50
 * [2017](./2017/) -  0 / 50
 * [2018](./2018/) -  0 / 50
