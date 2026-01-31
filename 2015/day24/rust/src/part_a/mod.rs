@@ -185,7 +185,7 @@ fn get_bag_combinations(
     println!("  blah {smallest_bag:?} {smallest_bag_qe:?}");
 }
 
-pub fn part_a(path: &String)
+pub fn part_a(path: &String, bag_count: &usize)
 {
     println!("Part A");
 
@@ -198,14 +198,9 @@ pub fn part_a(path: &String)
         }
     ).collect();
 
-    let mut packages = packages.clone();
-
     let total: usize = packages.iter().sum();
-    // let target = total / 2; // experiment
-    // let target = total / 3; // part a
-    let target = total / 4;  // part b
 
-    println!("{packages:?}");
+    let target = total / bag_count;  // part b
 
     println!("Target: {target}");
 
