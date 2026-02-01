@@ -34,4 +34,4 @@ Do this year in Rust
 * [Day 22](./day22/) - Completed - Very unhappy with this one, would like to try re-working it at some point.
 * [Day 23](./day23/) - Completed 
 * [Day 24](./day24/) - Completed (ish) - This needs a re-work, it doesn't complete but does provide me with the right answer
-* [Day 25](./day25/) 
+* [Day 25](./day25/) - COMPLETED!!!!!!

@@ -4,14 +4,28 @@ https://adventofcode.com/2015/day/25
 
 # Status
 
-* Part A - Incomplete
-* Part B - Incomplete
+* Part A - COMPLETE
 
 # Build / Run
 
 ## Build
 
-[build / run instructions]
+```
+cargo build [--release]
+```
+
+## Run
+
+```
+cargo run
+```
+
+or
+
+```
+cd [build dir]
+./day25
+```
 
 # Notes
 
