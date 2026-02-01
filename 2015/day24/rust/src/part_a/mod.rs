@@ -94,7 +94,15 @@ fn ways_to_get_target(
         }
         else if (&new_bag).weight() == *target {
             let size = new_bag.len();
-            // println!("{indent}  Found {:?} {remaining_packages:?}", new_bag);
+            // println!("{indent}  Found {:?} {remaining_packages:?} {successes:?}", new_bag);
+            let indent = format!("{indent}  ");
+
+            if remaining_packages.len() == 0 {
+                return Some((new_bag.len(), (&new_bag).calc_qe()));
+            }
+
+            skips.insert((packages.clone(), curr_bag.clone()));
+
             successes.entry(new_bag.clone()).
                 and_modify(|entry| {
                         entry.insert(remaining_packages.clone());
@@ -102,6 +110,30 @@ fn ways_to_get_target(
                 ).
                 or_insert(HashSet::from([remaining_packages.clone()]));
 
+            let result = ways_to_get_target(&remaining_packages, target, &Vec::new(), skips, successes, indent.as_str());
+
+            if result.is_none() {
+                return None;
+            }
+
+            let size = result.unwrap().0;
+            let qe = result.unwrap().1;
+
+            if size < smallest_bag {
+                smallest_bag = size;
+                smallest_bag_qe = qe;
+            }
+            if size == smallest_bag {
+                if qe < smallest_bag_qe {
+                    smallest_bag = size;
+                    smallest_bag_qe = qe;
+                }
+            }
+
+            // println!("{indent}  {new_bag:?} {remaining_packages:?}");
+            // println!("{indent}  result {result:?}");
+
+            let size = new_bag.len();
             let qe = (&new_bag).calc_qe();
             
             if size < smallest_bag {
@@ -152,42 +184,12 @@ fn get_bag_combinations(
     let mut smallest_bag = result.0;
     let mut smallest_bag_qe = result.1;
 
-    // println!("  {smallest_bag:?} {smallest_bag_qe:?}");
-
-    let mut success_successes = HashMap::<Vec<usize>, HashSet::<Vec<usize>>>::new();
-    let mut success_failures = HashSet::<(Vec<usize>, Vec<usize>)>::new();
-    
-    for success in successes {
-        println!("  Success: {success:?}");
-    
-        let success_packages = success.1.iter().nth(0).unwrap();
-        let result = ways_to_get_target(&success_packages, target, &Vec::new(), &mut success_failures, &mut success_successes, "");
-
-        match result {
-                Some((size, qe)) => {
-                    if size < smallest_bag {
-                        smallest_bag = size;
-                        smallest_bag_qe = qe;
-                    }
-                    if size == smallest_bag {
-                        if qe < smallest_bag_qe {
-                            smallest_bag = size;
-                            smallest_bag_qe = qe;
-                        }
-                    }
-                },
-                None => (),
-            }
-
-        // println!("result {result:?}");
-    }
-
-    println!("  blah {smallest_bag:?} {smallest_bag_qe:?}");
+    println!("Result: {smallest_bag:?} {smallest_bag_qe:?}");
 }
 
 pub fn part_a(path: &String, bag_count: &usize)
 {
-    println!("Part A");
+    println!("Bag count: {bag_count}");
 
     let file: File = File::open(path).expect("Could not open file");
     let buf_reader:BufReader<File> = BufReader::new(file);

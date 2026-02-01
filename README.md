@@ -4,7 +4,7 @@ My repository for the advent of code solutions
 
 # Total Solved
 
-* 66 / 524 (12.2%)
+* 66 / 524 (12.6%)
 
 # Breakdown by Year
 

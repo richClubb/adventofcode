@@ -4,16 +4,33 @@ https://adventofcode.com/2015/day/24
 
 # Status
 
-* Part A - COMPLETE (ish)
-* Part B - COMPLETE (ish)
+* Part A - COMPLETE (ish, needs review)
+* Part B - COMPLETE (ish, needs review)
 
 # Build / Run
 
 ## Build
 
-[build / run instructions]
+```
+cargo build [--release]
+```
 
-Will fill in once I've properly completed it.
+## Run
+
+```
+cargo run [path] [run]
+```
+
+or
+
+```
+cd [build dir]
+./day24 [path] [run]
+```
+
+where `[run]` is:
+* part_a
+* part_b
 
 # Notes
 

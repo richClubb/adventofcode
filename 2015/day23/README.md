@@ -25,7 +25,7 @@ or
 
 ```
 cd [build dir]
-./day01 [path] [run]
+./day23 [path] [run]
 ```
 
 where `[run]` is:
