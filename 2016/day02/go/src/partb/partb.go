@@ -12,26 +12,26 @@ func move_val(value uint8, instruction rune) uint8 {
 	switch value {
 	case 0x01:
 		if 'D' == instruction {
-			value = 3
+			value = 0x03
 		}
 		break
 	case 0x02:
 		switch instruction {
-		case 'L':
+		case 'R':
 			value = 0x03
 			break
 		case 'D':
-			value = 0x08
+			value = 0x06
 			break
 		}
 		break
 	case 0x03:
 		switch instruction {
 		case 'U':
-			value = 0x1
+			value = 0x01
 			break
 		case 'D':
-			value = 0x7
+			value = 0x07
 			break
 		case 'L':
 			value = 0x02
@@ -43,26 +43,26 @@ func move_val(value uint8, instruction rune) uint8 {
 		break
 	case 0x04:
 		switch instruction {
-		case 'R':
+		case 'L':
 			value = 0x03
 			break
 		case 'D':
-			value = 0x06
+			value = 0x08
 			break
 		}
 		break
 	case 0x05:
 		if 'R' == instruction {
-			value = 6
+			value = 0x06
 		}
 		break
 	case 0x06:
 		switch instruction {
 		case 'U':
-			value = 0x2
+			value = 0x02
 			break
 		case 'D':
-			value = 0xA
+			value = 0x0A
 			break
 		case 'L':
 			value = 0x05
@@ -75,10 +75,10 @@ func move_val(value uint8, instruction rune) uint8 {
 	case 0x07:
 		switch instruction {
 		case 'U':
-			value = 0x3
+			value = 0x03
 			break
 		case 'D':
-			value = 0xB
+			value = 0x0B
 			break
 		case 'L':
 			value = 0x06
@@ -91,10 +91,10 @@ func move_val(value uint8, instruction rune) uint8 {
 	case 0x08:
 		switch instruction {
 		case 'U':
-			value = 0x4
+			value = 0x04
 			break
 		case 'D':
-			value = 0xC
+			value = 0x0C
 			break
 		case 'L':
 			value = 0x07
@@ -106,26 +106,26 @@ func move_val(value uint8, instruction rune) uint8 {
 		break
 	case 0x09:
 		if 'L' == instruction {
-			value = 6
+			value = 0x08
 		}
 		break
 	case 0x0A:
 		switch instruction {
 		case 'R':
-			value = 0x06
+			value = 0x0B
 			break
 		case 'U':
-			value = 0x0B
+			value = 0x06
 			break
 		}
 		break
 	case 0x0B:
 		switch instruction {
 		case 'U':
-			value = 0x7
+			value = 0x07
 			break
 		case 'D':
-			value = 0xD
+			value = 0x0D
 			break
 		case 'L':
 			value = 0x0A
@@ -172,9 +172,7 @@ func PartB(input_file_path string) uint64 {
 	for scanner.Scan() {
 
 		line_text := scanner.Text()
-		// for index := 0; index < len(line_text); index++ {
-		// 	println(line_text[index])
-		// }
+
 		for _, char := range line_text {
 			val = move_val(val, char)
 		}

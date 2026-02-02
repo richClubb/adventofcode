@@ -4,17 +4,33 @@ https://adventofcode.com/2016/day/02
 
 # Status
 
-* Part A - Incomplete
-* Part B - Incomplete
+* Part A - COMPLETE
+* Part B - COMPLETE
 
 # Build / Run
 
 ## Build
 
-[build / run instructions]
+from `go/`
+
+```
+go build src/main.go
+```
+
+## Run
+
+After build
+
+```
+./main -i [path] -r [run]
+```
+
+where `[run]`
+
 
 # Notes
 
 
 # Improvements
 
+I think the data structure could be improved.
