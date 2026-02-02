@@ -35,10 +35,6 @@ Fixed
     }
 ```
 
-My answers:
-* Part A: 238
-* Part B: 69
-
 # Build / Run
 
 ## Build

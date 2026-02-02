@@ -3,7 +3,11 @@
 https://adventofcode.com/2023
 
 I started this in 2023 and did 4 days but didn't complete it. I did a huge study on day 05 as it was very interesting.
-  
+
+# Use of devcontainer
+
+This devcontainer is BIG. It has to download CUDA toolchains so it takes a very long time to download and compile.
+
 # Overview
 
 * [Day 01](./day01/)
