@@ -1,6 +1,6 @@
-# AoC [year] - Day [day]
+# AoC 2016 - Day 03
 
-https://adventofcode.com/[year]/day/[day]
+https://adventofcode.com/2016/day/03
 
 # Status
 

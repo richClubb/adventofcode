@@ -4,7 +4,7 @@ https://adventofcode.com/[year]
 
 # Challenge
 
-Use 25 of the languages from the TIOBE programming list
+Use 25 of the languages from the [TIOBE programming index](https://www.tiobe.com/tiobe-index/)
 
 * Python
 * C
@@ -27,7 +27,12 @@ Use 25 of the languages from the TIOBE programming list
 * Ruby
 * Julia
 
-I will have  to reapeat 5 languages as this list is only 20
+I will have to reapeat 5 languages as this list is only 20 and I'm not going to do some of the others.
+
+## Removed
+
+* SQL
+
 
 # Overview
 
