@@ -33,24 +33,20 @@ func PartA(input_file_path string) uint64 {
 				if 4 <= val {
 					val -= 3
 				}
-				break
 			case 'D':
 				if 6 >= val {
 					val += 3
 				}
-				break
 			case 'L':
 				if (val == 1) || (val == 4) || (val == 7) {
 					break
 				}
 				val -= 1
-				break
 			case 'R':
 				if (val == 3) || (val == 6) || (val == 9) {
 					break
 				}
 				val += 1
-				break
 			}
 		}
 

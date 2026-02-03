@@ -14,142 +14,104 @@ func move_val(value uint8, instruction rune) uint8 {
 		if 'D' == instruction {
 			value = 0x03
 		}
-		break
 	case 0x02:
 		switch instruction {
 		case 'R':
 			value = 0x03
-			break
 		case 'D':
 			value = 0x06
-			break
 		}
-		break
 	case 0x03:
 		switch instruction {
 		case 'U':
 			value = 0x01
-			break
 		case 'D':
 			value = 0x07
-			break
 		case 'L':
 			value = 0x02
-			break
 		case 'R':
 			value = 0x04
-			break
 		}
-		break
 	case 0x04:
 		switch instruction {
 		case 'L':
 			value = 0x03
-			break
 		case 'D':
 			value = 0x08
-			break
 		}
-		break
 	case 0x05:
 		if 'R' == instruction {
 			value = 0x06
 		}
-		break
 	case 0x06:
 		switch instruction {
 		case 'U':
 			value = 0x02
-			break
 		case 'D':
 			value = 0x0A
-			break
 		case 'L':
 			value = 0x05
-			break
 		case 'R':
 			value = 0x07
-			break
 		}
-		break
 	case 0x07:
 		switch instruction {
 		case 'U':
 			value = 0x03
-			break
 		case 'D':
 			value = 0x0B
-			break
 		case 'L':
 			value = 0x06
-			break
 		case 'R':
 			value = 0x08
-			break
 		}
-		break
 	case 0x08:
 		switch instruction {
 		case 'U':
 			value = 0x04
-			break
 		case 'D':
 			value = 0x0C
-			break
 		case 'L':
 			value = 0x07
-			break
 		case 'R':
 			value = 0x09
-			break
 		}
-		break
 	case 0x09:
 		if 'L' == instruction {
 			value = 0x08
 		}
-		break
 	case 0x0A:
 		switch instruction {
 		case 'R':
 			value = 0x0B
-			break
 		case 'U':
 			value = 0x06
-			break
 		}
-		break
 	case 0x0B:
 		switch instruction {
 		case 'U':
 			value = 0x07
-			break
+
 		case 'D':
 			value = 0x0D
-			break
+
 		case 'L':
 			value = 0x0A
-			break
+
 		case 'R':
 			value = 0x0C
-			break
 		}
-		break
 	case 0x0C:
 		switch instruction {
 		case 'L':
 			value = 0x0B
-			break
 		case 'U':
 			value = 0x08
-			break
 		}
-		break
 	case 0x0D:
 		if 'U' == instruction {
 			value = 0x0B
 		}
-		break
 	}
 	return value
 }
