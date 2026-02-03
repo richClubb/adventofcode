@@ -32,7 +32,16 @@ I will have to reapeat 5 languages as this list is only 20 and I'm not going to 
 ## Removed
 
 * SQL
+* MATLAB - I have a copy but I CBA and nobody else would be able to run it
+* Scratch - I..... have no idea
+* Assembly Language - I don't have the fortitude for this one
+* Kotlin - I don't really know. Might have to re-evaluate this one
+* Prolog - I don't want to do this
+* Classic Visual Basic - Repetition
+* SAS - Don't know anything about this
+* Objective-C - ~~I think this is Mac specific?~~ It's not but I don't want to use it.
 
+At this point I'm at 30 in the list
 
 # Overview
 
