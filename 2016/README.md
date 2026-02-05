@@ -11,7 +11,7 @@ Do this year in either Rust, Zig, Python, C or Go.
 * [Day 01](./day01/) - C - COMPLETED
 * [Day 02](./day02/) - Go - COMPLETED
 * [Day 03](./day03/) - Zig - COMPLETED
-* [Day 04](./day04/) - Rust
+* [Day 04](./day04/) - Rust - COMPLETED
 * [Day 05](./day05/) - Python
 * [Day 06](./day06/) - Go
 * [Day 07](./day07/) - Rust

@@ -4,12 +4,12 @@ My repository for the advent of code solutions
 
 # Total Solved
 
-* 74 / 524 (14.1%)
+* 76 / 524 (14.5%)
 
 # Breakdown by Year
 
 * [2015](./2015/) - 50 / 50 - Challenge - just use Rust.
-* [2016](./2016/) -  6 / 50 - Challenge - Alternate between C, Go, Rust, Python and Zig. Don't use same language twice in a row. Should end up doing each language 5 times.
+* [2016](./2016/) -  8 / 50 - Challenge - Alternate between C, Go, Rust, Python and Zig. Don't use same language twice in a row. Should end up doing each language 5 times.
 * [2017](./2017/) -  0 / 50
 * [2018](./2018/) -  0 / 50
 * [2019](./2019/) -  0 / 50
@@ -34,17 +34,17 @@ Respecting the [wishes of the author of AoC](https://adventofcode.com/2015/about
 
 Always respect the wishes of the creators. If you don't like it, go and do something else.
 
-# Encrpytion / Decryption Notes
+#3 Encrpytion / Decryption Notes
 
 This is mostly for me just in case I forget.
 
-## Encrypt
+### Encrypt
 
 ```
 tar -cvzf - problem_solution_input/ | gpg -e -r [id] > problem_solution_input.tar.gz.gpg
 ```
 
-## Decrypt
+### Decrypt
 
 ```
 gpg -d problem_solution_input.tar.gz.gpg | tar -xvzf -
