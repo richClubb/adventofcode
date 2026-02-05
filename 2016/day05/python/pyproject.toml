@@ -10,10 +10,12 @@ requires-python = ">=3.12"
 dependencies = [
 ]
 
-# [tool.poetry]
-# packages = [{include = "python", from = "src"}]
+[tool.poetry]
+packages = [{include = "python", from = "src"}]
+
+[tool.poetry.scripts]
+day05 = "python src/main.py:main"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
-
