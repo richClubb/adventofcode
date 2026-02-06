@@ -18,6 +18,7 @@ func main() {
 	flag.Parse()
 
 	fmt.Println("Advent of code 2016 - day 06")
+	fmt.Println(*run_type)
 
 	if strings.Compare(*run_type, "part_a") == 0 {
 

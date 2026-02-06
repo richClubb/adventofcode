@@ -4,12 +4,12 @@ My repository for the advent of code solutions
 
 # Total Solved
 
-* 76 / 524 (14.5%)
+* 80 / 524 (15.3%)
 
 # Breakdown by Year
 
 * [2015](./2015/) - 50 / 50 - Challenge - just use Rust.
-* [2016](./2016/) - 10 / 50 - Challenge - Alternate between C, Go, Rust, Python and Zig. Don't use same language twice in a row. Should end up doing each language 5 times.
+* [2016](./2016/) - 12 / 50 - Challenge - Alternate between C, Go, Rust, Python and Zig. Don't use same language twice in a row. Should end up doing each language 5 times.
 * [2017](./2017/) -  0 / 50
 * [2018](./2018/) -  0 / 50
 * [2019](./2019/) -  0 / 50

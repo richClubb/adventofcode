@@ -4,8 +4,8 @@ https://adventofcode.com/2016/day/06
 
 # Status
 
-* Part A - Incomplete
-* Part B - Incomplete
+* Part A - COMPLETE
+* Part B - COMPLETE
 
 # Build / Run
 
@@ -31,6 +31,7 @@ where `[run]`
 
 # Notes
 
+I'm not enjoying go..... Just going to put that out there.
 
 # Improvements
 
