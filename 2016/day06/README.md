@@ -1,11 +1,11 @@
-# AoC 2016 - Day 02
+# AoC 2016 - Day 06
 
-https://adventofcode.com/2016/day/02
+https://adventofcode.com/2016/day/06
 
 # Status
 
-* Part A - COMPLETE
-* Part B - COMPLETE
+* Part A - Incomplete
+* Part B - Incomplete
 
 # Build / Run
 
@@ -34,4 +34,3 @@ where `[run]`
 
 # Improvements
 
-I think the data structure could be improved.

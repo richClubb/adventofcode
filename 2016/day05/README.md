@@ -4,17 +4,22 @@ https://adventofcode.com/2016/day/05
 
 # Status
 
-* Part A - Incomplete
-* Part B - Incomplete
+* Part A - COMPLETE
+* Part B - COMPLETE
 
 # Build / Run
 
-## Build
+## Run
 
-[build / run instructions]
+from `python`
+
+```
+poetry run python src/main.py
+```
 
 # Notes
 
 
 # Improvements
 
+I want to get the poetry setup working properly.
