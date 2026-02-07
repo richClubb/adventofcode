@@ -1,6 +1,6 @@
-# AoC 2016 - Day 07
+# AoC 2016 - Day 08
 
-https://adventofcode.com/2016/day/07
+https://adventofcode.com/2016/day/08
 
 # Status
 
