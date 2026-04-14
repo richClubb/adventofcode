@@ -63,15 +63,17 @@ def find_min_in_range(start, size, maps):
 
     min_loc = 10**30
     for seed in range(start, start + size):
+        seed_val = seed
         map_key = 0
         while map_key < 7:
             for entry in maps[map_key]:
-                if seed >= entry[1] and seed < entry[1] + entry[2]:
-                    seed = entry[0] + (seed - entry[1])
+                if seed_val >= entry[1] and seed_val < entry[1] + entry[2]:
+                    seed_val = entry[0] + (seed_val - entry[1])
                     break
-            if seed < min_loc:
-                min_loc = seed
+            
             map_key += 1
+        if seed_val < min_loc:
+            min_loc = seed_val
 
     return min_loc
 
@@ -288,10 +290,9 @@ def part_b_forward_inline_sorted(input_file_path):
 
     min_loc = 10**30
     for seed_start, seed_size in seed_pairs:
-        for seed in range(seed_start, seed_start + seed_size - 1):
-            loc = find_location_forward_inline(seed, maps)
-            if loc < min_loc:
-                min_loc = loc
+        range_result = find_min_in_range(seed_start, seed_size, maps)
+        if range_result < min_loc:
+            min_loc = range_result
 
     return min_loc
 
