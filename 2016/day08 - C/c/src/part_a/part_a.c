@@ -29,7 +29,12 @@ typedef struct instruction_t {
 
 /* ----------------------------------- */
 
-uint64_t part_a(const CONFIG *config)
+INSTRUCTION* injest_file(const char* input_file, uint32_t* num_inputs) {
+    
+
+}
+
+uint64_t part_a(const CONFIG* config)
 {
 
     FILE* input_file = fopen(config->input_file_path, "r");

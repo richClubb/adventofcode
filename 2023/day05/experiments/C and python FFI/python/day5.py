@@ -122,6 +122,7 @@ def part_b(input_file_path):
 
     return min_value
 
+
 RUNS = ["part_a", "part_b"]
 
 if __name__ == "__main__":

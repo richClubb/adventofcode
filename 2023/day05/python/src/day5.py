@@ -123,12 +123,16 @@ def part_b_inverse(input_file_path):
     f = lambda A, n=3: [A[i : i + n] for i in range(0, len(A), n)]
     seed_pairs = f(seeds, 2)
 
-    start_val = 0
+    print(maps)
+
+    start_val = 1
     while True:
         try:
+            print(f"start value {start_val}")
             calculated_seed = find_location(
                 start_val, maps, direction=Mapping_Direction.OUTPUT_TO_INPUT
             )
+            print(f"start value {start_val} {calculated_seed}")
 
             for start, length in seed_pairs:
                 if (calculated_seed >= start) and (calculated_seed <= start + length):

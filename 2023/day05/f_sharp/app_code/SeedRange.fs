@@ -9,11 +9,12 @@ type SeedRange(start : int64, size : int64) =
     member this.SeedEnd: int64 = start + size
     // This works in a more traditionally functional way, but eats memory.
     member this.FindMinSeedInRange( mappingLayers : List<MappingLayer> ) = 
-
         let seeds = [|this.SeedStart .. this.SeedEnd|]
 
         let processed_values = Array.map (fun seed -> (seed, mappingLayers) ||> List.scan (fun s v -> v.TranslateSeedForward(s))) seeds
-        Array.map (fun a -> List.last a) processed_values |> Array.min
+        let min_value = Array.map (fun a -> List.last a) processed_values |> Array.min
+        printfn($"Min value of range {this.SeedStart} - {this.SeedEnd}: {min_value}\n")
+        min_value
 
     // This works by only keeping track of the minimum value, rather than trying to store the list of all values
     // by using a while loop rather than other iterators it means that it doesnt eat loads of memory

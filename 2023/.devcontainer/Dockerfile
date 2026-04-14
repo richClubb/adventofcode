@@ -12,8 +12,9 @@ RUN apt update && export DEBIAN_FRONTEND=noninteractive \
     clinfo \
     clang
 
-RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb && \
-    dpkg -i cuda-keyring_1.1-1_all.deb && \
+RUN wget --no-check-certificate https://developer.download.nvidia.com/compute/cuda/12.8.0/local_installers/cuda-repo-debian12-12-8-local_12.8.0-570.86.10-1_amd64.deb && \
+    dpkg -i cuda-repo-debian12-12-8-local_12.8.0-570.86.10-1_amd64.deb && \
+    cp /var/cuda-repo-debian12-12-8-local/cuda-*-keyring.gpg /usr/share/keyrings/ && \
     apt-get update && \
     apt-get -y install cuda-toolkit-12-8
 
