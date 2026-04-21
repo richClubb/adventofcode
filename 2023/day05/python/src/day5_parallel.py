@@ -14,15 +14,12 @@ RUNS = [
     "part_b_forward", 
     "part_b_forward_inline", 
     "part_b_forward_inline_sorted", 
-    "part_b_forward_parallel", 
+    "part_b_forward_parallel",
+    "part_b_forward_parallel_28_cores",
     "part_b_inverse", 
     "part_b_inverse_parallel"
 ]
 
-
-class Mapping_Direction(Enum):
-    INPUT_TO_OUTPUT = 1
-    OUTPUT_TO_INPUT = 2
 
 def do_mapping_forward(input, dest, src, length):
     if input >= src and input < src + length:
@@ -103,7 +100,27 @@ def find_lowest_location(arguments):
         if loc < min_loc:
             min_loc = loc
 
-    print("{} {} {}".format(seed_start, seed_length, min_loc))
+    return min_loc
+
+def find_lowest_location_inline(arguments):
+    seed_start, seed_length = arguments[0]
+    maps = arguments[1]
+
+    min_loc = 10**30
+
+    for seed in range(seed_start, seed_start + seed_length):
+        temp = seed
+        map_key = 0
+        while map_key < 7:
+            for entry in maps[map_key]:
+                if temp >= entry[1] and temp < entry[1] + entry[2]:
+                    temp = entry[0] + (temp - entry[1])
+                    break
+            map_key += 1
+
+        if temp < min_loc:
+            min_loc = temp
+
     return min_loc
 
 
@@ -210,18 +227,16 @@ def part_b_forward_multiprocess(input_file_path):
     processors = 28
 
     ideal_size = round(functools.reduce(lambda x, entry: x + entry[1], seed_pairs, 0) / processors)
-    print(ideal_size)
 
     new_input = []
     for entry in seed_pairs:
         new_input += (split_range(entry[0], entry[1], ideal_size))
 
-    print(len(new_input), new_input)
     for seed_pair in new_input:
         pool_arguments.append((seed_pair, maps))
 
     with Pool(processors) as p:
-        results = p.map(find_lowest_location, pool_arguments)
+        results = p.map(find_lowest_location_inline, pool_arguments)
 
     return min(results)
 
@@ -243,7 +258,7 @@ def part_b_inverse_multiprocess(input_file_path):
             )
             range_start += range_size
 
-        with Pool(28) as p:
+        with Pool(processes) as p:
             results = p.map(find_lowest_seed, pool_arguments)
 
             results = list(filter(lambda x: x is not None, results))
